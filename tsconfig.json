@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "declarationMap": true,
+    "allowJs": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "incremental": true,
+    "lib": ["ESNext"],
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": true,
+    "noEmitHelpers": true,
+    "importHelpers": true,
+    "target": "ES2019",
+    "outDir": "dist"
+  },
+  "compileOnSave": false,
+  "include": ["src"],
+  "exclude": ["node_modules", "cdk.out", "coverage", "dist"]
+}
