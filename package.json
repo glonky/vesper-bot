@@ -17,7 +17,7 @@
     "deploy:commands": "ts-node src/scripts/deploy-commands.ts",
     "test": "jest",
     "build": "tsc",
-    "heroku-postbuild": "yarn build && && yarn deploy:commands",
+    "heroku-postbuild": "yarn build && yarn deploy:commands",
     "lint": "eslint --ext .json,.ts,.tsx --cache .",
     "lint:fix": "yarn lint --fix",
     "prepublishOnly": "yarn build"
