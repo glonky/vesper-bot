@@ -6,6 +6,9 @@
     "type": "git",
     "url": "ssh://git@github.com/glonky/vesper-discord-bot.git"
   },
+  "engines": {
+    "node": ">=16"
+  },
   "license": "MIT",
   "scripts": {
     "prepare": "is-ci || husky install",
