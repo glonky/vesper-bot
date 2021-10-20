@@ -22,8 +22,8 @@ export class Config extends BaseConfig {
   };
 
   logger = {
-    enabled: this.getEnvVar<boolean>(process.env.LOG_ENABLED),
-    level: this.getEnvVar<string>(process.env.LOG_LEVEL),
+    enabled: this.getEnvVar<boolean>(process.env.LOG_ENABLED, true),
+    level: this.getEnvVar<string>(process.env.LOG_LEVEL, 'info'),
     prettyPrint: this.getEnvVar<boolean>(process.env.LOG_PRETTY_PRINT, false),
     timestamp: this.getEnvVar<boolean>(process.env.LOG_TIMESTAMP, false),
   };

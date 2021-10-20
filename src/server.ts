@@ -4,7 +4,7 @@ import Container from 'typedi';
 import { Client, Collection } from 'discord.js';
 import glob from 'glob';
 import { Config } from './config';
-import { ExtendedClient } from './interfaces';
+import { Command, ExtendedClient } from './interfaces';
 import { Logger } from './logger';
 
 const config = Container.get(Config);
@@ -31,7 +31,7 @@ const client = new Client({ intents: config.discord.intents }) as ExtendedClient
 client.commands = new Collection();
 
 for (const file of commandFiles) {
-  const command = require(file).default;
+  const command = require(file).default as Command;
 
   // Set a new item in the Collection
   // With the key as the command name and the value as the exported module
