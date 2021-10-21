@@ -10,7 +10,7 @@ import {
 } from '@discordjs/builders';
 import { Message } from 'discord.js';
 
-const boldString = bold('help me');
+const boldString = bold('help me please');
 const italicString = italic('the table');
 const strikethroughString = strikethrough("it's broken");
 const underscoreString = underscore('car');
