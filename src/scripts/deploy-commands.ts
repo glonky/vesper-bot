@@ -6,6 +6,7 @@ import Container from 'typedi';
 import glob from 'glob';
 import { Config } from '../config';
 import { Logger } from '../logger';
+import { Command } from '../interfaces';
 
 const commandsPath = path.join(__dirname, '..', 'commands');
 
@@ -16,7 +17,7 @@ const commandFiles = glob.sync(`${commandsPath}/**/*.{js,ts}`, {
 const commands = [];
 
 for (const file of commandFiles) {
-  const command = require(file).default;
+  const command = require(file).default as Command;
   commands.push(command.data.toJSON());
 }
 

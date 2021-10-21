@@ -1,0 +1,11 @@
+{
+  "recommendations": [
+    "streetsidesoftware.code-spell-checker",
+    "mikestead.dotenv",
+    "dbaeumer.vscode-eslint",
+    "github.copilot",
+    "orta.vscode-jest",
+    "esbenp.prettier-vscode",
+    "visualstudioexptteam.vscodeintellicode"
+  ]
+}
