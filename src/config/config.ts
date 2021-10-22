@@ -28,6 +28,10 @@ export class Config extends BaseConfig {
     timestamp: this.getEnvVar<boolean>(process.env.LOG_TIMESTAMP, false),
   };
 
+  coinmarketcap = {
+    apiKey: this.getEnvVar<string>(process.env.COINMARKETCAP_API_KEY),
+  };
+
   protected getPathToEnvFiles() {
     return path.join(__dirname, '..');
   }
