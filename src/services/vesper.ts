@@ -280,6 +280,6 @@ export class VesperService {
   private fetch<T>(endpoint: string): Promise<T> {
     const stage = Container.get(Config).isProduction ? 'prod' : 'beta';
 
-    return fetch(`${this.baseUrl}/${endpoint}?stages=${stage}`).then((response) => response.json()) as Promise<T>;
+    return fetch(`${this.baseUrl}/${endpoint}?stages=${stage}`).then((response: any) => response.json()) as Promise<T>;
   }
 }

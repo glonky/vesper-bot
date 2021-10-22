@@ -8,7 +8,7 @@ export default {
   async execute(message: Message) {
     const stats = await Container.get(VesperService).getVspStats();
     await message.reply(`
-    Price: ${stats.price}
+      Price: ${stats.price}
     `);
   },
 };
