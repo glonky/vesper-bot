@@ -8,6 +8,7 @@ import { Config } from '../config';
 import { Logger } from '../logger';
 import { Command } from '../interfaces';
 
+const logger = Container.get(Logger);
 const commandsPath = path.join(__dirname, '..', 'commands');
 
 const commandFiles = glob.sync(`${commandsPath}/**/*.{js,ts}`, {
@@ -18,13 +19,20 @@ const commands = [];
 
 for (const file of commandFiles) {
   const command = require(file).default as Command;
-  commands.push(command.data.toJSON());
+
+  if (!command) {
+    logger.warn(`Command is not a valid command.`, { file });
+    continue;
+  }
+
+  if (!command.data.disabled) {
+    commands.push(command.data.toJSON());
+  }
 }
 
 const config = Container.get(Config);
-const logger = Container.get(Logger);
 logger.info('Deploying commands...', {
-  commands,
+  commands: commands.map((command) => command.name),
 });
 
 const rest = new REST({ version: '9' }).setToken(config.discord.token);

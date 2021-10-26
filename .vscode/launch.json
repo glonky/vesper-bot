@@ -11,7 +11,22 @@
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/src/server.ts",
       "preLaunchTask": "tsc: build - tsconfig.json",
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "sourceMaps": true,
+      "smartStep": true,
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Deploy Commands",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/src/scripts/deploy-commands.ts",
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "sourceMaps": true,
+      "smartStep": true,
+      "console": "integratedTerminal"
     }
   ]
 }

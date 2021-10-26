@@ -1,5 +1,6 @@
 import { Interaction } from 'discord.js';
 import Container from 'typedi';
+import { SlashCommandSubcommandBuilder } from '../builders';
 import { ExtendedClient } from '../interfaces';
 import { Logger } from '../logger';
 
@@ -11,12 +12,32 @@ export default {
 
     if (!interaction.isCommand()) return;
 
-    const command = (interaction.client as ExtendedClient).commands.get(interaction.commandName);
+    let commandName = interaction.commandName;
 
-    if (!command) return;
+    if (interaction.options.getSubcommand(false)) {
+      commandName = `${interaction.commandName}.${interaction.options.getSubcommand()}`;
+    }
+
+    const command = (interaction.client as ExtendedClient).commands.get(commandName);
+
+    if (!command || command.data.disabled) {
+      return;
+    }
+
+    const subCommand = (command.data.options as SlashCommandSubcommandBuilder[]).find(
+      (option: SlashCommandSubcommandBuilder) => option.name === interaction.options.getSubcommand(),
+    );
+
+    if (subCommand && subCommand.disabled) {
+      return;
+    }
 
     try {
-      await command.execute(interaction);
+      if (subCommand) {
+        await subCommand.execute(interaction);
+      } else {
+        await command.data.execute(interaction);
+      }
     } catch (error) {
       console.error(error);
       await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });

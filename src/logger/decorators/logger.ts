@@ -1,7 +1,7 @@
 import Container from 'typedi';
 import { Logger } from '../logger';
 
-export function LoggerDecorator() {
+export function LoggerDecorator(prefix?: string) {
   return function loggerDecorator(object: any, propertyName: string, index?: number) {
     Container.registerHandler({
       index,
