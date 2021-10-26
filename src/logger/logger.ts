@@ -29,6 +29,66 @@ export class Logger {
 
   public _logger?: pino.Logger;
 
+  private get logger() {
+    if (this._logger) {
+      return this._logger;
+    }
+
+    const timeFunction = () => `,"time":"${moment().format('HH:mm:ss.SSS')}"`;
+    // const traceFile = createStreamFilePath('trace');
+    // const debugFile = createStreamFilePath('debug');
+    // const infoFile = createStreamFilePath('info');
+    // const errorFile = createStreamFilePath('error');
+
+    const streams = [
+      { level: 'debug', stream: process.stdout },
+      { level: 'error', stream: process.stderr },
+      // { level: 'trace', stream: pino.destination(traceFile) },
+      // { level: 'debug', stream: pino.destination(debugFile) },
+      // { level: 'info', stream: pino.destination(infoFile) },
+      // { level: 'error', stream: pino.destination(errorFile) },
+    ];
+
+    this._logger = pino(
+      {
+        // https://github.com/pinojs/pino/blob/master/docs/api.md#options-object
+        base: null,
+        enabled: this.config.logger.enabled,
+        formatters: {
+          level(label) {
+            return { level: label.toUpperCase() };
+          },
+        },
+        level: this.config.logger.level.toLowerCase() ?? 'info',
+        prettyPrint: this.config.logger.prettyPrint ?? this.config.isLocal ?? false,
+        timestamp: this.config.logger.timestamp ?? this.config.isLocal ? timeFunction : false,
+        // TODO: Put in tokens wildcard here
+        // redact: [''],
+      },
+      // this.config.isDevelopment || this.config.isLocal ? multistream(streams) : undefined,
+    );
+
+    // TODO: report error here as well
+    // process.on(
+    //   'uncaughtException',
+    //   pino.final(this._logger, (err, finalLogger) => {
+    //     finalLogger.error(err, 'uncaughtException');
+    //     process.exit(1);
+    //   }),
+    // );
+
+    // TODO: report error here as well
+    // process.on(
+    //   'unhandledRejection',
+    //   pino.final(this._logger, (err, finalLogger) => {
+    //     finalLogger.error(err, 'unhandledRejection');
+    //     process.exit(1);
+    //   }),
+    // );
+
+    return this._logger;
+  }
+
   public error(message: string, optionalProps?: OptionalProps & ErrorProps, loggerProps?: LoggerProps) {
     return this.logger.error(this.createMessage(message, optionalProps, loggerProps));
   }
@@ -154,66 +214,6 @@ export class Logger {
     });
 
     return result;
-  }
-
-  private get logger() {
-    if (this._logger) {
-      return this._logger;
-    }
-
-    const timeFunction = () => `,"time":"${moment().format('HH:mm:ss.SSS')}"`;
-    // const traceFile = createStreamFilePath('trace');
-    // const debugFile = createStreamFilePath('debug');
-    // const infoFile = createStreamFilePath('info');
-    // const errorFile = createStreamFilePath('error');
-
-    const streams = [
-      { level: 'debug', stream: process.stdout },
-      { level: 'error', stream: process.stderr },
-      // { level: 'trace', stream: pino.destination(traceFile) },
-      // { level: 'debug', stream: pino.destination(debugFile) },
-      // { level: 'info', stream: pino.destination(infoFile) },
-      // { level: 'error', stream: pino.destination(errorFile) },
-    ];
-
-    this._logger = pino(
-      {
-        // https://github.com/pinojs/pino/blob/master/docs/api.md#options-object
-        base: null,
-        enabled: this.config.logger.enabled,
-        formatters: {
-          level(label) {
-            return { level: label.toUpperCase() };
-          },
-        },
-        level: this.config.logger.level.toLowerCase() ?? 'info',
-        prettyPrint: this.config.logger.prettyPrint ?? this.config.isLocal ?? false,
-        timestamp: this.config.logger.timestamp ?? this.config.isLocal ? timeFunction : false,
-        // TODO: Put in tokens wildcard here
-        // redact: [''],
-      },
-      // this.config.isDevelopment || this.config.isLocal ? multistream(streams) : undefined,
-    );
-
-    // TODO: report error here as well
-    // process.on(
-    //   'uncaughtException',
-    //   pino.final(this._logger, (err, finalLogger) => {
-    //     finalLogger.error(err, 'uncaughtException');
-    //     process.exit(1);
-    //   }),
-    // );
-
-    // TODO: report error here as well
-    // process.on(
-    //   'unhandledRejection',
-    //   pino.final(this._logger, (err, finalLogger) => {
-    //     finalLogger.error(err, 'unhandledRejection');
-    //     process.exit(1);
-    //   }),
-    // );
-
-    return this._logger;
   }
 }
 

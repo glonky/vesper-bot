@@ -12,22 +12,6 @@ interface OverrideOptions extends dotenv.DotenvConfigOptions {
 export abstract class BaseConfig {
   nodeEnv = getEnvVar<string>(process.env.NODE_ENV, 'development');
 
-  get isProduction() {
-    return this.nodeEnv.includes('prod');
-  }
-
-  get isDevelopment() {
-    return this.nodeEnv.includes('development');
-  }
-
-  get isStaging() {
-    return this.nodeEnv.includes('staging');
-  }
-
-  get isTest() {
-    return this.nodeEnv.includes('test');
-  }
-
   protected getEnvVar = getEnvVar;
 
   // eslint-disable-next-line @typescript-eslint/member-ordering
@@ -54,6 +38,22 @@ export abstract class BaseConfig {
     } else if (!baseConfigPath && this.verboseConfig) {
       console.warn(`Could not find package.json for baseConfigPath ${__dirname}`);
     }
+  }
+
+  get isProduction() {
+    return this.nodeEnv.includes('prod');
+  }
+
+  get isDevelopment() {
+    return this.nodeEnv.includes('development');
+  }
+
+  get isStaging() {
+    return this.nodeEnv.includes('staging');
+  }
+
+  get isTest() {
+    return this.nodeEnv.includes('test');
   }
 
   protected abstract getPathToEnvFiles(): string;
