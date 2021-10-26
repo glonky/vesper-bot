@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+import 'reflect-metadata';
 import path from 'path';
 import Container from 'typedi';
 import { Client, Collection } from 'discord.js';
