@@ -18,6 +18,8 @@ export default {
         .setName('gas')
         .setDescription(`List Ethereum Gas Priority Fees from Etherscan Oracle`)
         .setExecute(async (interaction: CommandInteraction) => {
+          await interaction.deferReply();
+
           const etherscanService = Container.get(EtherscanService);
 
           const gasOracle = await etherscanService.getGasOracle();
@@ -78,7 +80,7 @@ export default {
             )
             .setTimestamp();
 
-          await interaction.reply({ embeds: [messageEmbed] });
+          await interaction.editReply({ embeds: [messageEmbed] });
         }),
     ),
 };

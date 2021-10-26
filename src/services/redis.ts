@@ -7,14 +7,12 @@ import { Config } from '../config';
 export class RedisService {
   static init() {
     const config = Container.get(Config);
-    const client = new IoRedis({
-      // host: config.redis.host,
-      // port: config.redis.port,
-      // tls: config.isDevelopment
-      // ? undefined
-      // : {
-      // rejectUnauthorized: false,
-      // },
+    const client = new IoRedis(config.redis.host, {
+      tls: config.isDevelopment
+        ? undefined
+        : {
+            rejectUnauthorized: false,
+          },
     });
     const clientAdapter = useAdapter(client);
     cacheManager.setOptions({
