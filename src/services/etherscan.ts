@@ -77,7 +77,6 @@ export class EtherscanService {
 
     const result = (await fetch(url.toString(), {
       method: 'GET',
-      timeout: config.coinGecko.timeout,
     }).then((response: any) => response.json())) as EtherscanResponse<T>;
 
     // TODO: Retry if rate limit exceeded

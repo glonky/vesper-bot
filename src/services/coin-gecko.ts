@@ -243,7 +243,6 @@ export class CoinGeckoService {
 
     return fetch(url.toString(), {
       method: 'GET',
-      timeout: config.coinGecko.timeout,
     }).then((response: any) => response.json()) as Promise<T>;
   }
 }
