@@ -4,7 +4,7 @@ import Container from 'typedi';
 import web3 from 'web3';
 import { SlashCommandBuilder } from '../builders';
 import { EtherscanService } from '../services';
-import { formatTimeFromSeconds } from '../utils';
+import { formatTimeFromSeconds, unwrap } from '../utils';
 
 export default {
   data: new SlashCommandBuilder()
@@ -49,29 +49,25 @@ export default {
               {
                 inline: true,
                 name: 'Fast',
-                value: `${new BigNumber(gasOracle.result.FastGasPrice).toFormat()} Gwei - ${formatTimeFromSeconds(
-                  fastEstimationOfConfirmationTime.result,
-                )}`,
+                value: unwrap`${new BigNumber(gasOracle.result.FastGasPrice).toFormat()} Gwei
+                ${formatTimeFromSeconds(fastEstimationOfConfirmationTime.result)}`,
               },
               {
                 inline: true,
                 name: 'Proposed',
-                value: `${new BigNumber(gasOracle.result.ProposeGasPrice).toFormat()} Gwei - ${formatTimeFromSeconds(
-                  proposedEstimationOfConfirmationTime.result,
-                )}`,
+                value: unwrap`${new BigNumber(gasOracle.result.ProposeGasPrice).toFormat()} Gwei
+                ${formatTimeFromSeconds(proposedEstimationOfConfirmationTime.result)}`,
               },
               {
                 inline: true,
                 name: 'Safe',
-                value: `${new BigNumber(gasOracle.result.SafeGasPrice).toFormat()} Gwei - ${formatTimeFromSeconds(
-                  safeEstimationOfConfirmationTime.result,
-                )}`,
+                value: unwrap`${new BigNumber(gasOracle.result.SafeGasPrice).toFormat()} Gwei
+                ${formatTimeFromSeconds(safeEstimationOfConfirmationTime.result)}`,
               },
               {
                 name: 'Suggested Base Fee',
-                value: `${new BigNumber(gasOracle.result.suggestBaseFee).toFormat(0)} Gwei - ${formatTimeFromSeconds(
-                  suggestedEstimationOfConfirmationTime.result,
-                )}`,
+                value: unwrap`${new BigNumber(gasOracle.result.suggestBaseFee).toFormat(0)} Gwei
+                ${formatTimeFromSeconds(suggestedEstimationOfConfirmationTime.result)}`,
               },
             )
             .setFooter(
