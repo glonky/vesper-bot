@@ -5,11 +5,11 @@ import { BaseConfig } from './base-config';
 
 @Service()
 export class Config extends BaseConfig {
-  aws = {
-    account: this.getEnvVar<string>(process.env.AWS_ACCOUNT),
-    mockAwsServices: this.getEnvVar<boolean>(process.env.MOCK_AWS_SERVICES, this.isLocal),
-    profile: this.getEnvVar<string>(process.env.AWS_PROFILE, 'shuffl-staging'),
-    region: this.getEnvVar<string>(process.env.AWS_REGION, 'us-east-1'),
+  vesper = {
+    contractAddress: this.getEnvVar<string>(
+      process.env.VESPER_CONTRACT_ADDRESS,
+      '0x1b40183efb4dd766f11bda7a7c3ad8982e998421',
+    ),
   };
 
   discord = {
@@ -28,8 +28,28 @@ export class Config extends BaseConfig {
     timestamp: this.getEnvVar<boolean>(process.env.LOG_TIMESTAMP, false),
   };
 
-  coinmarketcap = {
-    apiKey: this.getEnvVar<string>(process.env.COINMARKETCAP_API_KEY),
+  coinMarketCap = {
+    apiKey: this.getEnvVar<string>(process.env.COIN_MARKET_CAP_API_KEY),
+  };
+
+  redis = {
+    host: this.getEnvVar<string>(process.env.REDIS_TLS_URL ?? process.env.REDIS_URL, 'localhost'),
+    ttl: this.getEnvVar<number>(process.env.REDIS_TTL, 60 * 60 * 24), // 1 day
+  };
+
+  coinGecko = {
+    apiKey: this.getEnvVar<string>(process.env.COIN_GECKO_API_KEY),
+    apiVersion: 'v3',
+    baseUrl: 'https://api.coingecko.com/api',
+    requestsPerSecond: this.getEnvVar<number>(process.env.COIN_GECKO_REQUESTS_PER_SECOND, 10),
+    timeout: this.getEnvVar<number>(process.env.COIN_GECKO_TIMEOUT, 30000),
+  };
+
+  etherscan = {
+    apiKey: this.getEnvVar<string>(process.env.ETHERSCAN_API_KEY),
+    baseUrl: 'https://api.etherscan.io/api',
+    requestsPerSecond: this.getEnvVar<number>(process.env.ETHERSCAN_REQUESTS_PER_SECOND, 5),
+    timeout: this.getEnvVar<number>(process.env.ETHERSCAN_TIMEOUT, 30000),
   };
 
   protected getPathToEnvFiles() {
