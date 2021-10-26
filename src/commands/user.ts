@@ -9,8 +9,9 @@ export default {
     .setDescription('Replies with user info!')
     .setDisabled(Container.get(Config).isProduction)
     .setExecute(async (interaction: CommandInteraction) => {
-      await interaction.reply(`
-      Your id: ${interaction.user.id}
-      `);
+      await interaction.reply({
+        content: ` Your id: ${interaction.user.id}`,
+        ephemeral: true,
+      });
     }),
 };

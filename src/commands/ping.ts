@@ -9,6 +9,6 @@ export default {
     .setDescription('Replies with Pong!')
     .setDisabled(Container.get(Config).isProduction)
     .setExecute(async (interaction: CommandInteraction) => {
-      await interaction.reply('Pong!');
+      await interaction.reply({ content: 'Pong!', ephemeral: true });
     }),
 };

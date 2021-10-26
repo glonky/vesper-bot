@@ -9,11 +9,14 @@ export default {
     .setDescription('Replies with server info!')
     .setDisabled(Container.get(Config).isProduction)
     .setExecute(async (interaction: CommandInteraction) => {
-      await interaction.reply(`
+      await interaction.reply({
+        content: `
         Server name: ${interaction.guild?.name}
         Total members: ${interaction.guild?.memberCount}
         Verification Level: ${interaction.guild?.verificationLevel}
         Created At: ${interaction.guild?.createdAt}
-      `);
+      `,
+        ephemeral: true,
+      });
     }),
 };
