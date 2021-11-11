@@ -1,38 +1,10 @@
 import Container, { Service } from 'typedi';
 import fetch, { Headers } from 'node-fetch';
 import { Cacheable } from '@type-cacheable/core';
-import { Config } from '../config';
+import { Config } from '../../config';
+import { CryptoCurrencyMapItem, CoinMarketCapResponse } from './interfaces';
 
 // export interface MarketPairsLatest {}
-
-export interface CryptoCurrencyMapItem {
-  id: number;
-  rank: number;
-  name: string;
-  symbol: string;
-  slug: string;
-  is_active: number;
-  first_historical_data: string;
-  last_historical_data: string;
-  platform: {
-    id: number;
-    name: string;
-    symbol: string;
-    slug: string;
-    token_address: string;
-  };
-}
-
-interface CoinMarketCapResponse<T> {
-  data: T;
-  status: {
-    timestamp: string;
-    error_code?: number;
-    error_message?: string;
-    elapsed: number;
-    credit_count: number;
-  };
-}
 
 @Service()
 export class CoinMarketCapService {
@@ -70,6 +42,6 @@ export class CoinMarketCapService {
         'X-CMC_PRO_API_KEY': config.coinMarketCap.apiKey,
       }),
       method: 'GET',
-    }).then((response: any) => response.json()) as Promise<CoinMarketCapResponse<T>>;
+    }).then((response) => response.json()) as Promise<CoinMarketCapResponse<T>>;
   }
 }

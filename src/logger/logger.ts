@@ -131,9 +131,6 @@ export class Logger {
       sorted: this.config.isDevelopment || this.config.isLocal,
     };
 
-    const blackList = loggerProps?.blacklist ?? [];
-    blackList.push('apolloError', 'botToken', 'token');
-
     // TODO: Pull this context out to somewhere else
     // const asyncContext = getAsyncContext();
 

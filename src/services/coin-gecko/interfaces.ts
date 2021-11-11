@@ -1,10 +1,3 @@
-import { URL, URLSearchParams } from 'url';
-import Container, { Service } from 'typedi';
-import fetch from 'node-fetch';
-import { Cacheable } from '@type-cacheable/core';
-import { Config } from '../config';
-import { Logger, LoggerDecorator } from '../logger';
-
 export interface CoinGeckoResponse<T> {
   success: boolean;
   message: string;
@@ -212,37 +205,4 @@ export interface CoinInfoFromContractAddress {
     coin_id: string;
     target_coin_id: string;
   }[];
-}
-
-@Service()
-export class CoinGeckoService {
-  @LoggerDecorator('CoinGeckoService')
-  private logger!: Logger;
-
-  @Cacheable({
-    ttlSeconds: 60,
-  })
-  public async getCoinInfoFromContractAddress(props: { coinId: string; contractAddress: string }) {
-    return this.fetch<CoinInfoFromContractAddress>(`coins/${props.coinId}/contract/${props.contractAddress}`);
-  }
-
-  public async ping() {
-    return this.fetch<{ gecko_says: string }>('ping');
-  }
-
-  private fetch<T>(endpoint: string, params?: { [key: string]: string }): Promise<T> {
-    const config = Container.get(Config);
-
-    const searchParams = new URLSearchParams(params);
-    const url = new URL(`${config.coinGecko.baseUrl}/${config.coinGecko.apiVersion}/${endpoint}`);
-    url.search = searchParams.toString();
-
-    this.logger.debug('Fetching', {
-      url: url.toString(),
-    });
-
-    return fetch(url.toString(), {
-      method: 'GET',
-    }).then((response: any) => response.json()) as Promise<T>;
-  }
 }
