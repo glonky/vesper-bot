@@ -73,21 +73,4 @@ for (const file of eventFiles) {
 (async () => {
   // Login to Discord with your client's token
   await client.login(config.discord.token);
-
-  // const fullPermissions: GuildApplicationCommandPermissionData[] = [
-  //   {
-  //     id: '876543210987654321',
-  //     permissions: [
-  //       {
-  //         id: config.discord.customBotRole,
-  //         permission: true,
-  //         type: 'ROLE',
-  //       },
-  //     ],
-  //   },
-  // ];
-
-  // await client.guilds.cache.get(config.discord.guildId)?.commands.permissions.set({
-  //   fullPermissions,
-  // });
 })();

@@ -64,17 +64,17 @@ logger.info('Deploying commands...', {
           permissions: [
             {
               id: config.discord.roles.everyone,
-              permission: false,
+              permission: true,
               type: ApplicationCommandPermissionType.Role,
             },
             {
               id: config.discord.roles.admin,
-              permission: false,
+              permission: true,
               type: ApplicationCommandPermissionType.Role,
             },
             {
               id: config.discord.roles.internal,
-              permission: false,
+              permission: true,
               type: ApplicationCommandPermissionType.Role,
             },
             {
