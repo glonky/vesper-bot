@@ -7,7 +7,7 @@
     {
       "type": "pwa-node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Start Server",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/src/server.ts",
       "preLaunchTask": "tsc: build - tsconfig.json",

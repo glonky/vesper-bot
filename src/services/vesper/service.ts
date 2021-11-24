@@ -1,7 +1,8 @@
 import Container, { Service } from 'typedi';
 import fetch from 'node-fetch';
+import BigNumber from 'bignumber.js';
 import { Config } from '../../config';
-import { Dashboard, LoanRate, Pool, PoolDataPoints, ValuesLocked, VspStats } from './interfaces';
+import { Dashboard, LendRate, Pool, PoolDataPoints, ValuesLocked, VspStats } from './interfaces';
 
 @Service()
 export class VesperService {
@@ -11,7 +12,7 @@ export class VesperService {
    * Gets additional information such as contracts, strategies and pool rewards from all pools.
    * Returns an array with the requested data:
    */
-  public async getDashboard() {
+  public async getDashboards() {
     return this.fetch<Dashboard[]>('dashboard');
   }
 
@@ -20,7 +21,7 @@ export class VesperService {
    * Returns an object with the key `lendRates` that contains an array with the requested data from each pool.
    */
   public async getLoanRates() {
-    return this.fetch<LoanRate[]>('loan-rates');
+    return this.fetch<{ lendRates: LendRate[] }>('loan-rates');
   }
 
   /**
@@ -48,7 +49,16 @@ export class VesperService {
    * Gets information related to the VSP token, such as price, total and circulating supply, market cap and more.
    */
   public async getVspStats() {
-    return this.fetch<VspStats>('vsp-stats');
+    const response = await this.fetch<VspStats>('vsp-stats');
+    console.log(response);
+    return {
+      ...response,
+      circulatingSupply: new BigNumber(response.circulatingSupply).shiftedBy(-18),
+      marketCap: response.marketCap,
+      totalSupply: new BigNumber(response.totalSupply).shiftedBy(-18),
+      vspDistributed: new BigNumber(response.vspDistributed).shiftedBy(-18),
+      vspDistributed30d: new BigNumber(response.vspDistributed30d).shiftedBy(-18),
+    };
   }
 
   private fetch<T>(endpoint: string): Promise<T> {

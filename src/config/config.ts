@@ -22,6 +22,12 @@ export class Config extends BaseConfig {
     guildId: this.getEnvVar<string>(process.env.DISCORD_GUILD_ID),
     intents: [Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_WEBHOOKS, Intents.FLAGS.GUILDS],
     publicKey: this.getEnvVar<string>(process.env.DISCORD_PUBLIC_KEY),
+    roles: {
+      admin: this.getEnvVar<string>(process.env.DISCORD_ROLES_ADMIN),
+      everyone: this.getEnvVar<string>(process.env.DISCORD_ROLES_EVERYONE),
+      internal: this.getEnvVar<string>(process.env.DISCORD_ROLES_INTERNAL),
+      restrictToChannel: this.getEnvVar<string>(process.env.DISCORD_ROLES_RESTRICTED_TO_CHANNEL),
+    },
     token: this.getEnvVar<string>(process.env.DISCORD_TOKEN),
   };
 

@@ -7,7 +7,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName('server')
     .setDescription('Replies with server info!')
-    .setDisabled(Container.get(Config).isProduction)
+    .setEnabled(!Container.get(Config).isProduction)
     .setExecute(async (interaction: CommandInteraction) => {
       await interaction.reply({
         content: `

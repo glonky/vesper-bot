@@ -2,9 +2,15 @@
 import 'reflect-metadata';
 import path from 'path';
 import { REST } from '@discordjs/rest';
-import { Routes } from 'discord-api-types/v9';
+import {
+  ApplicationCommandPermissionType,
+  RESTPutAPIApplicationGuildCommandsResult,
+  RESTPutAPIGuildApplicationCommandsPermissionsJSONBody,
+  Routes,
+} from 'discord-api-types/v9';
 import Container from 'typedi';
 import glob from 'glob';
+import { mapKeys } from 'lodash';
 import { Config } from '../config';
 import { Logger } from '../logger';
 import { Command } from '../interfaces';
@@ -26,7 +32,7 @@ for (const file of commandFiles) {
     continue;
   }
 
-  if (!command.data.disabled) {
+  if (command.data.enabled ?? true) {
     commands.push(command.data.toJSON());
   }
 }
@@ -35,10 +41,53 @@ const config = Container.get(Config);
 logger.info('Deploying commands...', {
   commands: commands.map((command) => command.name),
 });
+(async () => {
+  const rest = new REST({ version: '9' }).setToken(config.discord.token);
 
-const rest = new REST({ version: '9' }).setToken(config.discord.token);
+  try {
+    const applicationGuildCommandsResult = (await rest.put(
+      Routes.applicationGuildCommands(config.discord.clientId, config.discord.guildId),
+      {
+        body: commands,
+      },
+    )) as RESTPutAPIApplicationGuildCommandsResult;
+    logger.info('Successfully registered application commands.');
 
-rest
-  .put(Routes.applicationGuildCommands(config.discord.clientId, config.discord.guildId), { body: commands })
-  .then(() => logger.info('Successfully registered application commands.'))
-  .catch((error) => logger.error('Could not deploy commands', { error }));
+    const commandsByName = mapKeys(applicationGuildCommandsResult, 'name');
+
+    // https://discord.com/developers/docs/interactions/application-commands#batch-edit-application-command-permissions
+    // You can only add up to 10 permission overwrites for a command.
+    await rest.put(Routes.guildApplicationCommandsPermissions(config.discord.clientId, config.discord.guildId), {
+      body: [
+        {
+          id: commandsByName['help'].id,
+          permissions: [
+            {
+              id: config.discord.roles.everyone,
+              permission: false,
+              type: ApplicationCommandPermissionType.Role,
+            },
+            {
+              id: config.discord.roles.admin,
+              permission: false,
+              type: ApplicationCommandPermissionType.Role,
+            },
+            {
+              id: config.discord.roles.internal,
+              permission: false,
+              type: ApplicationCommandPermissionType.Role,
+            },
+            {
+              id: config.discord.roles.restrictToChannel,
+              permission: true,
+              type: ApplicationCommandPermissionType.Role,
+            },
+          ],
+        },
+      ] as RESTPutAPIGuildApplicationCommandsPermissionsJSONBody,
+    });
+    logger.info('Successfully updated application commands permissions.');
+  } catch (err) {
+    logger.error('Could not deploy commands', { error: err as Error });
+  }
+})();

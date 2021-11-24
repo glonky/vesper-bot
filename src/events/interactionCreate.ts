@@ -20,7 +20,7 @@ export default {
 
     const command = (interaction.client as ExtendedClient).commands.get(commandName);
 
-    if (!command || command.data.disabled) {
+    if (!command || !(command.data.enabled ?? true)) {
       return;
     }
 
@@ -28,7 +28,7 @@ export default {
       (option: SlashCommandSubcommandBuilder) => option.name === interaction.options.getSubcommand(),
     );
 
-    if (subCommand && subCommand.disabled) {
+    if (subCommand && !(subCommand.enabled ?? true)) {
       return;
     }
 

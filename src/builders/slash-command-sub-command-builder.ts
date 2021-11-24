@@ -8,14 +8,14 @@ export class SlashCommandSubcommandBuilder extends DiscordSlashCommandSubcommand
 
   private executeFn?: (interaction: CommandInteraction) => Promise<any>;
 
-  private _disabled?: boolean;
+  private _enabled?: boolean;
 
-  public get disabled() {
-    return this._disabled;
+  public get enabled() {
+    return this._enabled;
   }
 
-  public setDisabled(disabled: boolean): this {
-    this._disabled = disabled;
+  public setEnabled(enabled: boolean): this {
+    this._enabled = enabled;
     return this;
   }
 

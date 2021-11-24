@@ -1,9 +1,11 @@
 import { hyperlink } from '@discordjs/builders';
 import { CommandInteraction, MessageEmbed } from 'discord.js';
+import { chain } from 'lodash';
 import Container from 'typedi';
 import { SlashCommandBuilder } from '../builders';
 import { Config } from '../config';
 import { CoinGeckoService, EtherscanService, VesperService } from '../services';
+import { unwrap } from '../utils';
 
 export default {
   data: new SlashCommandBuilder()
@@ -56,47 +58,173 @@ export default {
     )
     .addSubcommand((subcommand) =>
       subcommand
-        .setName('ratio')
-        .setDescription('Shows the vVSP to VSP ratio.')
+        .setName('exchange-rate')
+        .setDescription('Shows the vVSP to VSP exchange rate.')
         .setExecute(async (interaction: CommandInteraction) => {
           await interaction.deferReply();
 
           const config = Container.get(Config);
-          const tokenBalance = await Container.get(EtherscanService).getERC20TokenAccountBalanceForTokenContractAddress(
-            {
-              address: config.vesper.vvspTokenAddress,
-              contractAddress: config.vesper.vspTokenAddress,
-            },
+          const vvspAccountBalance = await Container.get(
+            EtherscanService,
+          ).getERC20TokenAccountBalanceForTokenContractAddress({
+            address: config.vesper.vvspTokenAddress,
+            contractAddress: config.vesper.vspTokenAddress,
+          });
+
+          const vvspTotalSupply = await Container.get(EtherscanService).getERC20TokenTotalSupplyByContractAddress(
+            config.vesper.vvspTokenAddress,
           );
 
-          const totalSupply = await Container.get(EtherscanService).getERC20TokenTotalSupplyByContractAddress(
-            config.vesper.vspTokenAddress,
-          );
-
-          const x = tokenBalance.result.dividedBy(totalSupply.result);
-          const y = totalSupply.result.dividedBy(tokenBalance.result);
+          const vspToVVSPRatio = vvspAccountBalance.result.dividedBy(vvspTotalSupply.result);
+          const vvspToVSPRatio = vvspTotalSupply.result.dividedBy(vvspAccountBalance.result);
 
           const messageEmbed = new MessageEmbed()
             .setColor('#0099ff')
-            .setTitle('VSP Ratio')
-            .setDescription('vVSP to VSP Ratio')
-            .setThumbnail('https://cdn-images-1.medium.com/fit/c/72/72/1*AjnJwyVg_kQs4kdf-PlXPQ.png')
-            .addFields(
-              {
-                inline: true,
-                name: 'VSP to vVSP',
-                value: `1 VSP = ${x.toFixed(4)} vVSP`,
-              },
-              {
-                inline: true,
-                name: 'vVSP to VSP',
-                value: `1 vVSP = ${y.toFixed(4)} VSP`,
-              },
+            .setTitle('VSP / vVSP Exchange Rate')
+            .setDescription(
+              unwrap`
+              1 VSP = ${vspToVVSPRatio.toFixed(3)} vVSP
+              1 vVSP = ${vvspToVSPRatio.toFixed(3)} VSP
+            `,
             )
-            .setFooter('Etherscan', 'https://etherscan.io/images/brandassets/etherscan-logo-light-circle.png')
-            .setTimestamp();
+            .setThumbnail('https://cdn-images-1.medium.com/fit/c/72/72/1*AjnJwyVg_kQs4kdf-PlXPQ.png');
 
           await interaction.editReply({ embeds: [messageEmbed] });
+        }),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('stats')
+        .setDescription('Shows the VSP stats.')
+        .setExecute(async (interaction: CommandInteraction) => {
+          await interaction.deferReply();
+
+          const vspStats = await Container.get(VesperService).getVspStats();
+
+          const percentFormatter = new Intl.NumberFormat('en-US', { style: 'percent' });
+          const numberFormatter = new Intl.NumberFormat('en-US', { maximumFractionDigits: 0, style: 'decimal' });
+          const fractionalCurrencyFormatter = new Intl.NumberFormat('en-US', { currency: 'USD', style: 'currency' });
+          const currencyFormatter = new Intl.NumberFormat('en-US', {
+            currency: 'USD',
+            maximumFractionDigits: 0,
+            style: 'currency',
+          });
+
+          const messageEmbed = new MessageEmbed()
+            .setColor('#0099ff')
+            .setTitle('VSP Stats')
+            .setDescription('VSP stats from the Vesper App')
+            .addFields([
+              { inline: true, name: 'Price', value: fractionalCurrencyFormatter.format(vspStats.price) },
+              {
+                inline: true,
+                name: 'Price Change 1 hour',
+                value: fractionalCurrencyFormatter.format(vspStats.priceChange1h),
+              },
+              {
+                inline: true,
+                name: 'Price Delta 1 hour',
+                value: fractionalCurrencyFormatter.format(vspStats.priceDelta1h),
+              },
+            ])
+            .addFields([
+              {
+                inline: true,
+                name: 'Total Supply',
+                value: `${numberFormatter.format(vspStats.totalSupply.toNumber())} VSP`,
+              },
+              {
+                inline: true,
+                name: 'Circulating Supply',
+                value: `${numberFormatter.format(vspStats.circulatingSupply.toNumber())} VSP`,
+              },
+              {
+                inline: true,
+                name: 'Supply Ratio',
+                value: percentFormatter.format(vspStats.circulatingSupply.dividedBy(vspStats.totalSupply).toNumber()),
+              },
+              { inline: true, name: 'Market Cap', value: currencyFormatter.format(vspStats.marketCap) },
+            ])
+            .addFields([
+              {
+                inline: true,
+                name: 'VSP Distributed 24 Hours',
+                value: numberFormatter.format(vspStats.vspDistributed.toNumber()),
+              },
+              {
+                inline: true,
+                name: 'vVSP Flow 30 Days',
+                value: numberFormatter.format(vspStats.vspDistributed30d.toNumber()),
+              },
+            ])
+            .setThumbnail('https://cdn-images-1.medium.com/fit/c/72/72/1*AjnJwyVg_kQs4kdf-PlXPQ.png');
+
+          await interaction.editReply({ embeds: [messageEmbed] });
+        }),
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('loan-rates')
+        .setDescription('Shows the loan rates.')
+        .setExecute(async (interaction: CommandInteraction) => {
+          await interaction.deferReply();
+
+          const loanRates = await Container.get(VesperService).getLoanRates();
+
+          const percentFormatter = new Intl.NumberFormat('en-US', { maximumSignificantDigits: 3, style: 'percent' });
+
+          const chunkedLendRates = chain(loanRates.lendRates).orderBy('apy', 'desc').chunk(8).value();
+          const lendRates = chain(loanRates.lendRates).orderBy('apy', 'desc').value();
+
+          await interaction.editReply({
+            embeds: [
+              new MessageEmbed()
+                .setColor('#0099ff')
+                .setTitle('Vesper Loan Rates')
+                .setDescription(
+                  `
+                Gets the APY, APR and token symbol from all pools over the last 24 hours.
+
+                Symbol   |   APY   |   APR
+                ---------|---------|---------
+                ${lendRates
+                  .map((lendRate) => {
+                    return `${lendRate.tokenSymbol}   |   ${percentFormatter.format(
+                      lendRate.apy,
+                    )}   |   ${percentFormatter.format(lendRate.apr)}`;
+                  })
+                  .join('\n')}
+                `,
+                )
+                .setThumbnail('https://cdn-images-1.medium.com/fit/c/72/72/1*AjnJwyVg_kQs4kdf-PlXPQ.png'),
+            ],
+          });
+
+          // chunkedLendRates.forEach((lendRates) => {
+          //   const messageEmbed = new MessageEmbed();
+
+          //   lendRates.forEach((lendRate) => {
+          //     messageEmbed.addFields(
+          //       {
+          //         inline: true,
+          //         name: 'Symbol',
+          //         value: lendRate.tokenSymbol,
+          //       },
+          //       {
+          //         inline: true,
+          //         name: 'APY',
+          //         value: percentFormatter.format(lendRate.apy),
+          //       },
+          //       {
+          //         inline: true,
+          //         name: 'APR',
+          //         value: percentFormatter.format(lendRate.apr),
+          //       },
+          //     );
+          //   });
+
+          //   interaction.channel?.send({ embeds: [messageEmbed] });
+          // });
         }),
     ),
 };

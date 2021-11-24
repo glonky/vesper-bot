@@ -38,9 +38,6 @@ for (const file of commandFiles) {
     continue;
   }
 
-  logger.info(`Loading command`, {
-    command: command.data.name,
-  });
   // Set a new item in the Collection
   // With the key as the command name and the value as the exported module
   client.commands.set(command.data.name, command);
@@ -48,8 +45,16 @@ for (const file of commandFiles) {
   if (command.data.options) {
     for (const option of command.data.options) {
       const optionAsSubCommand = option as SlashCommandSubcommandBuilder;
+      logger.info(`Loading sub-command`, {
+        command: command.data.name,
+        subCommand: optionAsSubCommand.name,
+      });
       client.commands.set(`${command.data.name}.${optionAsSubCommand.name}`, command);
     }
+  } else {
+    logger.info(`Loading command`, {
+      command: command.data.name,
+    });
   }
 }
 
@@ -65,6 +70,24 @@ for (const file of eventFiles) {
     client.on(event.name, (...args) => event.execute(...args));
   }
 }
+(async () => {
+  // Login to Discord with your client's token
+  await client.login(config.discord.token);
 
-// Login to Discord with your client's token
-client.login(config.discord.token);
+  // const fullPermissions: GuildApplicationCommandPermissionData[] = [
+  //   {
+  //     id: '876543210987654321',
+  //     permissions: [
+  //       {
+  //         id: config.discord.customBotRole,
+  //         permission: true,
+  //         type: 'ROLE',
+  //       },
+  //     ],
+  //   },
+  // ];
+
+  // await client.guilds.cache.get(config.discord.guildId)?.commands.permissions.set({
+  //   fullPermissions,
+  // });
+})();

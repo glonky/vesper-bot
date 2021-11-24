@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js';
+
 export interface Token {
   address: string;
   balance: string;
@@ -59,7 +61,7 @@ export interface Dashboard {
   stage: 'alpha' | 'beta' | 'prod' | 'retired';
 }
 
-export interface LoanRate {
+export interface LendRate {
   // annual percentage yield calculated over the last 24h.
   apy: number;
 
@@ -210,17 +212,17 @@ export interface VspStats {
   priceDelta1h: number;
 
   // VSP token total supply.
-  totalSupply: string;
+  totalSupply: BigNumber;
 
   //  VSP token circulating supply.
-  circulatingSupply: string;
+  circulatingSupply: BigNumber;
 
   // VSP token market cap.
   marketCap: number;
 
   // VSP tokens distributed.
-  vspDistributed: string;
+  vspDistributed: BigNumber;
 
   // VSP tokens distributed within 30 days.
-  vspDistributed30d: string;
+  vspDistributed30d: BigNumber;
 }
