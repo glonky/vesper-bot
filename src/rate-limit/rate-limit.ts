@@ -1,6 +1,6 @@
 export interface RateLimiterProps {}
 export class RateLimiter {
-  constructor(props: RateLimiterProps) {}
+  constructor(props?: RateLimiterProps) {}
 
   public limit(fn: Function) {}
 }

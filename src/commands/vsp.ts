@@ -4,6 +4,7 @@ import { chain } from 'lodash';
 import Container from 'typedi';
 import { SlashCommandBuilder } from '../builders';
 import { Config } from '../config';
+import { Logger } from '../logger';
 import { CoinGeckoService, EtherscanService, VesperService } from '../services';
 import { unwrap } from '../utils';
 
@@ -45,6 +46,7 @@ export default {
             )
             .setTimestamp();
 
+          Container.get(Logger).info('tickers', { tickers: coinInfo.tickers });
           coinInfo.tickers.forEach((ticker) => {
             messageEmbed.addField(
               ticker.market.name,
@@ -84,6 +86,7 @@ export default {
             .setDescription(
               unwrap`
               1 VSP = ${vspToVVSPRatio.toFixed(3)} vVSP
+
               1 vVSP = ${vvspToVSPRatio.toFixed(3)} VSP
             `,
             )
