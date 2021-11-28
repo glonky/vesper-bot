@@ -53,8 +53,7 @@ export default {
 
       if (shouldRateLimitCommand) {
         await interaction.reply({
-          content:
-            'You have called this command too many times in a short period of time. Please wait to call it again.',
+          content: `You can only call this command once every ${command.data.rateLimit} seconds. Please wait to call it again.`,
           ephemeral: true,
         });
 
@@ -76,8 +75,7 @@ export default {
 
             if (shouldRateLimitCommand) {
               await interaction.reply({
-                content:
-                  'You have called this command too many times in a short period of time. Please wait to call it again.',
+                content: `You can only call this command once every ${subCommand.rateLimit} seconds. Please wait to call it again.`,
                 ephemeral: true,
               });
               return;
