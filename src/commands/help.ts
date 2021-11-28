@@ -14,7 +14,7 @@ export default {
     .setRestrictToChannels([config.discord.channels.admin])
     .setRestrictToRoles([
       { allowed: true, id: config.discord.roles.everyone },
-      { allowed: true, id: config.discord.roles.testRestricted },
+      { allowed: false, id: config.discord.roles.testRestricted },
     ])
     .setRateLimit()
     .addSubcommand((subcommand) =>
