@@ -12,7 +12,10 @@ export default {
     .setName('help')
     .setDescription(`Learn more about Vesper.`)
     .setRestrictToChannels([config.discord.channels.admin])
-    .setRestrictToRoles([{ allowed: true, id: config.discord.roles.everyone }])
+    .setRestrictToRoles([
+      { allowed: true, id: config.discord.roles.everyone },
+      { allowed: true, id: config.discord.roles.testRestricted },
+    ])
     .setRateLimit()
     .addSubcommand((subcommand) =>
       subcommand

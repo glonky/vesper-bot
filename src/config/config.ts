@@ -28,6 +28,7 @@ export class Config extends BaseConfig {
     roles: {
       everyone: this.getEnvVar<string>(process.env.DISCORD_ROLES_EVERYONE),
       internal: this.getEnvVar<string>(process.env.DISCORD_ROLES_INTERNAL),
+      testRestricted: this.getEnvVar<string>(process.env.DISCORD_ROLES_TEST_RESTRICTED),
     },
     token: this.getEnvVar<string>(process.env.DISCORD_TOKEN),
   };
