@@ -17,16 +17,17 @@ export class Config extends BaseConfig {
   };
 
   discord = {
+    channels: {
+      admin: this.getEnvVar<string>(process.env.DISCORD_CHANNELS_ADMIN),
+    },
     clientId: this.getEnvVar<string>(process.env.DISCORD_CLIENT_ID),
     clientSecret: this.getEnvVar<string>(process.env.DISCORD_CLIENT_SECRET),
     guildId: this.getEnvVar<string>(process.env.DISCORD_GUILD_ID),
     intents: [Intents.FLAGS.DIRECT_MESSAGES, Intents.FLAGS.GUILD_WEBHOOKS, Intents.FLAGS.GUILDS],
     publicKey: this.getEnvVar<string>(process.env.DISCORD_PUBLIC_KEY),
     roles: {
-      admin: this.getEnvVar<string>(process.env.DISCORD_ROLES_ADMIN),
       everyone: this.getEnvVar<string>(process.env.DISCORD_ROLES_EVERYONE),
       internal: this.getEnvVar<string>(process.env.DISCORD_ROLES_INTERNAL),
-      restrictToChannel: this.getEnvVar<string>(process.env.DISCORD_ROLES_RESTRICTED_TO_CHANNEL),
     },
     token: this.getEnvVar<string>(process.env.DISCORD_TOKEN),
   };
@@ -61,6 +62,8 @@ export class Config extends BaseConfig {
     requestsPerSecond: this.getEnvVar<number>(process.env.ETHERSCAN_REQUESTS_PER_SECOND, 5),
     timeout: this.getEnvVar<number>(process.env.ETHERSCAN_TIMEOUT, 30000),
   };
+
+  commandRateLimit = this.getEnvVar<number>(process.env.COMMAND_RATE_LIMIT, 5);
 
   retry = {
     factor: this.getEnvVar<number>(process.env.RETRY_FACTOR),

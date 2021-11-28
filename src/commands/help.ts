@@ -1,15 +1,19 @@
 import { bold, hideLinkEmbed, hyperlink } from '@discordjs/builders';
 import { CommandInteraction, MessageEmbed } from 'discord.js';
+import Container from 'typedi';
 import { SlashCommandBuilder } from '../builders';
+import { Config } from '../config';
 import { unwrap } from '../utils';
+
+const config = Container.get(Config);
 
 export default {
   data: new SlashCommandBuilder()
     .setName('help')
     .setDescription(`Learn more about Vesper.`)
-    .setExecute(async (interaction: CommandInteraction) => {
-      await interaction.reply({ content: 'Please try using one of the help sub commands.', ephemeral: true });
-    })
+    .setRestrictToChannels([config.discord.channels.admin])
+    .setRestrictToRoles([{ allowed: true, id: config.discord.roles.everyone }])
+    .setRateLimit()
     .addSubcommand((subcommand) =>
       subcommand
         .setName('vvsp')

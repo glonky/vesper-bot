@@ -1,5 +1,7 @@
 import { SlashCommandSubcommandBuilder as DiscordSlashCommandSubcommandBuilder } from '@discordjs/builders';
 import { CommandInteraction } from 'discord.js';
+import Container from 'typedi';
+import { Config } from '../config';
 import { Logger, LoggerDecorator } from '../logger';
 
 export class SlashCommandSubcommandBuilder extends DiscordSlashCommandSubcommandBuilder {
@@ -10,12 +12,40 @@ export class SlashCommandSubcommandBuilder extends DiscordSlashCommandSubcommand
 
   private _enabled?: boolean;
 
+  private _restrictToChannels?: string[];
+
+  private _rateLimit?: number;
+
+  /**
+   * Rate limit in seconds
+   */
+  public get rateLimit() {
+    return this._rateLimit;
+  }
+
   public get enabled() {
     return this._enabled;
   }
 
+  public get restrictToChannels() {
+    return this._restrictToChannels;
+  }
+
+  /**
+   * Rate limit in seconds
+   */
+  public setRateLimit(rateLimit?: number): this {
+    this._rateLimit = rateLimit ?? Container.get(Config).commandRateLimit;
+    return this;
+  }
+
   public setEnabled(enabled: boolean): this {
     this._enabled = enabled;
+    return this;
+  }
+
+  public setRestrictToChannels(channels: string[]): this {
+    this._restrictToChannels = channels;
     return this;
   }
 

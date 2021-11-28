@@ -10,7 +10,6 @@ import {
 } from 'discord-api-types/v9';
 import Container from 'typedi';
 import glob from 'glob';
-import { mapKeys } from 'lodash';
 import { Config } from '../config';
 import { Logger } from '../logger';
 import { Command } from '../interfaces';
@@ -22,7 +21,7 @@ const commandFiles = glob.sync(`${commandsPath}/**/*.{js,ts}`, {
   ignore: ['**/__tests__/**', '**/*.d.ts', '**/*.map.*'],
 });
 
-const commands = [];
+const commands: Command[] = [];
 
 for (const file of commandFiles) {
   const command = require(file).default as Command;
@@ -33,14 +32,16 @@ for (const file of commandFiles) {
   }
 
   if (command.data.enabled ?? true) {
-    commands.push(command.data.toJSON());
+    commands.push(command);
   }
 }
 
 const config = Container.get(Config);
+
 logger.info('Deploying commands...', {
-  commands: commands.map((command) => command.name),
+  commands: commands.map((command) => command.data.name),
 });
+
 (async () => {
   const rest = new REST({ version: '9' }).setToken(config.discord.token);
 
@@ -48,43 +49,33 @@ logger.info('Deploying commands...', {
     const applicationGuildCommandsResult = (await rest.put(
       Routes.applicationGuildCommands(config.discord.clientId, config.discord.guildId),
       {
-        body: commands,
+        body: commands.map((command) => command.data.toJSON()),
       },
     )) as RESTPutAPIApplicationGuildCommandsResult;
+
     logger.info('Successfully registered application commands.');
 
-    const commandsByName = mapKeys(applicationGuildCommandsResult, 'name');
+    const permissions: RESTPutAPIGuildApplicationCommandsPermissionsJSONBody = [];
+
+    applicationGuildCommandsResult.forEach((apiCommand) => {
+      const command = commands.find((c) => c.data.name === apiCommand.name);
+
+      if (command?.data.restrictToRoles && command.data.restrictToRoles.length > 0) {
+        permissions.push({
+          id: apiCommand.id,
+          permissions: command.data.restrictToRoles.map((role) => ({
+            id: role.id,
+            permission: role.allowed,
+            type: ApplicationCommandPermissionType.Role,
+          })),
+        });
+      }
+    });
 
     // https://discord.com/developers/docs/interactions/application-commands#batch-edit-application-command-permissions
     // You can only add up to 10 permission overwrites for a command.
     await rest.put(Routes.guildApplicationCommandsPermissions(config.discord.clientId, config.discord.guildId), {
-      body: [
-        {
-          id: commandsByName['help'].id,
-          permissions: [
-            {
-              id: config.discord.roles.everyone,
-              permission: true,
-              type: ApplicationCommandPermissionType.Role,
-            },
-            {
-              id: config.discord.roles.admin,
-              permission: true,
-              type: ApplicationCommandPermissionType.Role,
-            },
-            {
-              id: config.discord.roles.internal,
-              permission: true,
-              type: ApplicationCommandPermissionType.Role,
-            },
-            {
-              id: config.discord.roles.restrictToChannel,
-              permission: true,
-              type: ApplicationCommandPermissionType.Role,
-            },
-          ],
-        },
-      ] as RESTPutAPIGuildApplicationCommandsPermissionsJSONBody,
+      body: permissions,
     });
     logger.info('Successfully updated application commands permissions.');
   } catch (err) {

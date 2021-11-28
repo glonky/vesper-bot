@@ -24,8 +24,8 @@ export interface RetryProps extends Options {
 
 const activeRetries: { [retryId: string]: (error: Error) => void } = {};
 
-process.on('uncaughtException', (err) => cancelAllRetries(err, true, 'uncaughtException'));
-process.on('unhandledRejection', (err) => cancelAllRetries(err, true, 'unhandledRejection'));
+process.on('uncaughtException', (err: Error) => cancelAllRetries(err, true, 'uncaughtException'));
+process.on('unhandledRejection', (err: Error) => cancelAllRetries(err, true, 'unhandledRejection'));
 process.on('SIGTERM', () => cancelAllRetries(null, true, 'SIGTERM'));
 process.on('SIGINT', () => cancelAllRetries(null, true, 'SIGINT'));
 process.on('SIGUSR2', () => cancelAllRetries(null, true, 'SIGTERM'));
