@@ -98,6 +98,7 @@ export default {
     .addSubcommand((subcommand) =>
       subcommand
         .setName('stats')
+        .setEnabled(!Container.get(Config).isProduction)
         .setDescription('Shows the VSP stats.')
         .setExecute(async (interaction: CommandInteraction) => {
           await interaction.deferReply();
@@ -168,6 +169,7 @@ export default {
     .addSubcommand((subcommand) =>
       subcommand
         .setName('loan-rates')
+        .setEnabled(!Container.get(Config).isProduction)
         .setDescription('Shows the loan rates.')
         .setExecute(async (interaction: CommandInteraction) => {
           await interaction.deferReply();

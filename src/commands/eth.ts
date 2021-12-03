@@ -3,12 +3,14 @@ import { CommandInteraction, MessageEmbed } from 'discord.js';
 import Container from 'typedi';
 import web3 from 'web3';
 import { SlashCommandBuilder } from '../builders';
+import { Config } from '../config';
 import { EtherscanService } from '../services';
 import { formatTimeFromSeconds, unwrap } from '../utils';
 
 export default {
   data: new SlashCommandBuilder()
     .setName('eth')
+    .setEnabled(!Container.get(Config).isProduction)
     .setDescription(`List ETH Price`)
     .setExecute(async (interaction: CommandInteraction) => {
       return interaction.reply('Eth price');

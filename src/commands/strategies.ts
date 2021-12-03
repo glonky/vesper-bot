@@ -2,11 +2,13 @@ import { hyperlink } from '@discordjs/builders';
 import { CommandInteraction, MessageEmbed } from 'discord.js';
 import Container from 'typedi';
 import { SlashCommandBuilder } from '../builders';
+import { Config } from '../config';
 import { VesperService } from '../services';
 
 export default {
   data: new SlashCommandBuilder()
     .setName('strategies')
+    .setEnabled(!Container.get(Config).isProduction)
     .setDescription(`Vesper Strategies Utilities`)
     .addSubcommand((subcommand) =>
       subcommand

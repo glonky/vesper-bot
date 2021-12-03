@@ -50,7 +50,6 @@ export class VesperService {
    */
   public async getVspStats() {
     const response = await this.fetch<VspStats>('vsp-stats');
-    console.log(response);
     return {
       ...response,
       circulatingSupply: new BigNumber(response.circulatingSupply).shiftedBy(-18),
