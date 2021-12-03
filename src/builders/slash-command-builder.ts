@@ -57,8 +57,8 @@ export class SlashCommandBuilder extends DiscordSlashCommandBuilder {
     return this;
   }
 
-  public setRestrictToChannels(channels: string[]): this {
-    this._restrictToChannels = channels;
+  public setRestrictToChannels(channels: (string | undefined)[]): this {
+    this._restrictToChannels = channels.filter(Boolean) as string[];
     return this;
   }
 

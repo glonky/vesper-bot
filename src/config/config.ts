@@ -17,9 +17,6 @@ export class Config extends BaseConfig {
   };
 
   discord = {
-    channels: {
-      admin: this.getEnvVar<string>(process.env.DISCORD_CHANNELS_ADMIN),
-    },
     clientId: this.getEnvVar<string>(process.env.DISCORD_CLIENT_ID),
     clientSecret: this.getEnvVar<string>(process.env.DISCORD_CLIENT_SECRET),
     guildId: this.getEnvVar<string>(process.env.DISCORD_GUILD_ID),

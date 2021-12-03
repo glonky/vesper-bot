@@ -1,10 +1,11 @@
-import { Client } from 'discord.js';
 import Container from 'typedi';
 import { Logger } from '../logger';
+import { DiscordService } from '../services';
 
 export default {
-  execute(client: Client) {
-    Container.get(Logger).info(`Ready! Logged in as ${client.user?.tag}`);
+  execute() {
+    const discordService = Container.get(DiscordService);
+    Container.get(Logger).info(`Ready! Logged in as ${discordService.client.user?.tag}`);
   },
   name: 'ready',
   once: true,

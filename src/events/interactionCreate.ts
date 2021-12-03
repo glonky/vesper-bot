@@ -2,17 +2,18 @@ import { Interaction } from 'discord.js';
 import Container from 'typedi';
 import { RateLimiter } from '../rate-limiter';
 import { SlashCommandSubcommandBuilder } from '../builders';
-import { ExtendedClient } from '../interfaces';
 import { Logger } from '../logger';
 import { assertion } from '../errors';
+import { DiscordService } from '../services';
 
 export default {
   async execute(interaction: Interaction) {
     if (!interaction.isCommand()) return;
 
     assertion('channel must be defined on interaction', interaction.channel);
+    const logger = Container.get(Logger);
 
-    Container.get(Logger).debug(`${interaction.user.tag} in #${interaction.channel.id} triggered an interaction.`);
+    logger.debug(`${interaction.user.tag} in #${interaction.channel.id} triggered an interaction.`);
 
     let commandName = interaction.commandName;
 
@@ -20,7 +21,8 @@ export default {
       commandName = `${interaction.commandName}.${interaction.options.getSubcommand()}`;
     }
 
-    const command = (interaction.client as ExtendedClient).commands.get(commandName);
+    const discordService = Container.get(DiscordService);
+    const command = discordService.commands.get(commandName);
 
     if (!command || !(command.data.enabled ?? true)) {
       return;
@@ -34,17 +36,21 @@ export default {
       return;
     }
 
-    if (
-      command.data.restrictToChannels?.includes(interaction.channel.id) &&
-      subCommand?.restrictToChannels === undefined
-    ) {
+    const restrictedChannels = [
+      ...(discordService.restrictToChannels ?? []),
+      ...(command.data.restrictToChannels ?? []),
+      ...(subCommand?.restrictToChannels ?? []),
+    ];
+
+    if (!restrictedChannels.includes(interaction.channel.id)) {
       await interaction.reply({ content: 'This command is not available in this channel.', ephemeral: true });
       return;
     }
 
     const rateLimiter = Container.get(RateLimiter);
+    const rateLimit = subCommand?.rateLimit ?? command.data.rateLimit ?? discordService.rateLimit;
 
-    if (command.data.rateLimit !== undefined && subCommand?.rateLimit === undefined) {
+    if (rateLimit !== undefined) {
       const shouldRateLimitCommand = await rateLimiter.shouldRateLimitCommand({
         channelId: interaction.channel.id,
         commandId: interaction.commandId,
@@ -53,7 +59,7 @@ export default {
 
       if (shouldRateLimitCommand) {
         await interaction.reply({
-          content: `You can only call this command once every ${command.data.rateLimit} seconds. Please wait to call it again.`,
+          content: `You can only call this command once every ${rateLimit} seconds. Please wait to call it again.`,
           ephemeral: true,
         });
 
@@ -63,27 +69,7 @@ export default {
 
     try {
       if (subCommand) {
-        if (subCommand.restrictToChannels?.includes(interaction.channel.id)) {
-          await interaction.reply({ content: 'This command is not available in this channel.', ephemeral: true });
-        } else {
-          if (subCommand.rateLimit !== undefined) {
-            const shouldRateLimitCommand = await rateLimiter.shouldRateLimitCommand({
-              channelId: interaction.channel.id,
-              commandId: interaction.commandId,
-              userId: interaction.user.id,
-            });
-
-            if (shouldRateLimitCommand) {
-              await interaction.reply({
-                content: `You can only call this command once every ${subCommand.rateLimit} seconds. Please wait to call it again.`,
-                ephemeral: true,
-              });
-              return;
-            }
-          }
-
-          await subCommand.execute(interaction);
-        }
+        await subCommand.execute(interaction);
       } else {
         await command.data.execute(interaction);
       }
@@ -91,7 +77,7 @@ export default {
       await rateLimiter.setCommandLastUsed({
         channelId: interaction.channel.id,
         commandId: interaction.commandId,
-        ttl: subCommand?.rateLimit ?? command.data.rateLimit,
+        ttl: rateLimit,
         userId: interaction.user.id,
       });
     } catch (error) {

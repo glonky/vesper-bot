@@ -1,25 +1,20 @@
 import { bold, hideLinkEmbed, hyperlink } from '@discordjs/builders';
 import { CommandInteraction, MessageEmbed } from 'discord.js';
-import Container from 'typedi';
 import { SlashCommandBuilder } from '../builders';
-import { Config } from '../config';
 import { unwrap } from '../utils';
-
-const config = Container.get(Config);
 
 export default {
   data: new SlashCommandBuilder()
     .setName('help')
     .setDescription(`Learn more about Vesper.`)
-    .setRestrictToChannels([config.discord.channels.admin])
-    .setRestrictToRoles([
-      { allowed: true, id: config.discord.roles.everyone },
-      { allowed: false, id: config.discord.roles.testRestricted },
-    ])
-    .setRateLimit()
     .addSubcommand((subcommand) =>
       subcommand
         .setName('vvsp')
+        .setRestrictToChannels([
+          '916121841783951390', // help
+          '916121858166906930', // resources
+          '916121989117280276', //q-and-a
+        ])
         .setDescription('Introduction to vVSP, the Vesper Governance Pool token')
         .setExecute(async (interaction: CommandInteraction) => {
           const content = unwrap`

@@ -15,6 +15,9 @@ export default {
     .addSubcommand((subcommand) =>
       subcommand
         .setName('price')
+        .setRestrictToChannels([
+          '916119936697507841', //price-and-trading
+        ])
         .setDescription('Current price of VSP on different exchanges.')
         .setExecute(async (interaction: CommandInteraction) => {
           await interaction.deferReply();
@@ -62,6 +65,10 @@ export default {
       subcommand
         .setName('exchange-rate')
         .setDescription('Shows the vVSP to VSP exchange rate.')
+        .setRestrictToChannels([
+          '916119936697507841', //price-and-trading
+          '916122090183208990', // defi-lending-strategies
+        ])
         .setExecute(async (interaction: CommandInteraction) => {
           await interaction.deferReply();
 
@@ -86,7 +93,6 @@ export default {
             .setDescription(
               unwrap`
               1 VSP = ${vspToVVSPRatio.toFixed(3)} vVSP
-
               1 vVSP = ${vvspToVSPRatio.toFixed(3)} VSP
             `,
             )

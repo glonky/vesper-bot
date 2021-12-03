@@ -12,8 +12,8 @@
   "license": "MIT",
   "scripts": {
     "prepare": "is-ci || husky install",
-    "start": "ts-node-dev --respawn --transpile-only src/server.ts & ts-node-dev --respawn --transpile-only src/scripts/deploy-commands.ts",
-    "heroku": "ts-node src/server.ts",
+    "start": "ts-node-dev --respawn --transpile-only src/index.ts & ts-node-dev --respawn --transpile-only src/scripts/deploy-commands.ts",
+    "heroku": "ts-node src/index.ts",
     "deploy:commands": "ts-node src/scripts/deploy-commands.ts",
     "test": "jest",
     "build": "tsc",
