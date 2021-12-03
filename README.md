@@ -5,13 +5,16 @@ Vesper Discord bot lives here. The Discord bot provides various interactive comm
 See below for the full list of commands.
 
 ## Commands
-* `/help vvsp`
+### /help vvsp
+
 ![help vvsp](images/help-vvsp.png)
 
-* `/vsp price`
+### /vsp price
+
 ![vsp price](images/vsp-price.png)
 
-* `/vsp exchange-rate`
+### /vsp exchange-rate
+
 ![vsp exchange rate](images/vsp-exchange-rate.png)
 
 ## External Services
