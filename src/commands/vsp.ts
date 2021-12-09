@@ -73,7 +73,7 @@ export default {
           await interaction.deferReply();
 
           const config = Container.get(Config);
-          const vvspAccountBalance = await Container.get(
+          const vspQuantityInVVSPPool = await Container.get(
             EtherscanService,
           ).getERC20TokenAccountBalanceForTokenContractAddress({
             address: config.vesper.vvspTokenAddress,
@@ -84,16 +84,16 @@ export default {
             config.vesper.vvspTokenAddress,
           );
 
-          const vspToVVSPRatio = vvspAccountBalance.result.dividedBy(vvspTotalSupply.result);
-          const vvspToVSPRatio = vvspTotalSupply.result.dividedBy(vvspAccountBalance.result);
+          const vvspToVSPRatio = vspQuantityInVVSPPool.result.dividedBy(vvspTotalSupply.result);
+          const vspToVVSPRatio = vvspTotalSupply.result.dividedBy(vspQuantityInVVSPPool.result);
 
           const messageEmbed = new MessageEmbed()
             .setColor('#0099ff')
             .setTitle('VSP / vVSP Exchange Rate')
             .setDescription(
               unwrap`
-              1 vVSP = ${vspToVVSPRatio.toFixed(3)} VSP
-              1 VSP = ${vvspToVSPRatio.toFixed(3)} vVSP
+              1 VSP = ${vspToVVSPRatio.toFixed(3)} vVSP
+              1 vVSP = ${vvspToVSPRatio.toFixed(3)} VSP
             `,
             )
             .setThumbnail('https://cdn-images-1.medium.com/fit/c/72/72/1*AjnJwyVg_kQs4kdf-PlXPQ.png');
