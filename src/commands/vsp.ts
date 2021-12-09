@@ -92,8 +92,8 @@ export default {
             .setTitle('VSP / vVSP Exchange Rate')
             .setDescription(
               unwrap`
-              1 VSP = ${vspToVVSPRatio.toFixed(3)} vVSP
-              1 vVSP = ${vvspToVSPRatio.toFixed(3)} VSP
+              1 vVSP = ${vspToVVSPRatio.toFixed(3)} VSP
+              1 VSP = ${vvspToVSPRatio.toFixed(3)} vVSP
             `,
             )
             .setThumbnail('https://cdn-images-1.medium.com/fit/c/72/72/1*AjnJwyVg_kQs4kdf-PlXPQ.png');
