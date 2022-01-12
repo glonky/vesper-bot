@@ -1,0 +1,9 @@
+{
+  "extends": "../../tsconfig.shared.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src"],
+  "references": [{ "path": "../config" }, { "path": "../logger" }, { "path": "../errors" }]
+}
