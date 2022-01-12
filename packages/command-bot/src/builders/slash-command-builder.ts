@@ -76,7 +76,7 @@ export class SlashCommandBuilder extends DiscordSlashCommandBuilder {
     return this.executeFn(interaction);
   }
 
-  public addSubcommand(
+  public addCustomSubcommand(
     input:
       | SlashCommandSubcommandBuilder
       | ((subcommandGroup: SlashCommandSubcommandBuilder) => SlashCommandSubcommandBuilder),

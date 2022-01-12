@@ -7,7 +7,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName('help')
     .setDescription(`Learn more about Vesper.`)
-    .addSubcommand((subcommand) =>
+    .addCustomSubcommand((subcommand) =>
       subcommand
         .setName('vvsp')
         .setRestrictToChannels([

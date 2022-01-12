@@ -13,4 +13,7 @@ coverage
 yarn-debug.log*
 yarn-error.log*
 
+# Ignore .js files for now. We will have to create a custom ESlint config for this with overrides for typescript.
 .eslintrc.js
+
+dist

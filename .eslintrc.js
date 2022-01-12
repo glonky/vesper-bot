@@ -16,10 +16,21 @@ module.exports = {
     'plugin:prettier/recommended', // Enables eslint-plugin-prettier and displays prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
   ],
   parser: '@typescript-eslint/parser',
-  parserOptions: {
-    project: ['./tsconfig.json'],
-    sourceType: 'module',
-  },
+  // NOTE: This fix for "parserOptions.project" has been set for @typescript-eslint/parser
+  // https://stackoverflow.com/a/64488474
+  overrides: [
+    {
+      files: ['*.ts'], // Your TypeScript files extension
+      parserOptions: {
+        //NOTE: tsconfig.json references are not supported yet.
+        // this is a workaround
+        // https://github.com/typescript-eslint/typescript-eslint/issues/2094#issuecomment-792276816
+        project: ['./tsconfig.json', './packages/*/tsconfig.json'],
+        sourceType: 'module',
+        tsconfigRootDir: __dirname,
+      },
+    },
+  ],
   plugins: ['@typescript-eslint', 'sort-keys-fix', 'unused-imports', 'jest', 'jest-formatting', 'prettier'],
   rules: {
     'import/order': ['error', { groups: ['builtin', 'external', 'parent', 'sibling', 'index'] }],
@@ -31,10 +42,7 @@ module.exports = {
     'jest/no-identical-title': 'error',
     'jest/prefer-to-have-length': 'warn',
     'jest/valid-expect': 'error',
-    // 'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
     'prefer-const': 'error',
-    'react/jsx-no-undef': 'off',
-    'react/prop-types': 'off',
     'sort-keys-fix/sort-keys-fix': 'warn',
     'unused-imports/no-unused-imports-ts': 'error',
     'unused-imports/no-unused-vars-ts': [

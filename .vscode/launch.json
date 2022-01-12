@@ -9,9 +9,9 @@
       "request": "launch",
       "name": "Start Server",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/src/server.ts",
-      "preLaunchTask": "tsc: build - tsconfig.json",
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "program": "${workspaceFolder}/packages/command-bot/src/index.ts",
+      "preLaunchTask": "npm: build",
+      "outFiles": ["${workspaceFolder}/packages/**/dist/**/*.js"],
       "sourceMaps": true,
       "smartStep": true,
       "console": "integratedTerminal"
@@ -22,11 +22,24 @@
       "name": "Deploy Commands",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/src/scripts/deploy-commands.ts",
-      "preLaunchTask": "tsc: build - tsconfig.json",
+      "preLaunchTask": "npm: build",
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "sourceMaps": true,
       "smartStep": true,
       "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
+      "name": "vscode-jest-tests",
+      "request": "launch",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "disableOptimisticBPs": true,
+      "smartStep": true,
+      "preLaunchTask": "npm: build",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "yarn",
+      "args": ["test", "--runInBand", "--watchAll=false", "--color", "--coverage=false"]
     }
   ]
 }

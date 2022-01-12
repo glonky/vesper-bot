@@ -15,7 +15,7 @@ export default {
     .setExecute(async (interaction: CommandInteraction) => {
       return interaction.reply('Eth price');
     })
-    .addSubcommand((subcommand) =>
+    .addCustomSubcommand((subcommand) =>
       subcommand
         .setName('gas')
         .setDescription(`List Ethereum Gas Priority Fees from Etherscan Oracle`)

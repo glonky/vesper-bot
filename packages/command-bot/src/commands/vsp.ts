@@ -12,7 +12,7 @@ export default {
   data: new SlashCommandBuilder()
     .setName('vsp')
     .setDescription(`VSP utilities`)
-    .addSubcommand((subcommand) =>
+    .addCustomSubcommand((subcommand) =>
       subcommand
         .setName('price')
         .setRestrictToChannels([
@@ -61,7 +61,7 @@ export default {
           await interaction.editReply({ embeds: [messageEmbed] });
         }),
     )
-    .addSubcommand((subcommand) =>
+    .addCustomSubcommand((subcommand) =>
       subcommand
         .setName('exchange-rate')
         .setDescription('Shows the vVSP to VSP exchange rate.')
@@ -101,7 +101,7 @@ export default {
           await interaction.editReply({ embeds: [messageEmbed] });
         }),
     )
-    .addSubcommand((subcommand) =>
+    .addCustomSubcommand((subcommand) =>
       subcommand
         .setName('stats')
         .setEnabled(!Container.get(Config).isProduction)
@@ -172,7 +172,7 @@ export default {
           await interaction.editReply({ embeds: [messageEmbed] });
         }),
     )
-    .addSubcommand((subcommand) =>
+    .addCustomSubcommand((subcommand) =>
       subcommand
         .setName('loan-rates')
         .setEnabled(!Container.get(Config).isProduction)
