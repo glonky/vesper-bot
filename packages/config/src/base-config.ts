@@ -14,6 +14,8 @@ export class BaseConfig {
 
   public isLocal = getEnvironmentVariable<boolean>('LOCAL', false);
 
+  public isCI = getEnvironmentVariable<boolean>('CI', false);
+
   protected getEnvVar = getEnvironmentVariable;
 
   public get isProduction() {
