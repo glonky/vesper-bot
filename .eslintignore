@@ -5,32 +5,10 @@ node_modules
 # testing
 coverage
 
-# production
-dist
-.parcel-cache
-
 # misc
 .DS_Store
 .env.local
 .env.*.local
 
-npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log
-*.lerna_backup
-
-# Local Netlify folder
-.netlify
-
-tsconfig.tsbuildinfo
-.eslintcache
-.zcompdump
-
-# Parcel build directories
-.cache
-.build
-
-packages/bot
-packages//src/generated
-cdk.out
