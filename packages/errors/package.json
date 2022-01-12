@@ -1,0 +1,12 @@
+{
+  "name": "@vesper-discord/errors",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@vesper-discord/logger": "1.0.0",
+    "@vesper-discord/utils": "1.0.0",
+    "http-status-codes": "2.2.0"
+  }
+}
