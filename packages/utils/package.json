@@ -1,0 +1,17 @@
+{
+  "name": "@vesper-discord/utils",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@vesper-discord/config": "1.0.0",
+    "dedent-js": "1.0.1",
+    "lodash": "4.17.21",
+    "pluralize": "8.0.0"
+  },
+  "devDependencies": {
+    "@types/pluralize": "0.0.29",
+    "@types/lodash": "4.14.178"
+  }
+}

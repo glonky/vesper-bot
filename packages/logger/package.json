@@ -1,0 +1,25 @@
+{
+  "name": "@vesper-discord/logger",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "exports": "./dist/index.js",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@vesper-discord/config": "1.0.0",
+    "@vesper-discord/utils": "1.0.0",
+    "lodash": "4.17.21",
+    "luxon": "2.3.0",
+    "pino": "7.6.2",
+    "pino-pretty": "7.3.0",
+    "pino-tee": "0.3.0",
+    "typedi": "0.10.0"
+  },
+  "devDependencies": {
+    "@types/lodash": "4.14.178",
+    "@types/pino": "7.0.5",
+    "@types/pino-pretty": "4.7.4",
+    "@types/pino-multi-stream": "5.1.3"
+  }
+}
