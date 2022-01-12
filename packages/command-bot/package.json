@@ -5,11 +5,10 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "start": "yarn start:server & yarn deploy:commands:watch",
+    "start": "yarn docker:start && yarn start:server",
     "start:server": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "docker:start": "docker compose up -d",
     "heroku": "ts-node src/index.ts",
-    "deploy:commands": "ts-node src/scripts/deploy-commands.ts",
-    "deploy:commands:watch": "ts-node-dev --respawn --transpile-only src/scripts/deploy-commands.ts",
     "heroku-postbuild": "yarn build && node dist/scripts/deploy-commands.js"
   },
   "dependencies": {
