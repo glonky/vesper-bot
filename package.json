@@ -7,7 +7,7 @@
     "url": "ssh://git@github.com/glonky/vesper-discord-bot.git"
   },
   "engines": {
-    "node": ">=16"
+    "node": "^12.20.0 || ^14.13.1 || >=16.0.0"
   },
   "license": "MIT",
   "scripts": {
@@ -15,7 +15,9 @@
     "start": "ts-node-dev --respawn --transpile-only src/index.ts & ts-node-dev --respawn --transpile-only src/scripts/deploy-commands.ts",
     "heroku": "ts-node src/index.ts",
     "deploy:commands": "ts-node src/scripts/deploy-commands.ts",
-    "test": "jest",
+    "test": "jest --config jest.config.cjs",
+    "test:watch": "yarn test --watch",
+    "test:ci": "yarn test --ci --silent --forceExit --detectOpenHandles --bail --passWithNoTests",
     "build": "tsc",
     "heroku-postbuild": "yarn build && node dist/scripts/deploy-commands.js",
     "lint": "eslint --cache .",
@@ -83,6 +85,7 @@
     "conventional-changelog-cli": "2.2.2",
     "cz-conventional-changelog": "3.3.0",
     "env-cmd": "10.1.0",
+    "esbuild-jest": "^0.5.0",
     "eslint": "8.6.0",
     "eslint-config-airbnb-typescript": "16.1.0",
     "eslint-config-prettier": "8.3.0",

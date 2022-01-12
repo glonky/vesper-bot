@@ -24,5 +24,9 @@
   },
   "compileOnSave": false,
   "include": ["src"],
-  "exclude": ["node_modules", "coverage", "dist"]
+  "exclude": ["node_modules", "coverage", "dist"],
+  "ts-node": {
+    "transpileOnly": true,
+    "transpiler": "ts-node/transpilers/swc-experimental"
+  }
 }
