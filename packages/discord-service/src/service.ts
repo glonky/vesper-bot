@@ -86,14 +86,14 @@ export class DiscordService {
       if (command.data.options) {
         for (const option of command.data.options) {
           const optionAsSubCommand = option as SlashCommandSubcommandBuilder;
-          this.logger.info(`Loading sub-command`, {
+          this.logger.debug(`Loading sub-command`, {
             command: command.data.name,
             subCommand: optionAsSubCommand.name,
           });
           this.commands.set(`${command.data.name}.${optionAsSubCommand.name}`, command);
         }
       } else {
-        this.logger.info(`Loading command`, {
+        this.logger.debug(`Loading command`, {
           command: command.data.name,
         });
       }
@@ -110,7 +110,7 @@ export class DiscordService {
     for (const file of eventFiles) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const event = require(file).default;
-      this.logger.info(`Loading event`, {
+      this.logger.debug(`Loading event`, {
         command: event.name,
       });
 

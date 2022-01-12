@@ -32,11 +32,11 @@ export class BaseConfig {
     return this.nodeEnv.includes('test');
   }
 
-  public static loadDotEnvFiles() {
+  public static loadDotEnvFiles(pathToEnvFiles?: string) {
     const nodeEnv = getEnvironmentVariable('NODE_ENV', 'development');
     const verboseConfig = getEnvironmentVariable<boolean>('CONFIG_VERBOSE', false);
 
-    const baseConfigPath = path.resolve('.');
+    const baseConfigPath = pathToEnvFiles ?? path.resolve('.');
 
     if (baseConfigPath) {
       const baseConfigDotEnv = dotenv.config({

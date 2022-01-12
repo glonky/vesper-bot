@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "yarn docker:start && yarn start:server",
-    "start:server": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "start:server": "tsc -b -w & ts-node-dev --respawn --transpile-only src/index.ts",
     "docker:start": "docker compose up -d",
     "heroku": "ts-node src/index.ts",
     "heroku-postbuild": "yarn build && node dist/scripts/deploy-commands.js"

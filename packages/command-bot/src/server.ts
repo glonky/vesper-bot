@@ -10,7 +10,7 @@ import { BaseConfig } from '@vesper-discord/config';
 export class Server {
   public async start() {
     RedisService.init();
-    BaseConfig.loadDotEnvFiles();
+    BaseConfig.loadDotEnvFiles(path.join(__dirname, '../../..'));
     const discordService = Container.get(DiscordService);
 
     discordService.setRateLimit();
