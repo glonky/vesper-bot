@@ -55,7 +55,7 @@ export enum StatusUpdateProjectType {
 /**
  * List of event types (most recent from /events/type)
  */
-export enum EVENT_TYPE {
+export enum EventType {
   CONFERENCE = 'Conference',
   EVENT = 'Event',
   MEETUP = 'Meetup',

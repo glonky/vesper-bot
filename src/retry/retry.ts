@@ -148,7 +148,9 @@ export async function retry<T>(fn: RetryFunction<T>, props?: RetryProps): Promis
         });
       }
 
-      throw originalError;
+      if (originalError) {
+        throw originalError;
+      }
     }
 
     logger.debug(`Failed to retry re-throwing.`, {

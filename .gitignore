@@ -24,4 +24,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+#eslint
+.eslintcache
+
 logs
