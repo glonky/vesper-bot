@@ -1,35 +1,27 @@
-# See https://help.github.com/ignore-files/ for more about ignoring files.
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 # dependencies
-node_modules
-pairing-reports
-esbuild-output
+/node_modules
 
 # testing
-coverage
+/coverage
 
 # production
 dist
 
 # misc
 .DS_Store
-.env.local
-.env.*.local
+*.pem
 
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log
-*.lerna_backup
 
-# Local Netlify folder
-.netlify
+# local env files
+.env.local
+.env.*.local
 
-tsconfig.tsbuildinfo
-.eslintcache
-.zcompdump
+# typescript
+*.tsbuildinfo
 
-# Parcel build directories
-.cache
-.build
-
-.git
+logs
