@@ -1,10 +1,9 @@
-import { CommandInteraction } from 'discord.js';
+import { CustomSlashCommandBuilder, CommandInteraction } from '@vesper-discord/discord-service';
 import Container from 'typedi';
-import { SlashCommandBuilder } from '../builders';
 import { Config } from '../config';
 
 export default {
-  data: new SlashCommandBuilder()
+  data: new CustomSlashCommandBuilder()
     .setName('ping')
     .setDescription('Replies with Pong!')
     .setEnabled(!Container.get(Config).isProduction)

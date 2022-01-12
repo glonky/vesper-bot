@@ -1,16 +1,19 @@
-import { hyperlink } from '@discordjs/builders';
-import { CommandInteraction, MessageEmbed } from 'discord.js';
+import {
+  CustomSlashCommandBuilder,
+  CommandInteraction,
+  MessageEmbed,
+  hyperlink,
+} from '@vesper-discord/discord-service';
+import { VesperService } from '@vesper-discord/vesper-service';
 import Container from 'typedi';
-import { SlashCommandBuilder } from '../builders';
 import { Config } from '../config';
-import { VesperService } from '../services';
 
 export default {
-  data: new SlashCommandBuilder()
+  data: new CustomSlashCommandBuilder()
     .setName('pools')
     .setEnabled(!Container.get(Config).isProduction)
     .setDescription(`Vesper pools Utilities`)
-    .addCustomSubcommand((subcommand) =>
+    .addSubcommand2((subcommand) =>
       subcommand
         .setName('stats')
         .setDescription('Shows stats about pools.')

@@ -1,18 +1,23 @@
-import { hyperlink } from '@discordjs/builders';
-import { CommandInteraction, MessageEmbed } from 'discord.js';
 import { chain } from 'lodash';
 import Container from 'typedi';
-import { SlashCommandBuilder } from '../builders';
+import { Logger } from '@vesper-discord/logger';
+import { unwrap } from '@vesper-discord/utils';
+import { Config as VesperConfig, VesperService } from '@vesper-discord/vesper-service';
+import { EtherscanService } from '@vesper-discord/etherscan-service';
+import { CoinGeckoService } from '@vesper-discord/coin-gecko-service';
+import {
+  CommandInteraction,
+  CustomSlashCommandBuilder,
+  hyperlink,
+  MessageEmbed,
+} from '@vesper-discord/discord-service';
 import { Config } from '../config';
-import { Logger } from '../logger';
-import { CoinGeckoService, EtherscanService, VesperService } from '../services';
-import { unwrap } from '../utils';
 
 export default {
-  data: new SlashCommandBuilder()
+  data: new CustomSlashCommandBuilder()
     .setName('vsp')
     .setDescription(`VSP utilities`)
-    .addCustomSubcommand((subcommand) =>
+    .addSubcommand2((subcommand) =>
       subcommand
         .setName('price')
         .setRestrictToChannels([
@@ -22,11 +27,11 @@ export default {
         .setExecute(async (interaction: CommandInteraction) => {
           await interaction.deferReply();
 
-          const config = Container.get(Config);
+          const config = Container.get(VesperConfig);
           const stats = await Container.get(VesperService).getVspStats();
           const coinInfo = await Container.get(CoinGeckoService).getCoinInfoFromContractAddress({
             coinId: 'ethereum',
-            contractAddress: config.vesper.vspTokenAddress,
+            contractAddress: config.vspTokenAddress,
           });
           const numberFormatter = new Intl.NumberFormat('en-US', { currency: 'USD', style: 'currency' });
 
@@ -61,7 +66,7 @@ export default {
           await interaction.editReply({ embeds: [messageEmbed] });
         }),
     )
-    .addCustomSubcommand((subcommand) =>
+    .addSubcommand2((subcommand) =>
       subcommand
         .setName('exchange-rate')
         .setDescription('Shows the vVSP to VSP exchange rate.')
@@ -72,16 +77,16 @@ export default {
         .setExecute(async (interaction: CommandInteraction) => {
           await interaction.deferReply();
 
-          const config = Container.get(Config);
+          const config = Container.get(VesperConfig);
           const vspQuantityInVVSPPool = await Container.get(
             EtherscanService,
           ).getERC20TokenAccountBalanceForTokenContractAddress({
-            address: config.vesper.vvspTokenAddress,
-            contractAddress: config.vesper.vspTokenAddress,
+            address: config.vvspTokenAddress,
+            contractAddress: config.vspTokenAddress,
           });
 
           const vvspTotalSupply = await Container.get(EtherscanService).getERC20TokenTotalSupplyByContractAddress(
-            config.vesper.vvspTokenAddress,
+            config.vvspTokenAddress,
           );
 
           const vvspToVSPRatio = vspQuantityInVVSPPool.result.dividedBy(vvspTotalSupply.result);
@@ -101,7 +106,7 @@ export default {
           await interaction.editReply({ embeds: [messageEmbed] });
         }),
     )
-    .addCustomSubcommand((subcommand) =>
+    .addSubcommand2((subcommand) =>
       subcommand
         .setName('stats')
         .setEnabled(!Container.get(Config).isProduction)
@@ -172,7 +177,7 @@ export default {
           await interaction.editReply({ embeds: [messageEmbed] });
         }),
     )
-    .addCustomSubcommand((subcommand) =>
+    .addSubcommand2((subcommand) =>
       subcommand
         .setName('loan-rates')
         .setEnabled(!Container.get(Config).isProduction)

@@ -1,10 +1,12 @@
-import { Interaction } from 'discord.js';
 import Container from 'typedi';
-import { RateLimiter } from '../rate-limiter';
-import { SlashCommandSubcommandBuilder } from '../builders';
-import { Logger } from '../logger';
-import { assertion } from '../errors';
-import { DiscordService } from '../services';
+import { Logger } from '@vesper-discord/logger';
+import { assertion } from '@vesper-discord/errors';
+import {
+  DiscordService,
+  CustomSlashCommandSubcommandBuilder,
+  RateLimiter,
+  Interaction,
+} from '@vesper-discord/discord-service';
 
 export default {
   async execute(interaction: Interaction) {
@@ -28,8 +30,8 @@ export default {
       return;
     }
 
-    const subCommand = (command.data.options as SlashCommandSubcommandBuilder[]).find(
-      (option: SlashCommandSubcommandBuilder) => option.name === interaction.options.getSubcommand(),
+    const subCommand = (command.data.options as CustomSlashCommandSubcommandBuilder[]).find(
+      (option: CustomSlashCommandSubcommandBuilder) => option.name === interaction.options.getSubcommand(),
     );
 
     if (subCommand && !(subCommand.enabled ?? true)) {

@@ -5,5 +5,16 @@
     "outDir": "dist"
   },
   "include": ["src"],
-  "references": []
+  "references": [
+    { "path": "../config" },
+    { "path": "../errors" },
+    { "path": "../logger" },
+    { "path": "../retry" },
+    { "path": "../utils" },
+    { "path": "../discord-service" },
+    { "path": "../coin-gecko-service" },
+    { "path": "../etherscan-service" },
+    { "path": "../vesper-service" },
+    { "path": "../redis-service" }
+  ]
 }

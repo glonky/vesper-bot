@@ -1,10 +1,9 @@
-import { CommandInteraction } from 'discord.js';
+import { CommandInteraction, CustomSlashCommandBuilder } from '@vesper-discord/discord-service';
 import Container from 'typedi';
-import { SlashCommandBuilder } from '../builders';
 import { Config } from '../config';
 
 export default {
-  data: new SlashCommandBuilder()
+  data: new CustomSlashCommandBuilder()
     .setName('user')
     .setDescription('Replies with user info!')
     .setEnabled(!Container.get(Config).isProduction)

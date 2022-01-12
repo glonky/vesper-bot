@@ -5,13 +5,13 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
+    "@type-cacheable/core": "10.0.3",
+    "@type-cacheable/ioredis-adapter": "10.0.3",
     "@vesper-discord/config": "1.0.0",
     "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
-    "@type-cacheable/core": "10.0.2",
-    "@type-cacheable/ioredis-adapter": "10.0.2",
-    "typedi": "0.10.0",
-    "ioredis": "4.28.2"
+    "ioredis": "4.28.3",
+    "typedi": "0.10.0"
   },
   "devDependencies": {
     "@types/ioredis": "4.28.7"

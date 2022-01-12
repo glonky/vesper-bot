@@ -1,6 +1,6 @@
 import Container from 'typedi';
-import { Logger } from '../logger';
-import { DiscordService } from '../services';
+import { Logger } from '@vesper-discord/logger';
+import { DiscordService } from '@vesper-discord/discord-service';
 
 export default {
   execute() {

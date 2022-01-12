@@ -7,14 +7,14 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
+    "@discordjs/builders": "0.11.0",
     "@vesper-discord/config": "1.0.0",
     "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
     "@vesper-discord/redis-service": "1.0.0",
-    "@discordjs/builders": "0.11.0",
-    "discord.js": "13.5.0",
-    "typedi": "0.10.0",
-    "glob": "7.2.0"
+    "discord.js": "13.5.1",
+    "glob": "7.2.0",
+    "typedi": "0.10.0"
   },
   "devDependencies": {
     "@types/glob": "7.2.0"

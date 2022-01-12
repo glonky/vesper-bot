@@ -1,13 +1,18 @@
-import { bold, hideLinkEmbed, hyperlink } from '@discordjs/builders';
-import { CommandInteraction, MessageEmbed } from 'discord.js';
-import { SlashCommandBuilder } from '../builders';
-import { unwrap } from '../utils';
+import {
+  CustomSlashCommandBuilder,
+  CommandInteraction,
+  hyperlink,
+  hideLinkEmbed,
+  bold,
+  MessageEmbed,
+} from '@vesper-discord/discord-service';
+import { unwrap } from '@vesper-discord/utils';
 
 export default {
-  data: new SlashCommandBuilder()
+  data: new CustomSlashCommandBuilder()
     .setName('help')
     .setDescription(`Learn more about Vesper.`)
-    .addCustomSubcommand((subcommand) =>
+    .addSubcommand2((subcommand) =>
       subcommand
         .setName('vvsp')
         .setRestrictToChannels([
@@ -46,7 +51,7 @@ export default {
 
            - Once you deposit VSP to the vVSP pool, you will no longer see VSP in your wallet - instead you will have the vVSP token representing your share of the governance pool. You can watch your VSP balance grow by checking the Vesper app.
 
-           - Since your vVSP balance represents your share of the governance pool, it will not track 1:1 with your VSP balance. Your vVSP balance will remain static, the VSP balance it represents will grow as platform revenue is distributed to you.
+           - Since your vVSP balance represents your share of the governance pool, it will not track 1:1 with your VSP balance. Your vVSP balance will remain static, the VSP balance it represents will grow as platform revenue is distributed to you. To see the current exchange rate of VSP to vVSP, you can use the \`/vsp exchange-rate\` command.
           `;
 
           const messageEmbed = new MessageEmbed()
