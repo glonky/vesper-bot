@@ -1,0 +1,19 @@
+{
+  "name": "@vesper-discord/vesper-service",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@vesper-discord/config": "1.0.0",
+    "@vesper-discord/errors": "1.0.0",
+    "@vesper-discord/logger": "1.0.0",
+    "node-fetch": "2.6.6",
+    "bignumber.js": "9.0.2",
+    "typedi": "0.10.0"
+  },
+  "devDependencies": {
+    "@types/bignumber.js": "5.0.0",
+    "@types/node-fetch": "2.5.12"
+  }
+}
