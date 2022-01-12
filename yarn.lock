@@ -1506,12 +1506,26 @@
   resolved "https://registry.yarnpkg.com/@tsconfig/node16/-/node16-1.0.2.tgz#423c77877d0569db20e1fc80885ac4118314010e"
   integrity sha512-eZxlbI8GZscaGS7kkc/trHTT5xgrjH3/1n2JDwusC9iahPKWMRvRjJSAN5mCXviuTGQ/lHnhvv8Q1YTpnfz9gA==
 
+"@type-cacheable/core@10.0.2":
+  version "10.0.2"
+  resolved "https://registry.yarnpkg.com/@type-cacheable/core/-/core-10.0.2.tgz#f3eca3584c3ac6a0f62a3779207ac4dfd439a2f2"
+  integrity sha512-Gaq9SqCbnMbeX2AJHMwRK0hYtpLQ0cXxxALl0dOfs0xUO7RFy4lTk0wejO9NzPirrQyMPD9JrfG4DG0UvY3yoQ==
+  dependencies:
+    serialize-javascript "^6.0.0"
+
 "@type-cacheable/core@10.0.3":
   version "10.0.3"
   resolved "https://registry.yarnpkg.com/@type-cacheable/core/-/core-10.0.3.tgz#432a8823a7b933ca793c7c013c5ae5f939174399"
   integrity sha512-tdprSlwDQ4a+aAEu7ksC1gKHdvCTDLMt0U/5VDRxQK7ClgP6u8QOFMS7Wd++kFL2opj8Gpul+i6FUuu2OUOKEw==
   dependencies:
     serialize-javascript "^6.0.0"
+
+"@type-cacheable/ioredis-adapter@10.0.2":
+  version "10.0.2"
+  resolved "https://registry.yarnpkg.com/@type-cacheable/ioredis-adapter/-/ioredis-adapter-10.0.2.tgz#4c87ad8fac00ed53029c492afb42e8203639c657"
+  integrity sha512-Hk0VqQPjYV0d/lZ3llS2PKC7FnFY4Q1Gw/fxWP7I6uqOmFqchgu0MJeMSzzKtjrHzxf5nVaLa7heBoT49mA/6g==
+  dependencies:
+    compare-versions "^3.6.0"
 
 "@type-cacheable/ioredis-adapter@10.0.3":
   version "10.0.3"
@@ -3153,6 +3167,11 @@ compare-func@^2.0.0:
   dependencies:
     array-ify "^1.0.0"
     dot-prop "^5.1.0"
+
+compare-versions@^3.6.0:
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.6.0.tgz#1a5689913685e5a87637b8d3ffca75514ec41d62"
+  integrity sha512-W6Af2Iw1z4CB7q4uU4hv646dW9GQuBM+YpC0UvUCWSD8w90SJjp+ujJuXaEMtAXBtSqGfMPuFOVn4/+FlaqfBA==
 
 compare-versions@^4.0.0:
   version "4.1.3"
@@ -5825,6 +5844,23 @@ into-stream@^6.0.0:
   dependencies:
     from2 "^2.3.0"
     p-is-promise "^3.0.0"
+
+ioredis@4.28.2:
+  version "4.28.2"
+  resolved "https://registry.yarnpkg.com/ioredis/-/ioredis-4.28.2.tgz#493ccd5d869fd0ec86c96498192718171f6c9203"
+  integrity sha512-kQ+Iv7+c6HsDdPP2XUHaMv8DhnSeAeKEwMbaoqsXYbO+03dItXt7+5jGQDRyjdRUV2rFJbzg7P4Qt1iX2tqkOg==
+  dependencies:
+    cluster-key-slot "^1.1.0"
+    debug "^4.3.1"
+    denque "^1.1.0"
+    lodash.defaults "^4.2.0"
+    lodash.flatten "^4.4.0"
+    lodash.isarguments "^3.1.0"
+    p-map "^2.1.0"
+    redis-commands "1.7.0"
+    redis-errors "^1.2.0"
+    redis-parser "^3.0.0"
+    standard-as-callback "^2.1.0"
 
 ioredis@4.28.3:
   version "4.28.3"
