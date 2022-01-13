@@ -4,14 +4,6 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
-  "scripts": {
-    "start": "yarn docker:start && yarn start:server && yarn vesper deploy-commands",
-    "start:server": "tsc -b -w & ts-node-dev --respawn --transpile-only src/index.ts",
-    "docker:start": "docker compose up -d",
-    "heroku": "ts-node src/index.ts",
-    "deploy-commands": "yarn vesper deploy-discord-commands -c ./src/commands",
-    "heroku-postbuild": "yarn build && CI=true yarn deploy-commands"
-  },
   "dependencies": {
     "@vesper-discord/config": "1.0.0",
     "@vesper-discord/errors": "1.0.0",
