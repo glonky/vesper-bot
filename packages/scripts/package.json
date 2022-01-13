@@ -24,6 +24,7 @@
     "@discordjs/rest": "0.2.0-canary.0",
     "@vesper-discord/config": "1.0.0",
     "@vesper-discord/discord-service": "1.0.0",
+    "@vesper-discord/command-bot": "1.0.0",
     "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
     "async-retry": "1.3.3",

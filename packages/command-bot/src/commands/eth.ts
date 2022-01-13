@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import Container from 'typedi';
 import web3 from 'web3';
 import { formatTimeFromSeconds, unwrap } from '@vesper-discord/utils';
-import { CustomSlashCommandBuilder, CommandInteraction, MessageEmbed } from '@vesper-discord/discord-service';
+import { CustomSlashCommandBuilder, MessageEmbed } from '@vesper-discord/discord-service';
 import { EtherscanService } from '@vesper-discord/etherscan-service';
 import { Config } from '../config';
 
@@ -11,14 +11,14 @@ export default {
     .setName('eth')
     .setEnabled(!Container.get(Config).isProduction)
     .setDescription(`List ETH Price`)
-    .setExecute(async (interaction: CommandInteraction) => {
+    .setExecute(async ({ interaction }) => {
       return interaction.reply('Eth price');
     })
     .addCustomSubcommand((subcommand) =>
       subcommand
         .setName('gas')
         .setDescription(`List Ethereum Gas Priority Fees from Etherscan Oracle`)
-        .setExecute(async (interaction: CommandInteraction) => {
+        .setExecute(async ({ interaction }) => {
           await interaction.deferReply();
 
           const etherscanService = Container.get(EtherscanService);

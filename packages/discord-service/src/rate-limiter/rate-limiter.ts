@@ -1,6 +1,5 @@
-import Container, { Service } from 'typedi';
+import { Service } from 'typedi';
 import { CacheManager } from '@vesper-discord/redis-service';
-import { Config } from '../config';
 
 export interface ShouldRateLimitCommandProps {
   commandId: string;
@@ -34,13 +33,12 @@ export class RateLimiter {
   }
 
   public async setCommandLastUsed(props: SetCommandLastUsedProps) {
-    const config = Container.get(Config);
     const key = `${props.commandId}.${props.channelId}.${props.userId}`;
 
     if (!CacheManager.client) {
       throw Error('CacheManager must be set before calling setCommandLastUsed');
     }
 
-    await CacheManager.client.set(key, true, props.ttl ?? config.commandRateLimit);
+    await CacheManager.client.set(key, true, props.ttl);
   }
 }

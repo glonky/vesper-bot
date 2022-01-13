@@ -8,7 +8,8 @@ import type {
 import { ApplicationCommandPermissionType, Routes } from 'discord-api-types/v9';
 import Container from 'typedi';
 import glob from 'glob';
-import { Config, Command } from '@vesper-discord/discord-service';
+import { Command } from '@vesper-discord/discord-service';
+import { Config } from '@vesper-discord/command-bot';
 import { flags } from '@oclif/command';
 import { BaseCommand } from '../base-command';
 

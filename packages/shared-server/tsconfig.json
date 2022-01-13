@@ -5,5 +5,10 @@
     "outDir": "dist"
   },
   "include": ["src"],
-  "references": [{ "path": "../command-bot" }]
+  "references": [
+    { "path": "../command-bot" },
+    { "path": "../config" },
+    { "path": "../redis-service" },
+    { "path": "../sidebar-gas-bot" }
+  ]
 }

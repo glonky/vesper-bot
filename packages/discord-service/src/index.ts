@@ -1,4 +1,4 @@
-export * from './service';
+export * from './discord-client';
 export * from './rate-limiter';
 export * from './interfaces';
 export * from './builders';

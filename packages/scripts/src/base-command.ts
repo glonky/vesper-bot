@@ -13,7 +13,7 @@ export abstract class BaseCommand extends Command {
   protected logger!: Logger;
 
   async run() {
-    BaseConfig.loadDotEnvFiles(path.join(__dirname, '../../..'));
+    Container.get(BaseConfig).loadDotEnvFiles(path.join(__dirname, '../../..'));
 
     const container = Container.of(uuid());
     this.logger = container.get(Logger);

@@ -14,7 +14,6 @@
     { "path": "../discord-service" },
     { "path": "../coin-gecko-service" },
     { "path": "../etherscan-service" },
-    { "path": "../vesper-service" },
-    { "path": "../redis-service" }
+    { "path": "../vesper-service" }
   ]
 }

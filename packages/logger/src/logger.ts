@@ -94,6 +94,23 @@ export class Logger {
     return this._logger;
   }
 
+  public setName(name: string) {
+    return {
+      debug: (message: string, optionalProps?: OptionalProps, loggerProps?: LoggerProps) =>
+        this.debug(message, merge({ logger: name }, optionalProps ?? {}), loggerProps),
+      error: (message: string, optionalProps?: OptionalProps & ErrorProps, loggerProps?: LoggerProps) =>
+        this.error(message, merge({ logger: name }, optionalProps ?? {}), loggerProps),
+      fatal: (message: string, optionalProps?: OptionalProps, loggerProps?: LoggerProps) =>
+        this.fatal(message, merge({ logger: name }, optionalProps ?? {}), loggerProps),
+      info: (message: string, optionalProps?: OptionalProps, loggerProps?: LoggerProps) =>
+        this.info(message, merge({ logger: name }, optionalProps ?? {}), loggerProps),
+      trace: (message: string, optionalProps?: OptionalProps, loggerProps?: LoggerProps) =>
+        this.trace(message, merge({ logger: name }, optionalProps ?? {}), loggerProps),
+      warn: (message: string, optionalProps?: OptionalProps, loggerProps?: LoggerProps) =>
+        this.warn(message, merge({ logger: name }, optionalProps ?? {}), loggerProps),
+    } as Logger;
+  }
+
   public error(message: string, optionalProps?: OptionalProps & ErrorProps, loggerProps?: LoggerProps) {
     return this.logger.error(this.createMessage(message, optionalProps, loggerProps));
   }

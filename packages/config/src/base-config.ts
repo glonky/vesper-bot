@@ -10,6 +10,8 @@ interface OverrideOptions extends dotenv.DotenvConfigOptions {
 
 @Service()
 export class BaseConfig {
+  private hasLoadedDotEnvFiles = false;
+
   public nodeEnv = getEnvironmentVariable<'development' | 'staging' | 'test' | 'production'>('NODE_ENV', 'development');
 
   public isLocal = getEnvironmentVariable<boolean>('LOCAL', false);
@@ -34,7 +36,11 @@ export class BaseConfig {
     return this.nodeEnv.includes('test');
   }
 
-  public static loadDotEnvFiles(pathToEnvFiles?: string) {
+  public loadDotEnvFiles(pathToEnvFiles?: string) {
+    if (this.hasLoadedDotEnvFiles) {
+      return;
+    }
+
     const nodeEnv = getEnvironmentVariable('NODE_ENV', 'development');
     const verboseConfig = getEnvironmentVariable<boolean>('CONFIG_VERBOSE', false);
 
@@ -59,5 +65,7 @@ export class BaseConfig {
     } else if (!baseConfigPath && verboseConfig) {
       console.warn(`Could not find package.json for baseConfigPath ${__dirname}`);
     }
+
+    this.hasLoadedDotEnvFiles = true;
   }
 }

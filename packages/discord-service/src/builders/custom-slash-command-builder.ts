@@ -1,16 +1,13 @@
 import { SlashCommandBuilder as DiscordSlashCommandBuilder } from '@discordjs/builders';
-import { CommandInteraction } from 'discord.js';
-import Container from 'typedi';
 import { Logger, LoggerDecorator } from '@vesper-discord/logger';
-import { Config } from '../config';
-import { RestrictedRole } from '../interfaces';
+import { InteractionEventExecuteProps, InteractionExecuteFunction, RestrictedRole } from '../interfaces';
 import { CustomSlashCommandSubcommandBuilder } from './custom-slash-command-sub-command-builder';
 
 export class CustomSlashCommandBuilder extends DiscordSlashCommandBuilder {
   @LoggerDecorator()
   private logger!: Logger;
 
-  private executeFn?: (interaction: CommandInteraction) => Promise<any>;
+  private executeFn?: InteractionExecuteFunction;
 
   private _enabled?: boolean;
 
@@ -42,8 +39,8 @@ export class CustomSlashCommandBuilder extends DiscordSlashCommandBuilder {
   /**
    * Rate limit in seconds
    */
-  public setRateLimit(rateLimit?: number): this {
-    this._rateLimit = rateLimit ?? Container.get(Config).commandRateLimit;
+  public setRateLimit(rateLimit: number): this {
+    this._rateLimit = rateLimit;
     return this;
   }
 
@@ -62,18 +59,18 @@ export class CustomSlashCommandBuilder extends DiscordSlashCommandBuilder {
     return this;
   }
 
-  public setExecute(executeFn: (interaction: CommandInteraction) => any): this {
+  public setExecute(executeFn: InteractionExecuteFunction): this {
     this.executeFn = executeFn;
     return this;
   }
 
-  public async execute(interaction: CommandInteraction) {
+  public async execute(props: InteractionEventExecuteProps) {
     if (!this.executeFn) {
       this.logger.warn('No execute function set for this command');
       return;
     }
 
-    return this.executeFn(interaction);
+    return this.executeFn(props);
   }
 
   public addCustomSubcommand(

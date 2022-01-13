@@ -6,7 +6,13 @@ import { Config } from './config';
 
 @Service()
 export class RedisService {
-  static init() {
+  private isInitialized = false;
+
+  init() {
+    if (this.isInitialized) {
+      return;
+    }
+
     const config = Container.get(Config);
     const client = new IoRedis(config.host, {
       tls: config.isDevelopment
@@ -20,5 +26,7 @@ export class RedisService {
       excludeContext: false,
     });
     cacheManager.setClient(clientAdapter);
+
+    this.isInitialized = true;
   }
 }

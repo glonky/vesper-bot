@@ -1,6 +1,5 @@
 import {
   CustomSlashCommandBuilder,
-  CommandInteraction,
   hyperlink,
   hideLinkEmbed,
   bold,
@@ -21,7 +20,7 @@ export default {
           '916121989117280276', //q-and-a
         ])
         .setDescription('Introduction to vVSP, the Vesper Governance Pool token')
-        .setExecute(async (interaction: CommandInteraction) => {
+        .setExecute(async ({ interaction }) => {
           const content = unwrap`
           Deposit your VSP to the ${hyperlink(
             'vVSP pool',

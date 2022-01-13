@@ -2,15 +2,15 @@ import Container from 'typedi';
 import { Logger } from '@vesper-discord/logger';
 import { assertion } from '@vesper-discord/errors';
 import {
-  DiscordService,
   CustomSlashCommandSubcommandBuilder,
   RateLimiter,
-  Interaction,
+  InteractionCreateEvent,
+  InteractionCreateEventExecuteProps,
 } from '@vesper-discord/discord-service';
 import { unwrap } from '@vesper-discord/utils';
 
-export default {
-  async execute(interaction: Interaction) {
+export default <InteractionCreateEvent>{
+  async execute({ interaction, client }: InteractionCreateEventExecuteProps) {
     if (!interaction.isCommand()) return;
 
     assertion('channel must be defined on interaction', interaction.channel);
@@ -24,8 +24,7 @@ export default {
       commandName = `${interaction.commandName}.${interaction.options.getSubcommand()}`;
     }
 
-    const discordService = Container.get(DiscordService);
-    const command = discordService.commands.get(commandName);
+    const command = client.commands.get(commandName);
 
     if (!command || !(command.data.enabled ?? true)) {
       return;
@@ -40,7 +39,7 @@ export default {
     }
 
     const restrictedChannels = [
-      ...(discordService.restrictToChannels ?? []),
+      ...(client.restrictToChannels ?? []),
       ...(command.data.restrictToChannels ?? []),
       ...(subCommand?.restrictToChannels ?? []),
     ];
@@ -59,7 +58,7 @@ export default {
     }
 
     const rateLimiter = Container.get(RateLimiter);
-    const rateLimit = subCommand?.rateLimit ?? command.data.rateLimit ?? discordService.rateLimit;
+    const rateLimit = subCommand?.rateLimit ?? command.data.rateLimit ?? client.rateLimit;
 
     if (rateLimit !== undefined) {
       const shouldRateLimitCommand = await rateLimiter.shouldRateLimitCommand({
@@ -80,9 +79,9 @@ export default {
 
     try {
       if (subCommand) {
-        await subCommand.execute(interaction);
+        await subCommand.execute({ client, interaction });
       } else {
-        await command.data.execute(interaction);
+        await command.data.execute({ client, interaction });
       }
 
       await rateLimiter.setCommandLastUsed({

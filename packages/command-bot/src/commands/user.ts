@@ -1,4 +1,4 @@
-import { CommandInteraction, CustomSlashCommandBuilder } from '@vesper-discord/discord-service';
+import { CustomSlashCommandBuilder } from '@vesper-discord/discord-service';
 import Container from 'typedi';
 import { Config } from '../config';
 
@@ -7,7 +7,7 @@ export default {
     .setName('user')
     .setDescription('Replies with user info!')
     .setEnabled(!Container.get(Config).isProduction)
-    .setExecute(async (interaction: CommandInteraction) => {
+    .setExecute(async ({ interaction }) => {
       await interaction.reply({
         content: ` Your id: ${interaction.user.id}`,
         ephemeral: true,

@@ -14,7 +14,6 @@
     "@vesper-discord/coin-gecko-service": "1.0.0",
     "@vesper-discord/etherscan-service": "1.0.0",
     "@vesper-discord/vesper-service": "1.0.0",
-    "@vesper-discord/redis-service": "1.0.0",
     "bignumber.js": "9.0.2",
     "lodash": "4.17.21",
     "typedi": "0.10.0",

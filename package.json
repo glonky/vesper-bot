@@ -16,6 +16,11 @@
   ],
   "scripts": {
     "clean": "concurrently 'printf \"y\n\" | lerna clean' 'tsc -b --clean' 'lerna run clean --parallel' \"lerna exec 'rm -rf coverage dist **.d.ts.* .eslintcache' --parallel\"  \"rm -rf logs\"",
+    "start": "yarn docker:start && yarn lerna run start --stream",
+    "docker:start": "docker compose up -d",
+    "heroku": "node packages/shared-server/dist/index.js",
+    "heroku-postbuild": "yarn build && CI=true yarn deploy-commands",
+    "deploy-commands": "yarn vesper deploy-discord-commands -c ./packages/command-bot/src/commands",
     "prepare": "is-ci || husky install",
     "test": "jest --config jest.config.cjs",
     "test:watch": "yarn test --watch",

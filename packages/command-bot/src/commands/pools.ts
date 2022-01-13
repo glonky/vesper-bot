@@ -1,9 +1,4 @@
-import {
-  CustomSlashCommandBuilder,
-  CommandInteraction,
-  MessageEmbed,
-  hyperlink,
-} from '@vesper-discord/discord-service';
+import { CustomSlashCommandBuilder, MessageEmbed, hyperlink } from '@vesper-discord/discord-service';
 import { VesperService } from '@vesper-discord/vesper-service';
 import Container from 'typedi';
 import { Config } from '../config';
@@ -17,7 +12,7 @@ export default {
       subcommand
         .setName('stats')
         .setDescription('Shows stats about pools.')
-        .setExecute(async (interaction: CommandInteraction) => {
+        .setExecute(async ({ interaction }) => {
           await interaction.deferReply();
 
           const vspDashboards = await Container.get(VesperService).getDashboards();

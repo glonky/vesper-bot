@@ -2,15 +2,13 @@
   "extends": "../../tsconfig.shared.json",
   "compilerOptions": {
     "rootDir": "src",
-    "esModuleInterop": true,
     "outDir": "dist"
   },
   "include": ["src"],
   "references": [
-    { "path": "../config" },
-    { "path": "../logger" },
-    { "path": "../errors" },
     { "path": "../discord-service" },
-    { "path": "../command-bot" }
+    { "path": "../etherscan-service" },
+    { "path": "../logger" },
+    { "path": "../config" }
   ]
 }

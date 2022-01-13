@@ -5,12 +5,7 @@ import { unwrap } from '@vesper-discord/utils';
 import { Config as VesperConfig, VesperService } from '@vesper-discord/vesper-service';
 import { EtherscanService } from '@vesper-discord/etherscan-service';
 import { CoinGeckoService } from '@vesper-discord/coin-gecko-service';
-import {
-  CommandInteraction,
-  CustomSlashCommandBuilder,
-  hyperlink,
-  MessageEmbed,
-} from '@vesper-discord/discord-service';
+import { CustomSlashCommandBuilder, hyperlink, MessageEmbed } from '@vesper-discord/discord-service';
 import { Config } from '../config';
 
 export default {
@@ -24,7 +19,7 @@ export default {
           '916119936697507841', //price-and-trading
         ])
         .setDescription('Current price of VSP on different exchanges.')
-        .setExecute(async (interaction: CommandInteraction) => {
+        .setExecute(async ({ interaction }) => {
           await interaction.deferReply();
 
           const config = Container.get(VesperConfig);
@@ -74,7 +69,7 @@ export default {
           '916119936697507841', //price-and-trading
           '916122090183208990', // defi-lending-strategies
         ])
-        .setExecute(async (interaction: CommandInteraction) => {
+        .setExecute(async ({ interaction }) => {
           await interaction.deferReply();
 
           const config = Container.get(VesperConfig);
@@ -111,7 +106,7 @@ export default {
         .setName('stats')
         .setEnabled(!Container.get(Config).isProduction)
         .setDescription('Shows the VSP stats.')
-        .setExecute(async (interaction: CommandInteraction) => {
+        .setExecute(async ({ interaction }) => {
           await interaction.deferReply();
 
           const vspStats = await Container.get(VesperService).getVspStats();
@@ -182,7 +177,7 @@ export default {
         .setName('loan-rates')
         .setEnabled(!Container.get(Config).isProduction)
         .setDescription('Shows the loan rates.')
-        .setExecute(async (interaction: CommandInteraction) => {
+        .setExecute(async ({ interaction }) => {
           await interaction.deferReply();
 
           const loanRates = await Container.get(VesperService).getLoanRates();

@@ -1,22 +1,18 @@
 import { SlashCommandSubcommandBuilder } from '@discordjs/builders';
-import { Client, Collection, Guild, GuildMember } from 'discord.js';
+import { Client, ClientOptions, Collection, Guild, GuildMember } from 'discord.js';
 import glob from 'glob';
-import Container, { Service } from 'typedi';
-import { Logger, LoggerDecorator } from '@vesper-discord/logger';
+import Container from 'typedi';
+import { Logger } from '@vesper-discord/logger';
 import { Retriable } from '@vesper-discord/retry';
 import { Command, RestrictedRole } from './interfaces';
 import { Config } from './config';
 
-@Service()
-export class DiscordService {
-  @LoggerDecorator()
+export class DiscordClient extends Client {
   private logger!: Logger;
 
   private config: Config;
 
   public commands: Collection<string, Command> = new Collection();
-
-  public client: Client;
 
   private _restrictToRoles?: RestrictedRole[];
 
@@ -48,17 +44,19 @@ export class DiscordService {
     return this._botMember;
   }
 
-  constructor() {
+  constructor(props: ClientOptions) {
+    super(props);
     this.config = Container.get(Config);
-    this.client = new Client({ intents: this.config.intents });
+    this.logger = Container.get(Logger);
+    this.logger.setName('DiscordClient');
   }
 
   public setRestrictToRoles(roles: (RestrictedRole | undefined)[]) {
     this._restrictToRoles = roles.filter(Boolean) as RestrictedRole[];
   }
 
-  public setRateLimit(rateLimit?: number) {
-    this._rateLimit = rateLimit ?? this.config.commandRateLimit;
+  public setRateLimit(rateLimit: number) {
+    this._rateLimit = rateLimit;
   }
 
   public setRestrictToChannels(channels: (string | undefined)[]) {
@@ -66,29 +64,29 @@ export class DiscordService {
   }
 
   @Retriable()
-  public async start() {
+  public async start(token: string) {
     this.logger.info(`Logging into Discord...`);
-    await this.client.login(this.config.token);
+    await this.login(token);
 
-    const guild = this.client.guilds.cache.first();
+    const guild = this.guilds.cache.first();
 
     if (guild) {
       this._guild = guild;
     }
 
-    if (this._guild && this.client.user) {
-      this._botMember = await this._guild.members.fetch(this.client.user.id);
+    if (this._guild && this.user) {
+      this._botMember = await this._guild.members.fetch(this.user.id);
     }
 
     return this;
   }
 
   public findChannelByName(name: string) {
-    return this.client.guilds.cache.first()?.channels.cache.find((channel) => channel.name === name);
+    return this.guilds.cache.first()?.channels.cache.find((channel) => channel.name === name);
   }
 
   public findRoleByName(name: string) {
-    return this.client.guilds.cache.first()?.roles.cache.find((role) => role.name === name);
+    return this.guilds.cache.first()?.roles.cache.find((role) => role.name === name);
   }
 
   public async loadCommands(commandsPath: string) {
@@ -142,18 +140,18 @@ export class DiscordService {
         });
 
         if (event.once) {
-          this.client.once(event.name, (...args) => {
+          this.once(event.name, (...args) => {
             this.logger.debug('Event fired', {
               name: event.name,
             });
-            return event.execute(...args);
+            return event.execute({ ...args, client: this });
           });
         } else {
-          this.client.on(event.name, (...args) => {
+          this.on(event.name, (...args) => {
             this.logger.debug('Event fired', {
               name: event.name,
             });
-            return event.execute(...args);
+            return event.execute({ ...args, client: this });
           });
         }
       }),
