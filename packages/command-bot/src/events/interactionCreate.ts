@@ -7,6 +7,7 @@ import {
   RateLimiter,
   Interaction,
 } from '@vesper-discord/discord-service';
+import { unwrap } from '@vesper-discord/utils';
 
 export default {
   async execute(interaction: Interaction) {
@@ -45,7 +46,15 @@ export default {
     ];
 
     if (!restrictedChannels.includes(interaction.channel.id)) {
-      await interaction.reply({ content: 'This command is not available in this channel.', ephemeral: true });
+      await interaction.reply({
+        content: unwrap`
+        This command is not available in this channel.
+
+        Please use this command in one of the following channels:
+        ${restrictedChannels.map((channelId) => `<#${channelId}>`).join('\n')}
+        `,
+        ephemeral: true,
+      });
       return;
     }
 
@@ -61,7 +70,7 @@ export default {
 
       if (shouldRateLimitCommand) {
         await interaction.reply({
-          content: `You can only call this command once every ${rateLimit} seconds. Please wait to call it again.`,
+          content: `You can only call this command once every __**${rateLimit}**__ seconds. Please wait to call it again.`,
           ephemeral: true,
         });
 

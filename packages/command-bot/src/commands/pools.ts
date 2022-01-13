@@ -13,7 +13,7 @@ export default {
     .setName('pools')
     .setEnabled(!Container.get(Config).isProduction)
     .setDescription(`Vesper pools Utilities`)
-    .addSubcommand2((subcommand) =>
+    .addCustomSubcommand((subcommand) =>
       subcommand
         .setName('stats')
         .setDescription('Shows stats about pools.')

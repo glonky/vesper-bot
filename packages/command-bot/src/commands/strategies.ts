@@ -13,7 +13,7 @@ export default {
     .setName('strategies')
     .setEnabled(!Container.get(Config).isProduction)
     .setDescription(`Vesper Strategies Utilities`)
-    .addSubcommand2((subcommand) =>
+    .addCustomSubcommand((subcommand) =>
       subcommand
         .setName('stats')
         .setDescription('Shows stats about strategies.')

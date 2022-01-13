@@ -1,3 +1,4 @@
+import path from 'path';
 import { REST } from '@discordjs/rest';
 import type {
   RESTGetAPIApplicationGuildCommandsResult,
@@ -39,8 +40,10 @@ export default class DeployDiscordCommands extends BaseCommand {
     const disabledCommands: Command[] = [];
 
     for (const file of commandFiles) {
+      const fullFilePath = path.join(__dirname, '../../../../', file);
+      this.logger.info('Loading command', { file, fullFilePath });
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const command = require(file).default as Command;
+      const command = require(fullFilePath).default as Command;
 
       if (!command) {
         this.logger.warn(`Command is not a valid command.`, { file });

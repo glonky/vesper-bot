@@ -5,6 +5,8 @@ Vesper Discord bot lives here. The Discord bot provides various interactive comm
 See below for the full list of commands.
 
 ## Commands
+All commands are located in `packages/command-bot/src/commands`
+
 ### /help vvsp
 
 ![help vvsp](images/help-vvsp.png)
@@ -16,6 +18,9 @@ See below for the full list of commands.
 ### /vsp exchange-rate
 
 ![vsp exchange rate](images/vsp-exchange-rate.png)
+
+## Adding a new command
+TODO
 
 ## External Services
 * [Vesper API](https://github.com/vesperfi/doc/blob/main/api/API.md)
@@ -46,8 +51,30 @@ Then run the following commands to install the dependencies
 `yarn install`
 `yarn start`
 
+### Discord Integration Management
+
+*Command bot*
+[Prod](https://discord.com/developers/applications/900186855448916079/information)
+[Staging](https://discord.com/developers/applications/900128400113553410/information)
+[Dev](https://discord.com/developers/applications/900104984442572800/information)
+
+*Sidebar bot*
+[Prod](https://discord.com/developers/applications/900186855448916079/information)
+[Staging](https://discord.com/developers/applications/900128400113553410/information)
+[Dev](https://discord.com/developers/applications/900104984442572800/information)
+
+#### Adding the bot to a server
+
+Once you are in an application go to OAuth2 -> URL Generator -> Select the `bot` scope.
+
+From there it will create a generated URL that you can use to add the bot to your server.
+
+[Prod](https://discord.com/developers/applications/900186855448916079/oauth2/url-generator)
+[Staging](https://discord.com/developers/applications/900128400113553410/oauth2/url-generator)
+[Dev](https://discord.com/developers/applications/900104984442572800/oauth2/url-generator)
+
 ### Testing
-TODO
+`yarn test`
 
 ## Security
 TODO

@@ -51,7 +51,7 @@ export class DiscordService {
   public async start() {
     this.client = new Client({ intents: this.config.intents });
     // Login to Discord with your client's token
-    this.logger.info(`Logging in to Discord...`);
+    this.logger.info(`Logging into Discord...`);
     await this.client.login(this.config.token);
 
     return this;
