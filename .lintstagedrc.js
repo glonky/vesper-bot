@@ -1,6 +1,6 @@
 module.exports = {
   '**/*.ts': [
-    'yarn lint:fix',
+    (fileNames) => `yarn lint:fix ${fileNames.join(' ')}`,
     "yarn test:ci --findRelatedTests --coverage=false"
   ],
 }
