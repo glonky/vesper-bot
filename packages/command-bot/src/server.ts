@@ -20,7 +20,9 @@ export class Server {
     await discordService.start();
     const commandsPath = path.join(__dirname, 'commands');
     const eventsPath = path.join(__dirname, 'events');
-    discordService.loadCommands(commandsPath);
-    discordService.loadEvents(eventsPath);
+    console.log('commandsPath', commandsPath);
+    console.log('eventsPath', eventsPath);
+    await discordService.loadCommands(commandsPath);
+    await discordService.loadEvents(eventsPath);
   }
 }

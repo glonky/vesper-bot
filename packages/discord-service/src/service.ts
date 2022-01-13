@@ -1,5 +1,5 @@
 import { SlashCommandSubcommandBuilder } from '@discordjs/builders';
-import { Client, Collection } from 'discord.js';
+import { Client, Collection, Guild, GuildMember } from 'discord.js';
 import glob from 'glob';
 import { Inject, Service } from 'typedi';
 import { Logger, LoggerDecorator } from '@vesper-discord/logger';
@@ -24,6 +24,10 @@ export class DiscordService {
 
   private _rateLimit?: number;
 
+  private _guild?: Guild;
+
+  private _botMember?: GuildMember;
+
   public get restrictToRoles() {
     return this._restrictToRoles;
   }
@@ -34,6 +38,14 @@ export class DiscordService {
 
   public get rateLimit() {
     return this._rateLimit;
+  }
+
+  public get guild() {
+    return this._guild;
+  }
+
+  public get botMember() {
+    return this._botMember;
   }
 
   public setRestrictToRoles(roles: (RestrictedRole | undefined)[]) {
@@ -50,6 +62,12 @@ export class DiscordService {
 
   public async start() {
     this.client = new Client({ intents: this.config.intents });
+    this._guild = this.client.guilds.cache.first();
+
+    if (this._guild && this.client.user) {
+      this._botMember = this._guild.members.cache.get(this.client.user.id);
+    }
+
     // Login to Discord with your client's token
     this.logger.info(`Logging into Discord...`);
     await this.client.login(this.config.token);
@@ -65,14 +83,14 @@ export class DiscordService {
     return this.client?.guilds.cache.first()?.roles.cache.find((role) => role.name === name);
   }
 
-  public loadCommands(commandsPath: string) {
+  public async loadCommands(commandsPath: string) {
     const commandFiles = glob.sync(`${commandsPath}/**/*.{js,ts}`, {
       ignore: ['**/__tests__/**', '**/*.d.ts', '**/*.map.*'],
     });
 
     for (const file of commandFiles) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const command = require(file).default as Command;
+      const command = (await require(file).default) as Command;
 
       if (!command) {
         this.logger.warn(`Command is not a valid command.`, { file });
@@ -100,24 +118,32 @@ export class DiscordService {
     }
   }
 
-  public loadEvents(eventsPath: string) {
-    // const eventsPath = path.join(__dirname, '..', '..', 'events');
-
+  public async loadEvents(eventsPath: string) {
     const eventFiles = glob.sync(`${eventsPath}/**/*.{js,ts}`, {
       ignore: ['**/__tests__/**', '**/*.d.ts', '**/*.map.*'],
     });
 
     for (const file of eventFiles) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
-      const event = require(file).default;
+      const event = await require(file).default;
       this.logger.debug(`Loading event`, {
-        command: event.name,
+        name: event.name,
       });
 
       if (event.once) {
-        this.client?.once(event.name, (...args) => event.execute(...args));
+        this.client?.once(event.name, (...args) => {
+          this.logger.debug('Event fired', {
+            name: event.name,
+          });
+          return event.execute(...args);
+        });
       } else {
-        this.client?.on(event.name, (...args) => event.execute(...args));
+        this.client?.on(event.name, (...args) => {
+          this.logger.debug('Event fired', {
+            name: event.name,
+          });
+          return event.execute(...args);
+        });
       }
     }
   }
