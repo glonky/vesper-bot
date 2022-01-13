@@ -10,6 +10,6 @@
     { "path": "../logger" },
     { "path": "../errors" },
     { "path": "../redis-service" },
-    { "path": "../redis-service" }
+    { "path": "../retry" }
   ]
 }

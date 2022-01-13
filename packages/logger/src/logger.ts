@@ -35,7 +35,7 @@ export class Logger {
       return this._logger;
     }
 
-    const timeFunction = () => `,"time":"${DateTime.now().toLocaleString(DateTime.TIME_WITH_SECONDS)}"`;
+    const timeFunction = () => `,"time":"${DateTime.now().toISOTime()}"`;
 
     const streams: (DestinationStream | StreamEntry)[] | DestinationStream | StreamEntry = [];
 

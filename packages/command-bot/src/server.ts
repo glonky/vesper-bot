@@ -17,12 +17,11 @@ export class Server {
     discordService.setRestrictToChannels(['900091874973483109']); //bot-spam
     discordService.setRestrictToRoles([{ allowed: false, id: '914346545795698689' }]); // Test Restricted
 
-    await discordService.start();
     const commandsPath = path.join(__dirname, 'commands');
     const eventsPath = path.join(__dirname, 'events');
-    console.log('commandsPath', commandsPath);
-    console.log('eventsPath', eventsPath);
     await discordService.loadCommands(commandsPath);
     await discordService.loadEvents(eventsPath);
+
+    await discordService.start();
   }
 }

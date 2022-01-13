@@ -33,7 +33,7 @@ export class CoinGeckoService {
     const url = new URL(`${this.config.baseUrl}/${this.config.apiVersion}/${endpoint}`);
     url.search = searchParams.toString();
 
-    this.logger.debug('Fetching', {
+    this.logger.trace('Fetching', {
       url: url.toString(),
     });
 

@@ -5,10 +5,11 @@ import { DiscordService } from '@vesper-discord/discord-service';
 export default {
   async execute() {
     const discordService = Container.get(DiscordService);
-    Container.get(Logger).info(`Ready! Logged in as ${discordService.client?.user?.tag}`);
+    const logger = Container.get(Logger);
 
-    // discordService.client?.user?.setActivity('Vesper', { type: 'PLAYING' });
-    // await discordService.botMember?
+    logger.info(`Ready! Logged in`, {
+      tag: discordService.client.user?.tag,
+    });
   },
   name: 'ready',
   once: true,
