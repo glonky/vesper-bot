@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.shared.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../discord-service" },
+    { "path": "../vesper-service" },
+    { "path": "../logger" },
+    { "path": "../config" },
+    { "path": "../utils" }
+  ]
+}

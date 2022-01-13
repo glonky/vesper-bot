@@ -4,7 +4,7 @@ const baseConfig = require('../../jest.config.shared.cjs');
 
 const config = {
   ...baseConfig,
-  displayName: 'shared-server',
+  displayName: 'sidebar-price-bot',
 };
 
 module.exports = config;

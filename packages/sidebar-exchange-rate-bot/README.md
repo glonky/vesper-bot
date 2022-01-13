@@ -1,1 +1,1 @@
-# Sidebar Gas Bot
+# Sidebar Exchange Rate Bot

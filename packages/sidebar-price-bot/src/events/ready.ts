@@ -2,7 +2,6 @@ import Container from 'typedi';
 import { Logger } from '@vesper-discord/logger';
 import { ReadyEvent } from '@vesper-discord/discord-service';
 import { VesperService } from '@vesper-discord/vesper-service';
-import { unwrap } from '@vesper-discord/utils';
 import { Config } from '../config';
 
 export default <ReadyEvent>{
@@ -17,23 +16,21 @@ export default <ReadyEvent>{
       tag: client.user?.tag,
     });
 
-    await updateBotPresenceWithExchangeRate();
+    await updateBotPresenceWithPrice();
 
     setInterval(async () => {
-      await updateBotPresenceWithExchangeRate();
+      await updateBotPresenceWithPrice();
     }, config.refreshInterval);
 
-    async function updateBotPresenceWithExchangeRate() {
-      const { vvspToVSPRatio, vspToVVSPRatio } = await vesperService.getExchangeRate();
+    async function updateBotPresenceWithPrice() {
+      const { price } = await vesperService.getVspStats();
+      const fractionalCurrencyFormatter = new Intl.NumberFormat('en-US', { currency: 'USD', style: 'currency' });
 
       try {
         client.user?.setPresence({
           activities: [
             {
-              name: unwrap`
-              1 VSP = ${vspToVVSPRatio.toFixed(3)} vVSP
-              1 vVSP = ${vvspToVSPRatio.toFixed(3)} VSP
-              `,
+              name: fractionalCurrencyFormatter.format(price),
             },
           ],
         });
