@@ -1,6 +1,7 @@
 import { Inject, Service } from 'typedi';
 import fetch from 'node-fetch';
 import BigNumber from 'bignumber.js';
+import { EtherscanService } from '@vesper-discord/etherscan-service';
 import { Config } from './config';
 import { Dashboard, LendRate, Pool, PoolDataPoints, ValuesLocked, VspStats } from './interfaces';
 
@@ -9,7 +10,29 @@ export class VesperService {
   @Inject()
   private config!: Config;
 
+  @Inject()
+  private etherscanService!: EtherscanService;
+
   private baseUrl = 'https://api.vesper.finance';
+
+  public async getExchangeRate() {
+    const vspQuantityInVVSPPool = await this.etherscanService.getERC20TokenAccountBalanceForTokenContractAddress({
+      address: this.config.vvspTokenAddress,
+      contractAddress: this.config.vspTokenAddress,
+    });
+
+    const vvspTotalSupply = await this.etherscanService.getERC20TokenTotalSupplyByContractAddress(
+      this.config.vvspTokenAddress,
+    );
+
+    const vvspToVSPRatio = vspQuantityInVVSPPool.result.dividedBy(vvspTotalSupply.result);
+    const vspToVVSPRatio = vvspTotalSupply.result.dividedBy(vspQuantityInVVSPPool.result);
+
+    return {
+      vspToVVSPRatio,
+      vvspToVSPRatio,
+    };
+  }
 
   /**
    * Gets additional information such as contracts, strategies and pool rewards from all pools.

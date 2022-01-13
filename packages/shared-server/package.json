@@ -13,6 +13,7 @@
     "@vesper-discord/config": "1.0.0",
     "@vesper-discord/redis-service": "1.0.0",
     "@vesper-discord/sidebar-gas-bot": "1.0.0",
+    "@vesper-discord/sidebar-exchange-rate-bot": "1.0.0",
     "typedi": "0.10.0"
   }
 }

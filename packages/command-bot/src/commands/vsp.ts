@@ -3,7 +3,6 @@ import Container from 'typedi';
 import { Logger } from '@vesper-discord/logger';
 import { unwrap } from '@vesper-discord/utils';
 import { Config as VesperConfig, VesperService } from '@vesper-discord/vesper-service';
-import { EtherscanService } from '@vesper-discord/etherscan-service';
 import { CoinGeckoService } from '@vesper-discord/coin-gecko-service';
 import { CustomSlashCommandBuilder, hyperlink, MessageEmbed } from '@vesper-discord/discord-service';
 import { Config } from '../config';
@@ -72,20 +71,7 @@ export default {
         .setExecute(async ({ interaction }) => {
           await interaction.deferReply();
 
-          const config = Container.get(VesperConfig);
-          const vspQuantityInVVSPPool = await Container.get(
-            EtherscanService,
-          ).getERC20TokenAccountBalanceForTokenContractAddress({
-            address: config.vvspTokenAddress,
-            contractAddress: config.vspTokenAddress,
-          });
-
-          const vvspTotalSupply = await Container.get(EtherscanService).getERC20TokenTotalSupplyByContractAddress(
-            config.vvspTokenAddress,
-          );
-
-          const vvspToVSPRatio = vspQuantityInVVSPPool.result.dividedBy(vvspTotalSupply.result);
-          const vspToVVSPRatio = vvspTotalSupply.result.dividedBy(vspQuantityInVVSPPool.result);
+          const { vvspToVSPRatio, vspToVVSPRatio } = await Container.get(VesperService).getExchangeRate();
 
           const messageEmbed = new MessageEmbed()
             .setColor('#0099ff')

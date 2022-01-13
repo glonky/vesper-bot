@@ -6,9 +6,10 @@
   },
   "include": ["src"],
   "references": [
-    { "path": "../config" },
+    { "path": "../discord-service" },
+    { "path": "../vesper-service" },
     { "path": "../logger" },
-    { "path": "../errors" },
-    { "path": "../etherscan-service" }
+    { "path": "../config" },
+    { "path": "../utils" }
   ]
 }
