@@ -24,16 +24,16 @@ export default <ReadyEvent>{
     }, config.refreshInterval);
 
     async function updateBotPresenceWithExchangeRate() {
-      const { vvspToVSPRatio, vspToVVSPRatio } = await vesperService.getExchangeRate();
+      const { vvspToVSPRatio } = await vesperService.getExchangeRate();
 
       try {
         client.user?.setPresence({
           activities: [
             {
               name: unwrap`
-              1 VSP = ${vspToVVSPRatio.toFixed(3)} vVSP
               1 vVSP = ${vvspToVSPRatio.toFixed(3)} VSP
               `,
+              type: 'WATCHING',
             },
           ],
         });

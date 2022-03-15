@@ -5,12 +5,12 @@ import Container from 'typedi';
 import { Logger } from '@vesper-discord/logger';
 import { Retriable } from '@vesper-discord/retry';
 import { Command, RestrictedRole } from './interfaces';
-import { Config } from './config';
+export interface DiscordClientStartProps {
+  token: string;
+}
 
 export class DiscordClient extends Client {
   private logger!: Logger;
-
-  private config: Config;
 
   public commands: Collection<string, Command> = new Collection();
 
@@ -46,7 +46,6 @@ export class DiscordClient extends Client {
 
   constructor(props: ClientOptions) {
     super(props);
-    this.config = Container.get(Config);
     this.logger = Container.get(Logger);
     this.logger.setName('DiscordClient');
   }
@@ -64,7 +63,7 @@ export class DiscordClient extends Client {
   }
 
   @Retriable()
-  public async start(token: string) {
+  public async start({ token }: DiscordClientStartProps) {
     this.logger.info(`Logging into Discord...`);
     await this.login(token);
 

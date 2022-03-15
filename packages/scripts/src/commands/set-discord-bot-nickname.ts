@@ -29,7 +29,7 @@ export default class SetDiscordBotNicknameCommand extends BaseCommand {
     const client = new DiscordClient({
       intents: [],
     });
-    await client.start(token);
+    await client.start({ token });
 
     try {
       await client.botMember?.setNickname(nickname);

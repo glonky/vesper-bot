@@ -22,6 +22,6 @@ export class Server {
     await discordService.loadCommands(commandsPath);
     await discordService.loadEvents(eventsPath);
 
-    await discordService.start(config.token);
+    await discordService.start({ token: config.token });
   }
 }

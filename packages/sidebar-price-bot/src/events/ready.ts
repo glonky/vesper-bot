@@ -31,6 +31,7 @@ export default <ReadyEvent>{
           activities: [
             {
               name: fractionalCurrencyFormatter.format(price),
+              type: 'WATCHING',
             },
           ],
         });

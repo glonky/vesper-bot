@@ -1,23 +1,18 @@
 {
-  "name": "@vesper-discord/discord-service",
+  "name": "@vesper-discord/blockchain",
   "version": "1.0.0",
-  "type": "commonjs",
-  "exports": "./dist/index.js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/builders": "0.11.0",
     "@vesper-discord/config": "1.0.0",
+    "@vesper-discord/retry": "1.0.0",
     "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
-    "@vesper-discord/redis-service": "1.0.0",
-    "@vesper-discord/retry": "1.0.0",
-    "discord.js": "13.6.0",
-    "glob": "7.2.0",
+    "node-fetch": "2.6.6",
     "typedi": "0.10.0"
   },
   "devDependencies": {
-    "@types/glob": "7.2.0"
+    "@types/node-fetch": "2.5.12"
   }
 }

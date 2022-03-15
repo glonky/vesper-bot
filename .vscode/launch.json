@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Start Server",
       "skipFiles": ["<node_internals>/**"],
-      "program": "${workspaceFolder}/packages/command-bot/src/index.ts",
+      "program": "${workspaceFolder}/packages/shared-server/src/index.ts",
       "preLaunchTask": "npm: build",
       "outFiles": ["${workspaceFolder}/packages/**/dist/**/*.js"],
       "sourceMaps": true,

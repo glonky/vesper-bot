@@ -26,10 +26,13 @@ export default <ReadyEvent>{
       const gas = await etherscanService.getGasOracle();
 
       try {
+        await client.botMember?.setNickname(`ETH Gas ⚡ ${gas.result.FastGasPrice}`);
+
         client.user?.setPresence({
           activities: [
             {
-              name: `⚡ ${gas.result.FastGasPrice} | 🚶 ${gas.result.ProposeGasPrice} | 🐢 ${gas.result.SafeGasPrice}`,
+              name: `🚶 ${gas.result.ProposeGasPrice} | 🐢 ${gas.result.SafeGasPrice}`,
+              type: 'WATCHING',
             },
           ],
         });

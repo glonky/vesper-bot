@@ -14,6 +14,6 @@ export class Server {
     const eventsPath = path.join(__dirname, 'events');
     await discordService.loadEvents(eventsPath);
 
-    await discordService.start(config.token);
+    await discordService.start({ token: config.token });
   }
 }
