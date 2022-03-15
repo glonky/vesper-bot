@@ -11,6 +11,7 @@
     { "path": "../redis-service" },
     { "path": "../sidebar-gas-bot" },
     { "path": "../sidebar-exchange-rate-bot" },
-    { "path": "../sidebar-price-bot" }
+    { "path": "../sidebar-price-bot" },
+    { "path": "../blockchain-events-bot" }
   ]
 }

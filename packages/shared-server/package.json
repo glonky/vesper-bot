@@ -15,6 +15,7 @@
     "@vesper-discord/sidebar-gas-bot": "1.0.0",
     "@vesper-discord/sidebar-exchange-rate-bot": "1.0.0",
     "@vesper-discord/sidebar-price-bot": "1.0.0",
+    "@vesper-discord/blockchain-events-bot": "1.0.0",
     "typedi": "0.10.0"
   }
 }

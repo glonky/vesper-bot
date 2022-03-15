@@ -4,7 +4,7 @@ const baseConfig = require('../../jest.config.shared.cjs');
 
 const config = {
   ...baseConfig,
-  displayName: 'vesper-service',
+  displayName: 'blockchain-service',
 };
 
 module.exports = config;

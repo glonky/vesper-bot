@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.shared.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../blockchain-service" },
+    { "path": "../discord-service" },
+    { "path": "../logger" },
+    { "path": "../config" }
+  ]
+}

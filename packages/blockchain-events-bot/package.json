@@ -1,0 +1,15 @@
+{
+  "name": "@vesper-discord/blockchain-events-bot",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "scripts": {},
+  "dependencies": {
+    "@vesper-discord/discord-service": "1.0.0",
+    "@vesper-discord/blockchain-service": "1.0.0",
+    "@vesper-discord/logger": "1.0.0",
+    "@vesper-discord/config": "1.0.0",
+    "typedi": "0.10.0"
+  }
+}
