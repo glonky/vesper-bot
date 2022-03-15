@@ -10,10 +10,10 @@
     "@vesper-discord/config": "1.0.0",
     "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
-    "ioredis": "4.28.3",
+    "ioredis": "4.28.5",
     "typedi": "0.10.0"
   },
   "devDependencies": {
-    "@types/ioredis": "4.28.7"
+    "@types/ioredis": "4.28.8"
   }
 }
