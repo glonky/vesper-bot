@@ -2,13 +2,15 @@
   "extends": "../../tsconfig.shared.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "typeRoots": ["../../node_modules/@types", "./@types"]
   },
   "include": ["src"],
   "references": [
     { "path": "../config" },
     { "path": "../logger" },
     { "path": "../errors" },
-    { "path": "../etherscan-service" }
+    { "path": "../etherscan-service" },
+    { "path": "../blockchain-service" }
   ]
 }

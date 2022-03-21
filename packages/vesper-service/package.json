@@ -9,8 +9,13 @@
     "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
     "@vesper-discord/etherscan-service": "1.0.0",
+    "@vesper-discord/blockchain-service": "1.0.0",
     "node-fetch": "2.6.6",
     "bignumber.js": "9.0.2",
+    "vesper-metadata": "2.55.0",
+    "vesper-lib": "1.0.0",
+    "web3": "1.7.1",
+    "web3-eth-contract": "1.7.1",
     "typedi": "0.10.0"
   },
   "devDependencies": {

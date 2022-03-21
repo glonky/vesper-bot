@@ -7,7 +7,7 @@ export class VesperErrorConverter implements ErrorConverter<VesperError> {
     let resultError;
 
     const code = props.error?.raw?.code ?? props.error?.code ?? props.error?.raw?.type;
-    const message = props.message ?? props.error.message ?? 'Vesper Error';
+    const message = props.error.message ?? 'Vesper Error';
 
     switch (code) {
       case 'invalid_request_error':
