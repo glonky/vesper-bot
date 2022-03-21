@@ -30,6 +30,18 @@
     },
     {
       "type": "node",
+      "request": "launch",
+      "name": "scripts: test",
+      "sourceMaps": true,
+      "smartStep": true,
+      "preLaunchTask": "npm: build",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/packages/scripts/bin/run",
+      "console": "integratedTerminal",
+      "args": ["test"]
+    },
+    {
+      "type": "node",
       "name": "vscode-jest-tests",
       "request": "launch",
       "console": "integratedTerminal",
