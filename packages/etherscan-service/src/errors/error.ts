@@ -2,18 +2,17 @@ import { ExtendedError, ExtendedErrorProps } from '@vesper-discord/errors';
 
 export type EtherscanError = Error & {
   code: string;
-  data: {
-    error: string;
-  };
-  raw?: {
-    type?: string;
-    code?: string;
-  };
+  status: string;
+  url: string;
+  action: string;
+  module: string;
 };
 
-export class ExtendedStripeError extends ExtendedError {
-  constructor(message: string, props: ExtendedErrorProps) {
-    super(message, props);
-    Object.setPrototypeOf(this, ExtendedStripeError.prototype);
+export type ExtendedEtherscanErrorProps = ExtendedErrorProps<EtherscanError>;
+export class ExtendedEtherscanError extends ExtendedError {
+  constructor(props: ExtendedEtherscanErrorProps) {
+    super('Error from Etherscan', props);
+    Object.setPrototypeOf(this, ExtendedEtherscanError.prototype);
+    this.name = this.constructor.name;
   }
 }

@@ -2,13 +2,17 @@
   "extends": "../../tsconfig.shared.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "typeRoots": ["../../node_modules/@types", "./@types"]
   },
   "include": ["src"],
   "references": [
     { "path": "../config" },
     { "path": "../logger" },
     { "path": "../errors" },
-    { "path": "../redis-service" }
+    { "path": "../retry" },
+    { "path": "../redis-service" },
+    { "path": "../blockchain-service" },
+    { "path": "../monitoring" }
   ]
 }
