@@ -138,73 +138,33 @@ export class Logger {
   private createMessage(message: string, optionalProps?: OptionalProps, loggerProps?: LoggerProps): any;
 
   private createMessage(message: string, optionalProps?: OptionalProps & ErrorProps, loggerProps?: LoggerProps): any {
-    let depth: null | undefined | number = loggerProps?.deep ?? true ? null : undefined;
-    const showHidden = !!(loggerProps?.deep ?? true);
+    const propsToLog = merge({}, optionalProps ?? ({} as OptionalProps & ErrorProps));
 
-    if (isErrorProps(optionalProps)) {
-      depth = this.config.isDevelopment || this.config.isLocal ? 3 : 2;
-    }
-
-    const inspectProps: util.InspectOptions = {
-      colors: this.config.colors ?? false,
-      depth,
-      showHidden,
-      sorted: this.config.isDevelopment || this.config.isLocal,
-    };
-
-    // const asyncContext = getAsyncContext();
-
-    const propsToLog = merge(
-      {
-        // userId: asyncContext?.user?.id,
-        // xCorrelationId: asyncContext?.aws?.xCorrelationId,
-      },
-      optionalProps ?? ({} as OptionalProps & ErrorProps),
-    );
-
-    if (this.config.prettyPrint ?? (this.config.isDevelopment || this.config.isLocal)) {
-      let result = message;
-
-      Object.entries(propsToLog).forEach(([key, value]) => {
-        let inspectedValue = value;
-
-        if (value && !(value instanceof ContainerInstance)) {
-          let valueToInspect = value;
-
-          if (key === 'error') {
-            const { ...error } = value;
-            valueToInspect = {
-              message: value.message,
-              stack: value.stack,
-              ...error,
-            };
-          }
-
-          if (valueToInspect) {
-            inspectedValue =
-              typeof valueToInspect === 'string' ? valueToInspect : util.inspect(valueToInspect, inspectProps);
-          }
-        }
-
-        if (inspectedValue !== undefined && inspectedValue !== null) {
-          result = `${result} [${key}: ${inspectedValue}]`;
-        }
-      });
-
-      return result;
-    }
-
-    const result = {
-      message,
-    } as any;
+    let result = message;
 
     Object.entries(propsToLog).forEach(([key, value]) => {
+      let depth: null | undefined | number = loggerProps?.deep ?? true ? null : undefined;
+      const showHidden = !!(loggerProps?.deep ?? true);
+
+      if (isErrorProps(optionalProps)) {
+        depth = this.config.isDevelopment || this.config.isLocal ? 3 : 2;
+      }
+
+      const inspectProps: util.InspectOptions = {
+        colors: this.config.colors ?? false,
+        depth,
+        showHidden,
+        sorted: this.config.isDevelopment || this.config.isLocal,
+      };
+
       let inspectedValue = value;
 
       if (value && !(value instanceof ContainerInstance)) {
         let valueToInspect = value;
 
         if (key === 'error') {
+          inspectProps.showHidden = false;
+
           const { ...error } = value;
           valueToInspect = {
             message: value.message,
@@ -220,7 +180,11 @@ export class Logger {
       }
 
       if (inspectedValue !== undefined && inspectedValue !== null) {
-        result[key] = inspectedValue;
+        if (this.config.prettyPrint ?? (this.config.isDevelopment || this.config.isLocal)) {
+          result = `${result} [${key}: ${inspectedValue}]`;
+        } else {
+          (result as any)[key] = inspectedValue;
+        }
       }
     });
 
