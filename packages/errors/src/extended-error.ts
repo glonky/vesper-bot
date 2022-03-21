@@ -1,5 +1,6 @@
 import { inspect } from 'util';
 import { StatusCodes } from 'http-status-codes';
+import _ from 'lodash';
 
 export interface ExtendedErrorProps<E extends Error = Error> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -29,69 +30,28 @@ export class ExtendedError<E extends Error = Error> extends Error {
   constructor(message?: string, props?: ExtendedErrorProps<E> | RethrownExtendedErrorProps<E>) {
     super(message);
 
-    this.statusCode = props?.statusCode;
     definePropertiesOnThis(this, props);
 
     // This solves an issue where util.inspect will print out the stack trace
     // of the originalError twice
-    Object.defineProperty(this, 'originalError', {
-      configurable: false,
-      enumerable: true,
-      value: props?.error,
-      writable: false,
-    });
+    if (props?.error) {
+      Object.defineProperty(this, 'originalError', {
+        configurable: false,
+        enumerable: true,
+        value: props?.error,
+        writable: false,
+      });
+    }
 
     Object.setPrototypeOf(this, ExtendedError.prototype);
-
-    if (typeof Error.captureStackTrace === 'function') {
-      Error.captureStackTrace(this, this.constructor);
-      if (this.originalError) {
-        if (typeof this.createStackFromCause === 'function') {
-          this.stack = this.createStackFromCause(this.originalError);
-        } else {
-          console.warn('this.createStackFromCause is not a function', this);
-        }
-      }
-    } else {
-      // NOTE: I think this is the best way to get the stack. Not sure though
-      this.stack = this.createStackFromCause(this.originalError ?? new Error(this.message));
-    }
-  }
-
-  /**
-   * This is a hack so that if we want to inharet from RethrownError we also need to call
-   * Error.captureStackTrace(this, this.constructor); but if we do that in the new Custom Error class
-   * Then it will override this stack if we try to add it in this constructor
-   * @param cause the error that is getting passed in. We could get this if it's non enumerable and set in the constructor
-   */
-  protected createStackFromCause(cause: Error) {
-    // TODO: Maybe put this back in, not sure yet
-    // const messageLines = (this.message.match(/\n/g) || []).length + 1;
-
-    if (this.stack) {
-      return `${this.stack
-        .split('\n')
-        // .slice(0, messageLines + 1)
-        .join('\n')}\n${inspect(cause)}`;
-    }
-
-    return this.stack;
-  }
-
-  private setStack(stack?: string) {
-    Object.defineProperty(this, 'stack', {
-      configurable: false,
-      enumerable: true,
-      value: stack,
-      writable: false,
-    });
+    this.name = this.constructor.name;
   }
 }
 
 function definePropertiesOnThis(errorToAddPropsTo: Error, props?: ExtendedErrorProps) {
   if (props) {
     const { error, code, ...rest } = props;
-    Object.entries(rest).forEach(([key, value]) => {
+    Object.entries(_.omitBy(rest, _.isNil)).forEach(([key, value]) => {
       let inspectedValue = value?.toString();
 
       if (inspectedValue === '[object Object]') {

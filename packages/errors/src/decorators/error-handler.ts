@@ -1,5 +1,3 @@
-/* eslint-disable new-cap */
-/* eslint-disable no-param-reassign */
 /* eslint-disable @typescript-eslint/ban-types */
 import { isPromise } from '@vesper-discord/utils';
 import { ErrorConverter } from '../error-converter';
@@ -7,7 +5,6 @@ import { ExtendedError } from '../extended-error';
 
 export interface ErrorHandlerProps<E extends Error = Error> {
   converter?: { new (...args: any[]): ErrorConverter<E> };
-  reportError?: boolean;
   ignoreErrors?: { new (...args: any[]): Error }[];
   message?: string;
 }
@@ -20,65 +17,72 @@ export const ErrorHandler =
 
     const originalMethod = descriptor.value as Function;
 
-    descriptor.value = function ErrorHandlerDecorator(...functionArgs: any[]) {
-      try {
-        const result = originalMethod.apply(this, functionArgs);
-        if (isPromise(result)) {
-          return result.catch((err: any) => {
-            if (props?.reportError) {
-              // await reportError({
-              //   error: err,
-              // });
+    return {
+      ...descriptor,
+      value: function ErrorHandlerDecorator(...functionArgs: any[]) {
+        try {
+          const result = originalMethod.apply(this, functionArgs);
+
+          if (isPromise(result)) {
+            return result.catch((err: Error) => {
+              const convertedError = convertError(err);
+
+              if (shouldIgnoreError(err, convertedError)) {
+                return;
+              }
+
+              throw convertedError;
+            });
+          }
+
+          return result;
+        } catch (err) {
+          if (err instanceof Error) {
+            const convertedError = convertError(err);
+
+            if (shouldIgnoreError(err, convertedError)) {
+              return;
             }
 
-            let errorToThrow = err;
+            throw convertedError;
+          }
 
-            if (props?.converter && !(err instanceof ExtendedError)) {
-              const converterInstance = new props.converter();
-              const fullyQualifiedName = `${target.constructor.name}.${propertyKey}`;
-
-              const message = props.message ? props.message : `Error calling ${fullyQualifiedName}`;
-              errorToThrow = converterInstance.convertError({ error: err, message });
-            }
-
-            if (
-              props?.ignoreErrors?.find(
-                (ignoreError) => err instanceof ignoreError || errorToThrow instanceof ignoreError,
-              )
-            ) {
-              return null;
-            }
-
-            throw errorToThrow;
-          });
-        }
-        return result;
-      } catch (err) {
-        if (props?.reportError) {
-          // await reportError({
-          //   error: err,
-          // });
+          throw err;
         }
 
-        let errorToThrow = err;
+        function shouldIgnoreError(err: Error, convertedError: Error) {
+          if (
+            props?.ignoreErrors?.find(
+              (ignoreError) => err instanceof ignoreError || convertedError instanceof ignoreError,
+            )
+          ) {
+            return true;
+          }
 
-        if (props?.converter && !(err instanceof ExtendedError)) {
-          const converterInstance = new props.converter();
-          const fullyQualifiedName = `${target.constructor.name}.${propertyKey}`;
-
-          const message = props.message ? props.message : `Error calling ${fullyQualifiedName}`;
-          errorToThrow = converterInstance.convertError({ error: err as E, message });
+          return false;
         }
 
-        if (
-          props?.ignoreErrors?.find((ignoreError) => err instanceof ignoreError || errorToThrow instanceof ignoreError)
-        ) {
-          return null;
-        }
+        function convertError(err: Error) {
+          let errorToThrow = err;
 
-        throw errorToThrow;
-      }
+          // TODO: Maybe we don't need to have this. We might want to be able to handle errors that we have thrown
+          if (props?.converter && !(err instanceof ExtendedError)) {
+            const converterInstance = new props.converter();
+            const fullyQualifiedName = `${target.constructor.name}.${propertyKey}`;
+
+            const message = props.message ?? `Error calling ${fullyQualifiedName}`;
+            errorToThrow = converterInstance.convertError({ error: err as E });
+
+            Object.defineProperty(errorToThrow, 'errorHandlerMessage', {
+              configurable: false,
+              enumerable: true,
+              value: message,
+              writable: false,
+            });
+          }
+
+          return errorToThrow;
+        }
+      },
     };
-
-    return descriptor;
   };

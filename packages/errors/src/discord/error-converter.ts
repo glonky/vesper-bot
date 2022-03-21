@@ -9,7 +9,7 @@ export class DiscordErrorConverter implements ErrorConverter<DiscordError> {
     let resultError;
 
     const discordError = props.error;
-    const message = props.message ?? props.error.message ?? 'Discord Error';
+    const message = props.error.message ?? 'Discord Error';
 
     const name = discordError?.code;
     const retryable = discordError?.retryable ?? false;

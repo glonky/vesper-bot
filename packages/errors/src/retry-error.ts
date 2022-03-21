@@ -9,5 +9,6 @@ export class RetryError extends NonRetriableError {
     // This is a limitation of typescript and jest
     // https://github.com/Microsoft/TypeScript/wiki/Breaking-Changes#extending-built-ins-like-error-array-and-map-may-no-longer-work
     Object.setPrototypeOf(this, RetryError.prototype);
+    this.name = this.constructor.name;
   }
 }
