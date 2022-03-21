@@ -1,10 +1,13 @@
+import { performance } from 'perf_hooks';
 import asyncRetry, { Options } from 'async-retry';
-import { v4 as uuid } from 'uuid';
+import { ulid } from 'ulid';
 import Container from 'typedi';
 import { Logger } from '@vesper-discord/logger';
 import { NonRetriableError, RetriableError, ExtendedError, NotFoundError, RetryError } from '@vesper-discord/errors';
+import { asyncLocalStorage } from '@vesper-discord/container';
 import { Config } from './config';
 import { nonRetriableJavascriptErrors } from './javascript-errors';
+
 export type BailOnError = typeof Error | typeof ExtendedError | string;
 export interface RetryFunctionProps {
   retryAttempt: number;
@@ -33,13 +36,13 @@ process.on('SIGUSR2', () => cancelAllRetries(null, true, 'SIGTERM'));
 // eslint-disable-next-line @typescript-eslint/ban-types
 function cancelAllRetries(error?: {} | Error | string | null, shouldExitProcess = true, shutdownReason = 'SIGTERM') {
   const logger = Container.get(Logger);
-  logger.debug('Received kill signal, bailing any active retries gracefully', {
+  logger.trace('Received kill signal, bailing any active retries gracefully', {
     error,
     shutdownReason,
   });
 
   Object.entries(activeRetries).map(([retryId, bail]) => {
-    logger.debug('Retry bail', {
+    logger.trace('Retry bail', {
       retryId,
     });
 
@@ -67,7 +70,7 @@ export async function retry<T>(fn: RetryFunction<T>, props?: RetryProps): Promis
   const config = Container.get(Config);
   const { factor, maxTimeout, minTimeout, randomize, retries, forever, maxRetryTime } = config;
 
-  const startTime = new Date();
+  const startTime = performance.now();
 
   const overrides: Options = {
     factor,
@@ -75,11 +78,6 @@ export async function retry<T>(fn: RetryFunction<T>, props?: RetryProps): Promis
     maxRetryTime,
     maxTimeout,
     minTimeout,
-    onRetry: (err: Error, retryCount: number) => {
-      const errorToInspect = (err as ExtendedError).originalError ?? err;
-      const timeElapsedMs = new Date().getTime() - startTime.getTime();
-      logger.warn(`Retrying`, { error: errorToInspect, retryCount, timeElapsedMs });
-    },
     randomize,
     retries,
     ...props,
@@ -90,11 +88,12 @@ export async function retry<T>(fn: RetryFunction<T>, props?: RetryProps): Promis
   bailOnErrors.push(...nonRetriableJavascriptErrors);
 
   let totalRetryAttempts = 0;
-  const retryId = uuid();
+  let retryAttemptError: Error | undefined = undefined;
+  const retryId = ulid();
 
   try {
-    return await asyncRetry(async (bail, retryAttempt) => {
-      totalRetryAttempts = retryAttempt;
+    return asyncRetry(async (bail, retryAttempt) => {
+      totalRetryAttempts = retryAttempt - 1; // retryAttempt starts at 1 even for the first call of the function which is not retrying yet
       activeRetries[retryId] = bail;
 
       // eslint-disable-next-line no-async-promise-executor
@@ -102,6 +101,13 @@ export async function retry<T>(fn: RetryFunction<T>, props?: RetryProps): Promis
         try {
           const result = await fn({ retryAttempt });
           delete activeRetries[retryId];
+          asyncLocalStorage.getStore()?.set('retryAttempts', totalRetryAttempts);
+
+          if (retryAttemptError) {
+            (retryAttemptError as RetriableError).retryAttempts = totalRetryAttempts;
+            asyncLocalStorage.getStore()?.set('retryAttemptError', retryAttemptError);
+          }
+
           return resolve(result);
         } catch (err) {
           delete activeRetries[retryId];
@@ -112,62 +118,89 @@ export async function retry<T>(fn: RetryFunction<T>, props?: RetryProps): Promis
           const isRetriable = error instanceof RetriableError || error.originalError instanceof RetriableError;
 
           if ((shouldBailForError || shouldBailForOriginalError) && !isRetriable) {
-            const wrappedError = new RetryError('Bailing because we found the error in bailOnErrors', {
+            const wrappedError = new RetryError('Bailing retry because we found the error in bailOnErrors', {
               error,
             });
-            bail(wrappedError);
-            // eslint-disable-next-line consistent-return
-            return;
+            return bail(wrappedError);
           }
 
           if (!isRetriable) {
-            const wrappedError = new RetryError('Bailing because we found the error in is not retriable', {
+            const wrappedError = new RetryError('Bailing retry because we found the error that is not retriable', {
               error,
             });
-            bail(wrappedError);
-            // eslint-disable-next-line consistent-return
-            return;
+            return bail(wrappedError);
           }
+
+          logNextRetryAttempt(retryAttempt, error);
+
+          asyncLocalStorage.getStore()?.set('retryAttempts', totalRetryAttempts);
+
+          retryAttemptError = error;
+          (retryAttemptError as RetriableError).retryAttempts = totalRetryAttempts;
+          asyncLocalStorage.getStore()?.set('retryAttemptError', retryAttemptError);
 
           return reject(error);
         }
       });
     }, overrides);
   } catch (err) {
-    // TODO: Report error here probably to sentry
+    const timeElapsedMs = performance.now() - startTime;
 
-    const timeElapsedMs = new Date().getTime() - startTime.getTime();
     if (err instanceof RetryError) {
       const { originalError } = err as RetryError;
 
       if (originalError instanceof NotFoundError) {
-        logger.debug(
+        logger.trace(
           'Throwing NotFoundError',
           {
-            entityName: (originalError as any).entityName,
             error: originalError,
             timeElapsedMs,
           },
           { deep: false },
         );
       } else if (originalError) {
-        logger.error('Failed and bailed early because we found RetryError, re-throwing originalError.', {
+        logger.trace('Failed and bailed early because we found RetryError, re-throwing originalError.', {
           error: originalError,
+          retryAttempts: totalRetryAttempts,
           timeElapsedMs,
-          totalRetryAttempts,
         });
+
+        (originalError as RetriableError).retryAttempts = totalRetryAttempts;
 
         throw originalError;
       }
     }
 
-    logger.debug(`Failed to retry re-throwing.`, {
+    logger.trace(`Failed to retry re-throwing.`, {
       error: err,
+      retryAttempts: totalRetryAttempts,
       timeElapsedMs,
-      totalRetryAttempts,
     });
 
+    (err as RetriableError).retryAttempts = totalRetryAttempts;
+
     throw err;
+  }
+
+  function logNextRetryAttempt(retryAttempt: number, error: ExtendedError<Error> | RetriableError) {
+    if (retryAttempt < (overrides.retries ?? 10)) {
+      const random = overrides.randomize ? Math.random() + 1 : 1;
+
+      let nextRetryAttemptInMs = Math.round(
+        random * Math.max(overrides.minTimeout ?? 1000, 1) * Math.pow(overrides.factor ?? 2, retryAttempt),
+      );
+
+      nextRetryAttemptInMs = Math.min(nextRetryAttemptInMs, overrides.maxTimeout ?? 5000);
+
+      const errorToInspect = (error as ExtendedError).originalError ?? error;
+
+      logger.trace('Failed to call function. Will retry.', {
+        error: errorToInspect,
+        maxRetries: overrides.retries,
+        nextRetryAttemptInMs: nextRetryAttemptInMs,
+        retryAttempt,
+      });
+    }
   }
 }
 
