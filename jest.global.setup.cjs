@@ -1,5 +1,12 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 require('reflect-metadata');
-const { BaseConfig } = require('./packages/config/src/base-config');
+const { Container } = require('typedi')
+const { RedisService } = require('@vesper-discord/redis-service/src')
+const { BaseConfig } = require('@vesper-discord/config/src/base-config');
 
-new BaseConfig().loadDotEnvFiles();
+module.exports = async () => {
+  // NOTE we might want to initialize each test with a new redis instance
+  new BaseConfig().loadDotEnvFiles();
+  global.redisClient = Container.get(RedisService).init();
+};
+
