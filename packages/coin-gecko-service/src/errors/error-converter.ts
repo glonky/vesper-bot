@@ -7,7 +7,7 @@ export class CoinGeckoErrorConverter implements ErrorConverter<CoinGeckoError> {
     let resultError;
 
     const code = props.error?.raw?.code ?? props.error?.code ?? props.error?.raw?.type;
-    const message = props.message ?? props.error.message ?? 'CoinGecko Error';
+    const message = props.error.message ?? 'CoinGecko Error';
 
     switch (code) {
       case 'invalid_request_error':

@@ -14,7 +14,7 @@ export class CoinGeckoService {
   @LoggerDecorator()
   private logger!: Logger;
 
-  @Inject()
+  @Inject(() => Config)
   private config!: Config;
 
   @Cacheable({
