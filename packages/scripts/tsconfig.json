@@ -11,6 +11,8 @@
     { "path": "../logger" },
     { "path": "../errors" },
     { "path": "../discord-service" },
+    { "path": "../etherscan-service" },
+    { "path": "../redis-service" },
     { "path": "../command-bot" }
   ]
 }
