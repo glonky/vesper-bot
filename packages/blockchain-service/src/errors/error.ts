@@ -11,9 +11,10 @@ export type BlockchainError = Error & {
   };
 };
 
-export class ExtendedVesperError extends ExtendedError {
+export class ExtendedBlockchainError extends ExtendedError {
   constructor(message: string, props: ExtendedErrorProps) {
     super(message, props);
-    Object.setPrototypeOf(this, ExtendedVesperError.prototype);
+    Object.setPrototypeOf(this, ExtendedBlockchainError.prototype);
+    this.name = this.constructor.name;
   }
 }
