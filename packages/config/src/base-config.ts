@@ -14,7 +14,7 @@ export class BaseConfig {
 
   public nodeEnv = getEnvironmentVariable<'development' | 'staging' | 'test' | 'production'>('NODE_ENV', 'development');
 
-  public isLocal = getEnvironmentVariable<boolean>('LOCAL', false);
+  public isLocal = getEnvironmentVariable<boolean>('IS_LOCAL', false);
 
   public isCI = getEnvironmentVariable<boolean>('CI', false);
 
