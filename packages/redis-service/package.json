@@ -15,6 +15,6 @@
     "typedi": "0.10.0"
   },
   "devDependencies": {
-    "@types/ioredis": "4.28.8"
+    "@types/ioredis": "4.28.10"
   }
 }
