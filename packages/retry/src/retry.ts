@@ -92,7 +92,7 @@ export async function retry<T>(fn: RetryFunction<T>, props?: RetryProps): Promis
   const retryId = ulid();
 
   try {
-    return asyncRetry(async (bail, retryAttempt) => {
+    return await asyncRetry(async (bail, retryAttempt) => {
       totalRetryAttempts = retryAttempt - 1; // retryAttempt starts at 1 even for the first call of the function which is not retrying yet
       activeRetries[retryId] = bail;
 
