@@ -12,6 +12,7 @@
     { "path": "../errors" },
     { "path": "../discord-service" },
     { "path": "../etherscan-service" },
+    { "path": "../vesper-service" },
     { "path": "../redis-service" },
     { "path": "../command-bot" }
   ]

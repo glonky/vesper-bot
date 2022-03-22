@@ -27,6 +27,7 @@
     "@vesper-discord/config": "1.0.0",
     "@vesper-discord/redis-service": "1.0.0",
     "@vesper-discord/discord-service": "1.0.0",
+    "@vesper-discord/vesper-service": "1.0.0",
     "@vesper-discord/etherscan-service": "1.0.0",
     "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
