@@ -39,14 +39,14 @@ export const Log =
 
     return {
       ...descriptor,
-      value: function logDecorator(...functionArgs: any[]) {
+      value: async function logDecorator(...functionArgs: any[]) {
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const boundThis = this;
 
         const store = new Map();
         store.set('id', ulid());
 
-        return asyncLocalStorage.run(store, () => {
+        return asyncLocalStorage.run(store, async () => {
           const monitorId = asyncLocalStorage.getStore()?.get('id');
           const fullyQualifiedName = `${target.constructor.name}.${propertyKey}`;
 
@@ -78,16 +78,18 @@ export const Log =
             const result = originalMethod.apply(this, functionArgs);
 
             if (isPromise(result)) {
-              return result
+              return await result
                 .then((promiseResult: any) => {
-                  return onSuccess(promiseResult);
+                  onSuccess(promiseResult);
+                  return promiseResult;
                 })
                 .catch((err: Error) => {
                   onError(err);
                 });
             }
 
-            return onSuccess(result);
+            onSuccess(result);
+            return result;
           } catch (err) {
             onError(err as Error);
           }
@@ -180,8 +182,6 @@ export const Log =
                 retryAttempts: shouldLogRetryAttempts ? retryAttempts : undefined,
               });
             }
-
-            return result;
           }
         });
       },
