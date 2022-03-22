@@ -1,9 +1,9 @@
 import { Inject, Service } from 'typedi';
 import fetch from 'node-fetch';
-import createVesper from 'vesper-lib';
 import BigNumber from 'bignumber.js';
 import { EtherscanService } from '@vesper-discord/etherscan-service';
 import { BlockchainService } from '@vesper-discord/blockchain-service';
+import createVesper from 'vesper-lib';
 import { Config } from './config';
 import { Dashboard, LendRate, Pool, PoolDataPoints, ValuesLocked, VspStats } from './interfaces';
 

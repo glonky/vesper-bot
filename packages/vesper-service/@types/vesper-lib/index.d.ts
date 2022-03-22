@@ -2,36 +2,6 @@
 /// <reference path="../../../../node_modules/web3-eth-contract/types/index.d.ts" />
 
 declare module 'vesper-lib' {
-  export interface MetadataToken {
-    symbol: string;
-    address: string;
-    decimals: number;
-    chainId: number;
-  }
-
-  export interface MetadataPool {
-    name: string;
-    address: string;
-    asset: string;
-    birthblock: number;
-    chainId: number;
-    riskLevel: number;
-    stage: 'alpha' | 'beta' | 'retired' | 'prod';
-  }
-  export interface MetadataController {
-    name: string;
-    address: string;
-    chainId: number;
-  }
-
-  export interface Metadata {
-    name: string;
-    version: string;
-    controllers: MetadataController[];
-    pools: MetadataPool[];
-    tokens: MetadataToken[];
-  }
-
   export interface PoolMethods {
     canRebalance: () => Promise<boolean>;
     claimVsp: () => Promise<any>;
@@ -59,7 +29,7 @@ declare module 'vesper-lib' {
     withdraw: () => Promise<any>;
   }
 
-  export interface Pool {
+  export interface VesperPool {
     name: string;
     address: string;
     asset: {
@@ -114,7 +84,7 @@ declare module 'vesper-lib' {
   export interface Instance {
     metadata: Metadata;
     getContracts: () => Promise<Contracts>;
-    getPools: () => Promise<Pool>;
+    getPools: () => Promise<VesperPool>;
     getPortfolio: (address: string) => Promise<Portfolio>;
     getAssetPortfolio: (address: string) => Promise<AssetPortfolio>;
     vDAI: PoolMethods;
