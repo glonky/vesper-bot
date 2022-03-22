@@ -3,7 +3,7 @@
 import fs from 'fs';
 import util from 'util';
 import path from 'path';
-import pretty from 'pino-pretty';
+import PinoPretty from 'pino-pretty';
 import { DateTime } from 'luxon';
 import pino, { DestinationStream, Level, multistream, StreamEntry } from 'pino';
 import { Service, Inject, ContainerInstance } from 'typedi';
@@ -58,7 +58,7 @@ export class Logger {
       streams.push(
         ...allLevels.map((level) => ({
           level: level as Level,
-          stream: pretty({ colorize: this.config.colors }),
+          stream: PinoPretty({ colorize: this.config.colors, sync: true }),
         })),
       );
     }
@@ -70,9 +70,9 @@ export class Logger {
       streams.push(
         ...allLevels.map((level) => ({
           level: level as Level,
-          stream: pino.destination(allFile),
+          stream: pino.destination({ dest: allFile, sync: true }),
         })),
-        { level: 'error', stream: pino.destination(errorFile) },
+        { level: 'error', stream: pino.destination({ dest: errorFile, sync: true }) },
       );
     }
 

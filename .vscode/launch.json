@@ -31,14 +31,14 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "scripts: test",
+      "name": "scripts: test-command",
       "sourceMaps": true,
       "smartStep": true,
       "preLaunchTask": "npm: build",
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/packages/scripts/bin/run",
       "console": "integratedTerminal",
-      "args": ["test"]
+      "args": ["test-command"]
     },
     {
       "type": "node",

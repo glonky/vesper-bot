@@ -173,12 +173,12 @@ export class EtherscanService {
    * Returns the transaction receipt for a given transaction hash.
    * @cacheable 5 seconds
    */
+  @Log({
+    logInput: ({ input }) => input[0],
+  })
   @Cacheable({
     cacheKey: (args) => args[0],
     ttlSeconds: 60 * 60 * 24,
-  })
-  @Log({
-    logInput: ({ input }) => input[0],
   })
   public async getTransactionReceipt(txhash: string) {
     return this.etherscanProvider.getTransactionReceipt(txhash);
@@ -192,14 +192,16 @@ export class EtherscanService {
   })
   @ErrorHandler({ converter: EtherscanErrorConverter })
   public async parseTransactionReceiptLogs(receipt: ethers.providers.TransactionReceipt) {
+    const logsCopy = [...receipt.logs];
     return Promise.all(
-      receipt.logs.map(async (log) => {
+      logsCopy.map(async (log) => {
         const contractAbiResponse = await this.getContractABI(log.address);
         const contractInterface = new ethers.utils.Interface(contractAbiResponse.result);
 
         if (contractInterface) {
+          let parsedLog;
           try {
-            return Container.get(BlockchainService).parseTransactionLog(contractInterface, log);
+            parsedLog = Container.get(BlockchainService).parseTransactionLog(contractInterface, log);
           } catch (err) {
             if (err instanceof EtherscanParseTransactionLogError) {
               this.logger.trace('Error while parsing log', { error: err, log });
@@ -207,6 +209,11 @@ export class EtherscanService {
               throw err;
             }
           }
+
+          return {
+            ...log,
+            parsedLog,
+          };
         }
       }),
     );
@@ -218,7 +225,6 @@ export class EtherscanService {
    */
   @Log({
     logInput: ({ input }) => input[0],
-    logResult: ({ input }) => input[0],
   })
   @Cacheable({
     cacheKey: (args) => args[0],
