@@ -58,7 +58,7 @@ export class Logger {
       streams.push(
         ...allLevels.map((level) => ({
           level: level as Level,
-          stream: PinoPretty({ colorize: this.config.colors, sync: true }),
+          stream: PinoPretty({ colorize: this.config.colors, sync: this.config.sync }),
         })),
       );
     }
@@ -70,9 +70,9 @@ export class Logger {
       streams.push(
         ...allLevels.map((level) => ({
           level: level as Level,
-          stream: pino.destination({ dest: allFile, sync: true }),
+          stream: pino.destination({ dest: allFile, sync: this.config.sync }),
         })),
-        { level: 'error', stream: pino.destination({ dest: errorFile, sync: true }) },
+        { level: 'error', stream: pino.destination({ dest: errorFile, sync: this.config.sync }) },
       );
     }
 

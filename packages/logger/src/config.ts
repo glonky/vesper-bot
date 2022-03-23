@@ -7,6 +7,8 @@ export class Config extends BaseConfig {
 
   level = this.getEnvVar<string>('LOG_LEVEL', 'debug');
 
+  sync = this.getEnvVar<boolean>('LOG_SYNC', this.isLocal);
+
   prettyPrint = this.getEnvVar<boolean>('LOG_PRETTY_PRINT', false);
 
   timestamp = this.getEnvVar<boolean>('LOG_TIMESTAMP', false);
