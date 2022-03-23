@@ -5,9 +5,7 @@ import _ from 'lodash';
 export interface ExtendedErrorProps<E extends Error = Error> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [otherProps: string]: any;
-  tenantId?: string;
   statusCode?: StatusCodes;
-  userId?: string;
   error?: E;
 }
 
