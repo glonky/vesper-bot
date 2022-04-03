@@ -1,14 +1,27 @@
+import { ethers } from 'ethers';
 import Container from 'typedi';
+import { NotProxyAddressError } from '../errors/not-proxy-address-error';
 import { BlockchainService } from '../service';
 
 describe('blockchain-service | service | e2e', () => {
-  describe('getTransactionReceipt', () => {
-    it.skip('should response with 200', async () => {
-      const etherscanService = Container.get(BlockchainService);
-      const proxyAddress = '0x9B11078F5e8345d074498a83C4f9824942F796d3';
+  describe('findImplementationAddressFromProxyAddress', () => {
+    it('should response with the correct address', async () => {
+      const blockchainService = Container.get(BlockchainService);
+      const proxyAddress = '0x01e1d41c1159b745298724c5fd3eaff3da1c6efd';
+      const expectedImplementationAddress = '0xfaed291aba8c0f7daae17c0176ccc398d9284fd5';
+      const actualImplementationAddress = await blockchainService.findImplementationAddressFromProxyAddress(
+        proxyAddress,
+      );
+      expect(actualImplementationAddress.toLowerCase()).toBe(expectedImplementationAddress.toLowerCase());
+    });
 
-      // console.log(JSON.stringify(f));
-      expect(200).toBe(200);
+    it('should throw NotProxyAddressError if it is not a proxy address', async () => {
+      const blockchainService = Container.get(BlockchainService);
+      const proxyAddress = ethers.constants.AddressZero;
+
+      await expect(() => blockchainService.findImplementationAddressFromProxyAddress(proxyAddress)).rejects.toThrow(
+        NotProxyAddressError,
+      );
     });
   });
 });
