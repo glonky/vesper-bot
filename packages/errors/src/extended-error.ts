@@ -1,6 +1,6 @@
 import { inspect } from 'util';
 import { StatusCodes } from 'http-status-codes';
-import _ from 'lodash';
+import { isUndefined, omitBy } from 'lodash';
 
 export interface ExtendedErrorProps<E extends Error = Error> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -49,7 +49,7 @@ export class ExtendedError<E extends Error = Error> extends Error {
 function definePropertiesOnThis(errorToAddPropsTo: Error, props?: ExtendedErrorProps) {
   if (props) {
     const { error, code, ...rest } = props;
-    Object.entries(_.omitBy(rest, _.isNil)).forEach(([key, value]) => {
+    Object.entries(omitBy(rest, isUndefined)).forEach(([key, value]) => {
       let inspectedValue = value?.toString();
 
       if (inspectedValue === '[object Object]') {

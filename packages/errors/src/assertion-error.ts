@@ -2,6 +2,17 @@ import { NonRetriableError } from './non-retriable-error';
 import { ExtendedErrorProps } from './extended-error';
 
 export function assertion(message: string, thingToAssert: any, props?: ExtendedErrorProps): asserts thingToAssert;
+export function assertion(
+  message: string,
+  thingToAssert: any,
+  props?: { new (...args: any[]): NonRetriableError },
+): asserts thingToAssert;
+export function assertion(
+  message: string,
+  thingToAssert: any,
+  ErrorToThrowOrProps?: { new (...args: any[]): NonRetriableError } | ExtendedErrorProps,
+  props?: ExtendedErrorProps,
+): asserts thingToAssert;
 
 export function assertion(
   message: string,
@@ -29,6 +40,7 @@ function isErrorToThrowOrPropsError(
 
   return true;
 }
+
 export class AssertionError extends NonRetriableError {
   constructor(message: string, props?: ExtendedErrorProps) {
     super(message, props);

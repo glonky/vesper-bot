@@ -6,4 +6,3 @@ export * from './retriable-error';
 export * from './decorators';
 export * from './retry-error';
 export * from './error-converter';
-export * from './discord';
