@@ -96,7 +96,7 @@ export class VesperService {
   }
 
   private fetch<T>(endpoint: string): Promise<T> {
-    const stage = this.config.isProduction ? 'prod' : 'beta';
+    const stage = 'prod';
 
     return fetch(`${this.baseUrl}/${endpoint}?stages=${stage}`).then((response: any) => response.json()) as Promise<T>;
   }

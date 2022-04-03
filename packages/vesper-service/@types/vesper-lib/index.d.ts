@@ -1,7 +1,5 @@
-/* eslint-disable @typescript-eslint/triple-slash-reference */
-/// <reference path="../../../../node_modules/web3-eth-contract/types/index.d.ts" />
-
 declare module 'vesper-lib' {
+  import { Contract } from 'web3-eth-contract';
   export interface PoolMethods {
     canRebalance: () => Promise<boolean>;
     claimVsp: () => Promise<any>;
