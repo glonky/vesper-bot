@@ -30,17 +30,20 @@ export class DefaultStrategy implements CacheStrategy {
         // Try to parse the string as JSON. This happens because we are using the ioredis pipeline function which always returns strings
         result = JSON.parse(result);
         // eslint-disable-next-line no-empty
-      } catch (err) {}
+      } catch (jsonErr) {
+        // Only try to parse a number if it's not a string
+        if (!(result as string).startsWith('0x')) {
+          try {
+            // Try to parse the string as number. This happens because we are using the ioredis pipeline function which always returns strings
+            const number = Number(result);
 
-      try {
-        // Try to parse the string as number. This happens because we are using the ioredis pipeline function which always returns strings
-        const number = Number(result);
-
-        if (!Number.isNaN(number)) {
-          result = number;
+            if (!Number.isNaN(number)) {
+              result = number;
+            }
+            // eslint-disable-next-line no-empty
+          } catch (numberErr) {}
         }
-        // eslint-disable-next-line no-empty
-      } catch (err) {}
+      }
 
       const ttl = cachedValue[0][1];
       asyncLocalStorage.getStore()?.set('cacheHit', true);
@@ -51,8 +54,12 @@ export class DefaultStrategy implements CacheStrategy {
   };
 
   async handle(context: CacheStrategyContext): Promise<any> {
+    const fullyQualifiedName = `${context.originalMethodScope.constructor.name}.${context.originalPropertyKey}`;
+    const finalKey = `${fullyQualifiedName}:${context.key}`;
+    asyncLocalStorage.getStore()?.set('cacheKey', finalKey);
+
     try {
-      const cachedValue = await this.findCachedValue(context.client, context.key);
+      const cachedValue = await this.findCachedValue(context.client, finalKey);
 
       // If a value for the cacheKey was found in cache, simply return that.
       if (cachedValue !== undefined && cachedValue !== null) {
@@ -61,7 +68,7 @@ export class DefaultStrategy implements CacheStrategy {
     } catch (err) {
       if (context.fallbackClient) {
         try {
-          const cachedValue = await this.findCachedValue(context.fallbackClient, context.key);
+          const cachedValue = await this.findCachedValue(context.fallbackClient, finalKey);
 
           // If a value for the cacheKey was found in cache, simply return that.
           if (cachedValue !== undefined && cachedValue !== null) {
@@ -82,7 +89,7 @@ export class DefaultStrategy implements CacheStrategy {
 
     // On a cache miss, run the decorated method and cache its return value.
     let result: any;
-    const pendingMethodRun = this.pendingMethodCallMap.get(context.key);
+    const pendingMethodRun = this.pendingMethodCallMap.get(finalKey);
 
     if (pendingMethodRun) {
       result = await pendingMethodRun;
@@ -97,11 +104,11 @@ export class DefaultStrategy implements CacheStrategy {
         }
 
         try {
-          await context.client.set(context.key, returnValue, context.ttl);
+          await context.client.set(finalKey, returnValue, context.ttl);
         } catch (err) {
           if (context.fallbackClient) {
             try {
-              await context.fallbackClient.set(context.key, returnValue, context.ttl);
+              await context.fallbackClient.set(finalKey, returnValue, context.ttl);
               // eslint-disable-next-line no-empty
             } catch (fallbackErr) {}
           }
@@ -119,10 +126,10 @@ export class DefaultStrategy implements CacheStrategy {
       });
 
       try {
-        this.pendingMethodCallMap.set(context.key, methodPromise);
+        this.pendingMethodCallMap.set(finalKey, methodPromise);
         result = await methodPromise;
       } finally {
-        this.pendingMethodCallMap.delete(context.key);
+        this.pendingMethodCallMap.delete(finalKey);
       }
     }
 
