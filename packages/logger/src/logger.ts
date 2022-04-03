@@ -5,7 +5,7 @@ import util from 'util';
 import path from 'path';
 import PinoPretty from 'pino-pretty';
 import { DateTime } from 'luxon';
-import pino, { DestinationStream, Level, multistream, StreamEntry } from 'pino';
+import pino, { DestinationStream, Level, LoggerOptions, multistream, StreamEntry } from 'pino';
 import { Service, Inject, ContainerInstance } from 'typedi';
 import { merge } from 'lodash';
 import { Config } from './config';
@@ -76,20 +76,23 @@ export class Logger {
       );
     }
 
-    this._logger = pino(
-      {
-        base: null,
-        enabled: this.config.enabled,
-        formatters: {
-          level(label) {
-            return { level: label.toUpperCase() };
-          },
+    const pinoProps: LoggerOptions = {
+      base: null,
+      enabled: this.config.enabled,
+      formatters: {
+        level(label) {
+          return { level: label.toUpperCase() };
         },
-        level: this.config.level.toLowerCase() ?? 'info',
-        timestamp: this.config.timestamp ?? this.config.isLocal ? timeFunction : false,
       },
-      multistream(streams, { dedupe: true }),
-    );
+      level: this.config.level.toLowerCase() ?? 'info',
+      timestamp: this.config.timestamp ?? this.config.isLocal ? timeFunction : false,
+    };
+
+    if (this.config.isLocal) {
+      this._logger = pino(pinoProps, multistream(streams, { dedupe: true }));
+    } else {
+      this._logger = pino(pinoProps);
+    }
 
     return this._logger;
   }
@@ -140,7 +143,13 @@ export class Logger {
   private createMessage(message: string, optionalProps?: OptionalProps & ErrorProps, loggerProps?: LoggerProps): any {
     const propsToLog = merge({}, optionalProps ?? ({} as OptionalProps & ErrorProps));
 
-    let result = message;
+    let result: any;
+
+    if (this.config.prettyPrint ?? (this.config.isDevelopment || this.config.isLocal)) {
+      result = message;
+    } else {
+      result = { message };
+    }
 
     Object.entries(propsToLog).forEach(([key, value]) => {
       let depth: null | undefined | number = loggerProps?.deep ?? true ? null : undefined;
