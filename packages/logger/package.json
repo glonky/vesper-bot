@@ -7,12 +7,15 @@
   "dependencies": {
     "@vesper-discord/config": "1.0.0",
     "@vesper-discord/utils": "1.0.0",
+    "@vesper-discord/errors": "1.0.0",
+    "@vesper-discord/container": "1.0.0",
     "lodash": "4.17.21",
     "luxon": "2.3.1",
     "pino": "7.9.2",
-    "pino-pretty": "7.5.4",
+    "pino-pretty": "7.6.0",
     "pino-tee": "0.3.0",
-    "typedi": "0.10.0"
+    "typedi": "0.10.0",
+    "ulid": "2.3.0"
   },
   "devDependencies": {
     "@types/lodash": "4.14.180",

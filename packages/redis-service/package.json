@@ -5,8 +5,8 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "@type-cacheable/core": "10.0.3",
-    "@type-cacheable/ioredis-adapter": "10.0.3",
+    "@type-cacheable/core": "10.1.0",
+    "@type-cacheable/ioredis-adapter": "10.0.4",
     "@vesper-discord/config": "1.0.0",
     "@vesper-discord/container": "1.0.0",
     "@vesper-discord/errors": "1.0.0",

@@ -6,7 +6,6 @@
   "license": "MIT",
   "dependencies": {
     "bluebird": "3.7.2",
-    "@vesper-discord/logger": "1.0.0",
     "@vesper-discord/utils": "1.0.0",
     "http-status-codes": "2.2.0",
     "lodash": "4.17.21"

@@ -11,9 +11,11 @@
     "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
     "node-fetch": "2.6.6",
+    "lodash": "4.17.21",
     "typedi": "0.10.0"
   },
   "devDependencies": {
+    "@types/lodash": "4.14.181",
     "@types/node-fetch": "2.5.12"
   }
 }

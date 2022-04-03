@@ -12,6 +12,7 @@
     "@vesper-discord/redis-service": "1.0.0",
     "@vesper-discord/blockchain-service": "1.0.0",
     "@vesper-discord/retry": "1.0.0",
+    "@vesper-discord/eip-utils": "1.0.0",
     "luxon": "2.3.1",
     "ethers": "5.6.1",
     "node-fetch": "2.6.6",
