@@ -206,3 +206,9 @@ export interface CoinInfoFromContractAddress {
     target_coin_id: string;
   }[];
 }
+
+export interface PriceOfToken {
+  [symbol: string]: {
+    [currency: string]: number;
+  };
+}

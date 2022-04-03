@@ -1,12 +1,13 @@
 import { URL, URLSearchParams } from 'url';
 import { Inject, Service } from 'typedi';
 import fetch from 'node-fetch';
-import { Logger, LoggerDecorator } from '@vesper-discord/logger';
+import { Logger, LoggerDecorator, Log } from '@vesper-discord/logger';
 import { Retriable } from '@vesper-discord/retry';
 import { Cacheable } from '@vesper-discord/redis-service';
 import { ErrorHandler } from '@vesper-discord/errors';
+import { omitBy, isNil } from 'lodash';
 import { Config } from './config';
-import { CoinInfoFromContractAddress } from './interfaces';
+import { CoinInfoFromContractAddress, PriceOfToken } from './interfaces';
 import { CoinGeckoErrorConverter } from './errors';
 
 @Service()
@@ -17,13 +18,51 @@ export class CoinGeckoService {
   @Inject(() => Config)
   private config!: Config;
 
-  @Cacheable({
-    ttlSeconds: 1,
+  @Log({
+    logInput: ({ input }) => input[0],
+    logResult: ({ result }) => result,
   })
-  public async getCoinInfoFromContractAddress(props: { coinId: string; contractAddress: string }) {
-    return this.fetch<CoinInfoFromContractAddress>(`coins/${props.coinId}/contract/${props.contractAddress}`);
+  @Cacheable({
+    ttlSeconds: 60 * 60 * 24,
+  })
+  public async getCoinInfoFromContractAddress(props: { platformId: string; contractAddress: string }) {
+    return this.fetch<CoinInfoFromContractAddress>(`coins/${props.platformId}/contract/${props.contractAddress}`, {});
   }
 
+  @Log({
+    logInput: ({ input }) => input[0],
+    logResult: ({ result }) => result,
+  })
+  @Cacheable({
+    ttlSeconds: 5,
+  })
+  public async getPriceOfToken(props: { platformId: string; contractAddresses: string[]; vsCurrencies: string[] }) {
+    return this.fetch<PriceOfToken>(`simple/token_price/${props.platformId}`, {
+      contract_addresses: props.contractAddresses.join(','),
+      vs_currencies: props.vsCurrencies.join(','),
+    });
+  }
+
+  @Log({
+    logInput: ({ scope, input }) => {
+      const [endpoint, params] = input;
+      const cleanParams = omitBy(params, isNil);
+      const searchParams = new URLSearchParams({
+        ...cleanParams,
+      });
+
+      const url = new URL(`${scope.config.baseUrl}/${scope.config.apiVersion}/${endpoint}`);
+      url.search = searchParams.toString();
+
+      return {
+        ...cleanParams,
+        url: url.toString(),
+      };
+    },
+    logLevel: 'trace',
+    logResult: ({ result }) => result,
+    message: 'Fetching data from Etherscan',
+  })
   @Retriable()
   @ErrorHandler({
     converter: CoinGeckoErrorConverter,
