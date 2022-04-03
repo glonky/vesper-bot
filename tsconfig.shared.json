@@ -18,7 +18,7 @@
     "noEmitHelpers": true,
     "inlineSources": true, // TODO: Do we want this?
     "strict": true,
-    "target": "es2019"
+    "target": "ESNext"
   },
   "compileOnSave": false,
   "include": ["<rootDir>/src"],
