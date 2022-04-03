@@ -42,6 +42,30 @@
     },
     {
       "type": "node",
+      "request": "launch",
+      "name": "scripts: call-blockchain-method",
+      "sourceMaps": true,
+      "smartStep": true,
+      "preLaunchTask": "npm: build",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/packages/scripts/bin/run",
+      "console": "integratedTerminal",
+      "args": ["call-blockahin-method", "-m", "getStrategies", "-a", "0x75619E9F479f9415630d21dDc99919da47c0a737"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "scripts: get-reward-amount",
+      "sourceMaps": true,
+      "smartStep": true,
+      "preLaunchTask": "npm: build",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/packages/scripts/bin/run",
+      "console": "integratedTerminal",
+      "args": ["get-reward-amount", "-t", "0x11e0494a6f27cf13047051b1cecf1770ff9f6cb575a4f2f7499124341dd3018e"]
+    },
+    {
+      "type": "node",
       "name": "vscode-jest-tests",
       "request": "launch",
       "console": "integratedTerminal",
