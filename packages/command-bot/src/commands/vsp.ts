@@ -24,8 +24,8 @@ export default {
           const config = Container.get(VesperConfig);
           const stats = await Container.get(VesperService).getVspStats();
           const coinInfo = await Container.get(CoinGeckoService).getCoinInfoFromContractAddress({
-            coinId: 'ethereum',
             contractAddress: config.vspTokenAddress,
+            platformId: 'ethereum',
           });
           const numberFormatter = new Intl.NumberFormat('en-US', { currency: 'USD', style: 'currency' });
 
