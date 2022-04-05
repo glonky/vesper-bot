@@ -9,8 +9,7 @@
     { "path": "../config" },
     { "path": "../logger" },
     { "path": "../errors" },
-    { "path": "../retry" },
     { "path": "../redis-service" },
-    { "path": "../monitoring" }
+    { "path": "../retry" }
   ]
 }
