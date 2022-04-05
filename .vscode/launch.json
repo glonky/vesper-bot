@@ -62,7 +62,19 @@
       "skipFiles": ["<node_internals>/**"],
       "program": "${workspaceFolder}/packages/scripts/bin/run",
       "console": "integratedTerminal",
-      "args": ["get-reward-amount", "-t", "0x11e0494a6f27cf13047051b1cecf1770ff9f6cb575a4f2f7499124341dd3018e"]
+      "args": ["get-reward-amount", "-t", "0xdacecfa6f6ed7ae545b3895b99e953f9b5f90f6a31666da4bbc564558eec290c"]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "scripts: get-contract-logs",
+      "sourceMaps": true,
+      "smartStep": true,
+      "preLaunchTask": "npm: build",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/packages/scripts/bin/run",
+      "console": "integratedTerminal",
+      "args": ["get-contract-logs", "-a", "0x35864296944119F72AA1B468e13449222f3f0E67"]
     },
     {
       "type": "node",
