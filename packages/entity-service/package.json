@@ -1,0 +1,11 @@
+{
+  "name": "@vesper-discord/entity-service",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "dependencies": {
+    "typedi": "0.10.0"
+  },
+  "devDependencies": {}
+}
