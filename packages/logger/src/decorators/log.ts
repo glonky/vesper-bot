@@ -31,6 +31,7 @@ export interface LogProps<This, Input, Result> {
     | boolean;
   ignoreErrors?: { new (...args: any[]): Error }[];
   message?: string;
+  category?: string;
   logInput?: Boolean | LogInputFn<This, Input>;
   logResult?: Boolean | LogOutputFn<This, Result>;
 }
@@ -73,6 +74,7 @@ export const Log =
             }
 
             logger[finalLogLevel](props?.message ? `Starting: ${props.message}` : 'Calling method', {
+              category: props?.category,
               input: inputArgsToLog,
               logId,
               method: fullyQualifiedName,
@@ -112,6 +114,7 @@ export const Log =
               const retryAttempts = asyncLocalStorage.getStore()?.get('retryAttempts');
 
               logger.error(props?.message ? `Error: ${props.message}` : 'Error calling method', {
+                category: props?.category,
                 elapsedTimeMs,
                 error: err,
                 logId,
@@ -187,6 +190,7 @@ export const Log =
                 cacheHit: finalCacheHit,
                 cacheKey: shouldLogCacheKey ? cacheKey : undefined,
                 cacheTTL: shouldLogCacheTTL ? cacheTTLSeconds : undefined,
+                category: props?.category,
                 elapsedTimeMs,
                 logId,
                 method: fullyQualifiedName,
