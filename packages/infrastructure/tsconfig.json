@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.shared.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "coverage", "dist", "cdk.out"],
+  "references": [
+    { "path": "../aws" },
+    { "path": "../config" },
+    { "path": "../logger" },
+    { "path": "../errors" },
+    { "path": "../container" }
+  ]
+}
