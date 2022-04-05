@@ -17,9 +17,9 @@ const config = {
   },
   setupFilesAfterEnv: ['<rootDir>/../../jest.env.setup.cjs'],
   testEnvironment: 'node',
-  testPathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/node_modules/', '<rootDir>/e2e/'],
+  testPathIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/node_modules/', '<rootDir>/e2e/', '<rootDir>/cdk.out', 'node_modules'],
   transform: {
-    '^.+\\.(t|j)sx?$': [
+    '^.+\\.tsx?$': [
       'esbuild-jest',
       {
         sourcemap: true,
