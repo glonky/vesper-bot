@@ -12,6 +12,8 @@
     { "path": "../errors" },
     { "path": "../discord-service" },
     { "path": "../etherscan-service" },
+    { "path": "../coin-gecko-service" },
+    { "path": "../blockchain-service" },
     { "path": "../vesper-service" },
     { "path": "../redis-service" },
     { "path": "../command-bot" }

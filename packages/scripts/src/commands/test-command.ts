@@ -1,15 +1,15 @@
 import Container from 'typedi';
 import { EtherscanService } from '@vesper-discord/etherscan-service';
 import { ethers } from 'ethers';
-import _ from 'lodash';
 import * as vsp from '@vesper-discord/vesper-service';
+import _ from 'lodash';
 import { BaseCommand } from '../base-command';
 
 export default class TestCommand extends BaseCommand {
   static flags = {};
 
   async runHandler() {
-    const addressMetadata = {
+    let addressMetadata = {
       '0x0538C8bAc84E95A9dF8aC10Aad17DbE81b9E36ee': {
         address: '0x0538C8bAc84E95A9dF8aC10Aad17DbE81b9E36ee',
         chainId: 1,
@@ -55,7 +55,7 @@ export default class TestCommand extends BaseCommand {
         chainId: 1,
         decimals: 18,
         logoURI: 'https://raw.githubusercontent.com/vesperfi/metadata/master/src/logos/vsp.svg',
-        name: 'UNKNOWN owned by vesper',
+        name: 'UNKNOWN owned by vesper 0x35864296944119F72AA1B468e13449222f3f0E67',
         symbol: 'UNKNOWN',
       },
       '0x6B175474E89094C44Da98b954EedeAC495271d0F': {
@@ -71,7 +71,7 @@ export default class TestCommand extends BaseCommand {
         chainId: 1,
         decimals: 18,
         logoURI: 'https://raw.githubusercontent.com/vesperfi/metadata/master/src/logos/vsp.svg',
-        name: 'UNKNOWN Owned by vesper',
+        name: 'UNKNOWN Owned by vesper 0x7465E30ed5487d62a158625cf38Ae0E9a5Ea733B',
         symbol: 'WETH',
       },
       '0x75619E9F479f9415630d21dDc99919da47c0a737': {
@@ -79,8 +79,16 @@ export default class TestCommand extends BaseCommand {
         chainId: 1,
         decimals: 18,
         logoURI: 'https://raw.githubusercontent.com/vesperfi/metadata/master/src/logos/vsp.svg',
-        name: 'UNKNOWN Owned by vesper',
+        name: 'UNKNOWN Owned by vesper 0x75619E9F479f9415630d21dDc99919da47c0a737',
         symbol: 'WETH',
+      },
+      '0x9b11078f5e8345d074498a83c4f9824942f796d3': {
+        address: '0x9b11078f5e8345d074498a83c4f9824942f796d3',
+        chainId: 1,
+        decimals: 18,
+        logoURI: 'https://raw.githubusercontent.com/vesperfi/metadata/master/src/logos/vsp.svg',
+        name: 'EarnVesperStrategyDAIWBTC',
+        symbol: 'EarnVesperStrategyDAIWBTC',
       },
       '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2': {
         address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
@@ -98,7 +106,7 @@ export default class TestCommand extends BaseCommand {
         name: 'SushiSwap WBTC/ETH LP (SLP) ',
         symbol: 'SLP',
       },
-    };
+    } as any;
     const etherscanService = Container.get(EtherscanService);
     const proxyAddress = '0x9B11078F5e8345d074498a83C4f9824942F796d3';
     const listOfNormalTransactionsByAddress = await etherscanService.getListOfNormalTransactionsByAddress({
@@ -106,12 +114,43 @@ export default class TestCommand extends BaseCommand {
       sort: 'desc',
     });
     const { result } = listOfNormalTransactionsByAddress;
-    const [firstTransaction] = result;
+    const [firstTransaction, second] = result;
 
-    const receipt = await etherscanService.getTransactionReceipt(firstTransaction.hash);
+    const receipt = await etherscanService.getTransactionReceipt(second.hash);
     const parsedLogs = await etherscanService.parseTransactionReceiptLogs(receipt);
 
-    const filteredLogs = parsedLogs.filter(Boolean).map((log) => {
+    function populateKnownAddresses() {
+      const vesperMetadata = vsp.metadata;
+
+      vesperMetadata.controllers.forEach(
+        (c) => ((addressMetadata as any)[c.address] = { ...c, address: c.address.toLowerCase() }),
+      );
+
+      vesperMetadata.pools.forEach(
+        (c) => ((addressMetadata as any)[c.address] = { ...c, address: c.address.toLowerCase() }),
+      );
+      vesperMetadata.tokens.forEach(
+        (c) => ((addressMetadata as any)[c.address] = { ...c, address: c.address.toLowerCase() }),
+      );
+
+      addressMetadata = _.mapKeys(addressMetadata, (v, k) => k.toLowerCase()) as any;
+    }
+
+    populateKnownAddresses();
+
+    function findAndUpdateAddressMetadata(address: string) {
+      try {
+        const lowerCaseAddress = address.toLowerCase();
+        const knownAddress = (addressMetadata as any)[lowerCaseAddress];
+        if (knownAddress) return knownAddress;
+      } catch (err) {
+        console.error(err);
+      }
+
+      return null;
+    }
+
+    parsedLogs.filter(Boolean).map((log) => {
       if (!log?.parsedLog) {
         return;
       }
@@ -135,35 +174,35 @@ export default class TestCommand extends BaseCommand {
         return acc;
       }, {} as any);
 
-      // this.logger.info('Parsed Log', {
-      //   address: log.address,
-      //   args: convertedArgs,
-      //   name: log.parsedLog.name,
-      // });
+      if (log.parsedLog.name === 'Transfer') {
+        const metadata = findAndUpdateAddressMetadata(log.address) ?? { name: 'Zero' };
+        const from = findAndUpdateAddressMetadata(convertedArgs.from ?? convertedArgs.dst) ?? { name: 'Zero' };
+        const to = findAndUpdateAddressMetadata(convertedArgs.to ?? convertedArgs.src) ?? { name: 'Zero' };
+
+        this.logger.info('Transfer', {
+          address: metadata.name,
+          amount: convertedArgs.value ?? convertedArgs.wad,
+          from: from?.name,
+          to: to?.name,
+          type: log.parsedLog.eventFragment.type,
+        });
+      } else {
+        this.logger.debug('Parsed Log', {
+          address: log.address,
+          args: convertedArgs,
+          name: log.parsedLog.name,
+          type: log.parsedLog.eventFragment.type,
+        });
+      }
     });
 
     // const vesperMetadata = (Container.get(VesperService).vesperLib as any).metadata;
-    const vesperMetadata = vsp.metadata;
 
-    const uniqueAddressess = _.chain(parsedLogs).uniqBy('address').map('address').value();
-    const addressMetadatas = uniqueAddressess.map((address) => {
-      const controller = vesperMetadata.controllers.find((c: any) => c.address === address);
-      if (controller) return controller;
+    // const uniqueAddressess = _.chain(parsedLogs).uniqBy('address').map('address').value();
+    // const addressMetadatas = uniqueAddressess.map((address) => {});
 
-      const pool = vesperMetadata.pools.find((p: any) => p.address === address);
-      if (pool) return pool;
-
-      const token = vesperMetadata.tokens.find((t: any) => t.address === address);
-      if (token) return token;
-
-      const knownAddress = (addressMetadata as any)[address];
-      if (knownAddress) return knownAddress;
-
-      this.logger.error('Unknown address', { address });
-    });
-
-    this.logger.info('uniqueAddressess', {
-      addressMetadatas,
-    });
+    // this.logger.info('uniqueAddressess', {
+    // addressMetadatas,
+    // });
   }
 }
