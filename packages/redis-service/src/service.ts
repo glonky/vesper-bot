@@ -16,6 +16,7 @@ export class RedisService {
 
     const config = Container.get(Config);
     const client = new IoRedis(config.host, {
+      db: config.isTest ? 1 : 0,
       tls:
         config.isDevelopment || config.isLocal || config.isTest
           ? undefined

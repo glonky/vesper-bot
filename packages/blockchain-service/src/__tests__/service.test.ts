@@ -1,23 +1,20 @@
 import Container from 'typedi';
 import { ethers } from 'ethers';
-import { CacheManager } from '@vesper-discord/redis-service';
+import { RedisService } from '@vesper-discord/redis-service';
 import { BlockchainService } from '../service';
 import { NotProxyAddressError } from '../errors';
+let redisClient: any;
+
+beforeAll(() => {
+  redisClient = Container.get(RedisService).init();
+});
+afterAll(() => {
+  redisClient?.quit();
+});
 
 describe('blockchain-service | service | e2e', () => {
   describe('findImplementationAddressFromProxyAddress', () => {
     const proxyAddress = '0x01e1d41c1159b745298724c5fd3eaff3da1c6efd';
-
-    beforeEach(async () => {
-      Container.reset();
-
-      await CacheManager.client?.del(
-        `BlockchainService:findImplementationAddressFromProxyAddress:${ethers.constants.AddressZero}`,
-      );
-      await CacheManager.client?.del(
-        `BlockchainService:findImplementationAddressFromProxyAddress:0x01e1d41c1159b745298724c5fd3eaff3da1c6efd`,
-      );
-    });
 
     it('should response with the correct address', async () => {
       const blockchainService = Container.get(BlockchainService);

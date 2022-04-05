@@ -1,15 +1,14 @@
 import { URL, URLSearchParams } from 'url';
 import Container, { Inject, Service } from 'typedi';
-import { Log } from '@vesper-discord/monitoring';
 import fetch from 'node-fetch';
 import { ethers } from 'ethers';
 import { Cacheable } from '@vesper-discord/redis-service';
-import { BlockchainService, EtherscanParseTransactionLogError } from '@vesper-discord/blockchain-service';
+import { BlockchainService, NotProxyAddressError } from '@vesper-discord/blockchain-service';
 import BigNumber from 'bignumber.js';
-import { Logger, LoggerDecorator } from '@vesper-discord/logger';
+import { Logger, LoggerDecorator, Log } from '@vesper-discord/logger';
 import { Retriable } from '@vesper-discord/retry';
 import { ErrorHandler } from '@vesper-discord/errors';
-import _ from 'lodash';
+import { omitBy, isNil } from 'lodash';
 import { Config } from './config';
 import {
   GetGasOracleResponse,
@@ -85,6 +84,11 @@ export interface GetListOfERC20TokenTransferEventsByAddressProps {
   sort?: 'asc' | 'desc';
 }
 
+interface GetContractABIFromAddressProps {
+  contractAddress: string;
+  followProxy?: boolean;
+}
+
 @Service()
 export class EtherscanService {
   @LoggerDecorator('EtherscanService')
@@ -92,6 +96,9 @@ export class EtherscanService {
 
   @Inject(() => Config)
   private config!: Config;
+
+  @Inject(() => BlockchainService)
+  private blockchainService!: BlockchainService;
 
   private get etherscanProvider() {
     return new ethers.providers.EtherscanProvider(this.config.network, this.config.apiKey);
@@ -174,10 +181,10 @@ export class EtherscanService {
    * @cacheable 5 seconds
    */
   @Log({
-    logInput: ({ input }) => input[0],
+    logInput: ({ input }) => input[0].toLowerCase(),
   })
   @Cacheable({
-    cacheKey: (args) => args[0],
+    cacheKey: (args) => args[0].toLowerCase(),
     ttlSeconds: 60 * 60 * 24,
   })
   public async getTransactionReceipt(txhash: string) {
@@ -188,27 +195,23 @@ export class EtherscanService {
    * Prase the transaction receipt to get the log data
    */
   @Log({
-    logInput: ({ input }) => input[0].transactionHash,
+    logInput: ({ input }) => input[0].transactionHash.toLowerCase(),
   })
   @ErrorHandler({ converter: EtherscanErrorConverter })
   public async parseTransactionReceiptLogs(receipt: ethers.providers.TransactionReceipt) {
     const logsCopy = [...receipt.logs];
+
     return Promise.all(
       logsCopy.map(async (log) => {
-        const contractAbiResponse = await this.getContractABI(log.address);
-        const contractInterface = new ethers.utils.Interface(contractAbiResponse.result);
+        const contractAbiResponse = await this.getContractABIFromAddress({
+          contractAddress: log.address,
+          followProxy: true,
+        });
+
+        const contractInterface = new ethers.utils.Interface(contractAbiResponse);
 
         if (contractInterface) {
-          let parsedLog;
-          try {
-            parsedLog = Container.get(BlockchainService).parseTransactionLog(contractInterface, log);
-          } catch (err) {
-            if (err instanceof EtherscanParseTransactionLogError) {
-              this.logger.trace('Error while parsing log', { error: err, log });
-            } else {
-              throw err;
-            }
-          }
+          const parsedLog = Container.get(BlockchainService).parseTransactionLog(contractInterface, log);
 
           return {
             ...log,
@@ -224,18 +227,55 @@ export class EtherscanService {
    * @cacheable 1 day
    */
   @Log({
-    logInput: ({ input }) => input[0],
+    logInput: ({ input }) => ({
+      contractAddress: input[0].contractAddress.toLowerCase(),
+      followProxy: input[0].followProxy,
+    }),
   })
   @Cacheable({
-    cacheKey: (args) => args[0],
+    cacheKey: (args) => {
+      const { contractAddress, followProxy } = args[0];
+      return `${contractAddress.toLowerCase()}${followProxy ? ':proxy' : ''}`;
+    },
     ttlSeconds: 60 * 60 * 24, // 1 day,
   })
-  public async getContractABI(contractAddress: string) {
-    return this.fetch<any>({
+  public async getContractABIFromAddress({
+    contractAddress,
+    followProxy,
+  }: GetContractABIFromAddressProps): Promise<string> {
+    let finalContractAddress = contractAddress;
+
+    if (followProxy) {
+      try {
+        finalContractAddress = await Container.get(BlockchainService).findImplementationAddressFromProxyAddress(
+          contractAddress,
+        );
+      } catch (err) {
+        if (!(err instanceof NotProxyAddressError)) {
+          throw err;
+        }
+      }
+    }
+
+    const { result } = await this.fetch<string>({
       action: 'getabi',
-      address: contractAddress,
+      address: finalContractAddress,
       module: 'contract',
     });
+
+    return result;
+  }
+
+  @Log({
+    logInput: ({ input }) => input[0].toLowerCase(),
+  })
+  public async getContractFromAddress(address: string) {
+    const abi = await this.getContractABIFromAddress({
+      contractAddress: address,
+      followProxy: true,
+    });
+
+    return new ethers.Contract(address, abi, this.blockchainService.ethersProvider);
   }
 
   /**
@@ -283,7 +323,7 @@ export class EtherscanService {
   @Log({
     logInput: ({ scope, input }) => {
       const [params] = input;
-      const cleanParams = _.omitBy(params, _.isNil);
+      const cleanParams = omitBy(params, isNil);
       const searchParams = new URLSearchParams({
         ...cleanParams,
         apikey: scope.config.apiKey,
@@ -305,7 +345,7 @@ export class EtherscanService {
   @ErrorHandler({ converter: EtherscanErrorConverter })
   private async fetch<T>(params: EtherscanFetchParams): Promise<EtherscanResponse<T>> {
     const searchParams = new URLSearchParams({
-      ..._.omitBy(params, _.isNil),
+      ...omitBy(params, isNil),
       apikey: this.config.apiKey,
     });
 
