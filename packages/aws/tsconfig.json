@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.shared.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src"],
+  "references": [
+    { "path": "../utils" },
+    { "path": "../config" },
+    { "path": "../errors" },
+    { "path": "../logger" },
+    { "path": "../retry" }
+  ]
+}
