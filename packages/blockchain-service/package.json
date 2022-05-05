@@ -1,25 +1,29 @@
 {
   "name": "@vesper-discord/blockchain-service",
   "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
   "main": "./dist/index.js",
+  "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "@ethersproject/abi": "5.6.0",
+    "@ethersproject/abi": "5.6.1",
     "@vesper-discord/config": "1.0.0",
     "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
     "@vesper-discord/monitoring": "1.0.0",
     "@vesper-discord/redis-service": "1.0.0",
     "@vesper-discord/retry": "1.0.0",
-    "ethers": "5.6.1",
+    "ethers": "5.6.4",
+    "lodash": "4.17.21",
     "node-fetch": "2.6.6",
     "reflect-metadata": "0.1.13",
     "typedi": "0.10.0",
-    "web3": "1.7.1"
+    "web3": "1.7.3"
   },
   "devDependencies": {
     "@ethersproject/abstract-provider": "5.6.0",
-    "@types/node-fetch": "2.5.12"
+    "@types/lodash": "4.14.182"
   }
 }

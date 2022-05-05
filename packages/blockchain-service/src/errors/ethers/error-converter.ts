@@ -1,5 +1,6 @@
 import { ErrorConverter, ErrorConverterConvertErrorProps } from '@vesper-discord/errors';
 import { EthersError, ExtendedEthersError } from './error';
+import { RetriableEthersError } from './retriable-ethers-error';
 
 export class EthersErrorConverter implements ErrorConverter<EthersError> {
   convertError(props: ErrorConverterConvertErrorProps<EthersError>) {
@@ -10,6 +11,10 @@ export class EthersErrorConverter implements ErrorConverter<EthersError> {
     const message = props.error.message ?? 'Ethers Error';
 
     switch (code) {
+      case 'TIMEOUT': {
+        resultError = new RetriableEthersError(message, props);
+        break;
+      }
       default:
         resultError = new ExtendedEthersError(message, props);
     }
