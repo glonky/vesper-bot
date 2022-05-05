@@ -1,8 +1,8 @@
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import fs from 'fs';
+import fs from 'node:fs';
 import util from 'util';
-import path from 'path';
+import path from 'node:path';
 import PinoPretty from 'pino-pretty';
 import { DateTime } from 'luxon';
 import pino, { DestinationStream, Level, LoggerOptions, multistream, StreamEntry } from 'pino';
@@ -26,7 +26,7 @@ export interface LoggerProps {
 @Service()
 export class Logger {
   @Inject(() => Config)
-  private config!: Config;
+  private readonly config!: Config;
 
   public _logger?: pino.Logger;
 
@@ -70,9 +70,9 @@ export class Logger {
       streams.push(
         ...allLevels.map((level) => ({
           level: level as Level,
-          stream: pino.destination({ dest: allFile, sync: this.config.sync }),
+          stream: pino.destination({ dest: allFile.toString(), sync: this.config.sync }),
         })),
-        { level: 'error', stream: pino.destination({ dest: errorFile, sync: this.config.sync }) },
+        { level: 'error', stream: pino.destination({ dest: errorFile.toString(), sync: this.config.sync }) },
       );
     }
 

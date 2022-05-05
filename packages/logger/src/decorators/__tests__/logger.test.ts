@@ -1,4 +1,4 @@
-import Container, { Service } from 'typedi';
+import { Container, Service } from 'typedi';
 import { Logger } from '../../logger';
 import { LoggerDecorator } from '../logger';
 

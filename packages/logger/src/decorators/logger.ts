@@ -1,4 +1,4 @@
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Logger } from '../logger';
 
 export function LoggerDecorator(loggerName?: string) {

@@ -4,7 +4,7 @@
 import { performance } from 'perf_hooks';
 import { isPromise } from '@vesper-discord/utils';
 import { NotFoundError } from '@vesper-discord/errors';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { asyncLocalStorage } from '@vesper-discord/container';
 import { ulid } from 'ulid';
 import { Logger } from '../logger';
