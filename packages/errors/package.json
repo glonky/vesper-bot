@@ -1,17 +1,21 @@
 {
   "name": "@vesper-discord/errors",
   "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
   "main": "./dist/index.js",
+  "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
     "@vesper-discord/utils": "1.0.0",
     "bluebird": "3.7.2",
+    "reflect-metadata": "0.1.13",
     "http-status-codes": "2.2.0",
     "lodash": "4.17.21"
   },
   "devDependencies": {
     "@types/bluebird": "3.5.36",
-    "@types/lodash": "4.14.181"
+    "@types/lodash": "4.14.182"
   }
 }

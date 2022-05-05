@@ -1,9 +1,9 @@
 import { ExtendedError, ExtendedErrorProps } from './extended-error';
 
-export class RetriableError extends ExtendedError {
+export class RetriableError<E extends Error = Error> extends ExtendedError<E> {
   public retryAttempts?: number;
 
-  constructor(message: string, props?: ExtendedErrorProps) {
+  constructor(message: string, props?: ExtendedErrorProps<E>) {
     super(message, props);
 
     // This is a limitation of typescript and jest

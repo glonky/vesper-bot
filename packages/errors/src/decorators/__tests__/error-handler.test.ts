@@ -1,4 +1,5 @@
-import { ErrorHandler } from '..';
+import 'reflect-metadata';
+import { ErrorHandler } from '../index';
 import { ErrorConverter } from '../../error-converter';
 import { ExtendedError } from '../../extended-error';
 
