@@ -75,8 +75,10 @@ export interface LendRate {
 export interface Pool {
   // name of the pool.
   name: string;
+  logoURI: string;
   poolName: string;
 
+  type: string;
   // address of the pool.
   address: string;
 

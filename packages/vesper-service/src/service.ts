@@ -1,28 +1,19 @@
 import { Inject, Service } from 'typedi';
 import fetch from 'node-fetch';
 import BigNumber from 'bignumber.js';
-import { EtherscanService } from '@vesper-discord/etherscan-service';
-import { BlockchainService } from '@vesper-discord/blockchain-service';
-import createVesper from 'vesper-lib';
+import { EtherscanService } from '@vesper-discord/blockchain-scan-service';
 import { Config } from './config';
 import { Dashboard, LendRate, Pool, PoolDataPoints, ValuesLocked, VspStats } from './interfaces';
 
 @Service()
 export class VesperService {
   @Inject(() => Config)
-  private config!: Config;
+  private readonly config!: Config;
 
   @Inject(() => EtherscanService)
-  private etherscanService!: EtherscanService;
-
-  @Inject(() => BlockchainService)
-  private blockchainService!: BlockchainService;
+  private readonly etherscanService!: EtherscanService;
 
   private baseUrl = 'https://api.vesper.finance';
-
-  public get vesperLib() {
-    return createVesper(this.blockchainService.web3);
-  }
 
   public async getExchangeRate() {
     const vspQuantityInVVSPPool = await this.etherscanService.getERC20TokenAccountBalanceForTokenContractAddress({

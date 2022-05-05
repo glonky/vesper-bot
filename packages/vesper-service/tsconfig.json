@@ -5,12 +5,14 @@
     "outDir": "dist",
     "typeRoots": ["../../node_modules/@types", "./@types"]
   },
-  "include": ["src"],
+  "include": ["src", "src/pools/releases/*/contracts.json"],
   "references": [
     { "path": "../config" },
     { "path": "../logger" },
     { "path": "../errors" },
-    { "path": "../etherscan-service" },
-    { "path": "../blockchain-service" }
+    { "path": "../blockchain-scan-service" },
+    { "path": "../blockchain-service" },
+    { "path": "../coin-gecko-service" },
+    { "path": "../entity-service" }
   ]
 }
