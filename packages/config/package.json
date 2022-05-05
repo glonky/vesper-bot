@@ -1,18 +1,21 @@
 {
   "name": "@vesper-discord/config",
   "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
   "main": "./dist/index.js",
+  "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "dotenv-expand": "5.1.0",
+    "dotenv-expand": "8.0.3",
     "dotenv-flow": "3.2.0",
-    "luxon": "2.3.1",
+    "luxon": "2.3.2",
     "pkg-dir": "5.0.0",
     "typedi": "0.10.0"
   },
   "devDependencies": {
     "@types/dotenv-flow": "3.2.0",
-    "@types/luxon": "2.3.1"
+    "@types/luxon": "2.3.2"
   }
 }

@@ -1,4 +1,5 @@
 import { getEnvironmentVariable } from '../get-environment-variable';
+
 describe('getEnvironmentVariable', () => {
   const envVarName = 'FOO';
 
