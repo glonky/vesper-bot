@@ -76,6 +76,19 @@
       "console": "integratedTerminal",
       "args": ["get-contract-logs", "-a", "0x35864296944119F72AA1B468e13449222f3f0E67"]
     },
+
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "scripts: backfill-reward-added-events",
+      "sourceMaps": true,
+      "smartStep": true,
+      "preLaunchTask": "npm: build",
+      "skipFiles": ["<node_internals>/**"],
+      "program": "${workspaceFolder}/packages/scripts/bin/run",
+      "console": "integratedTerminal",
+      "args": ["backfill-reward-added-events", "-f"]
+    },
     {
       "type": "node",
       "name": "vscode-jest-tests",
