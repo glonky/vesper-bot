@@ -1,9 +1,9 @@
 import BigNumber from 'bignumber.js';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import web3 from 'web3';
 import { formatTimeFromSeconds, unwrap } from '@vesper-discord/utils';
-import { CustomSlashCommandBuilder, MessageEmbed } from '@vesper-discord/discord-service';
-import { EtherscanService } from '@vesper-discord/etherscan-service';
+import { CustomSlashCommandBuilder, discord } from '@vesper-discord/discord-service';
+import { EtherscanService } from '@vesper-discord/blockchain-scan-service';
 import { Config } from '../config';
 
 export default {
@@ -38,7 +38,7 @@ export default {
             etherscanService.getEstimationOfConfirmationTime(web3.utils.toWei(gasOracle.result.suggestBaseFee, 'Gwei')),
           ]);
 
-          const messageEmbed = new MessageEmbed()
+          const messageEmbed = new discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle('Ethereum Gas Priority Fees')
             .setThumbnail('https://etherscan.io/images/ethereum-icon.png')

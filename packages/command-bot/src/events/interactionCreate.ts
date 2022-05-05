@@ -1,4 +1,4 @@
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Logger } from '@vesper-discord/logger';
 import { assertion } from '@vesper-discord/errors';
 import {

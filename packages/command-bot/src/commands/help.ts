@@ -1,10 +1,4 @@
-import {
-  CustomSlashCommandBuilder,
-  hyperlink,
-  hideLinkEmbed,
-  bold,
-  MessageEmbed,
-} from '@vesper-discord/discord-service';
+import { CustomSlashCommandBuilder, discordBuilders, discord } from '@vesper-discord/discord-service';
 import { unwrap } from '@vesper-discord/utils';
 
 export default {
@@ -22,38 +16,42 @@ export default {
         .setDescription('Introduction to vVSP, the Vesper Governance Pool token')
         .setExecute(async ({ interaction }) => {
           const content = unwrap`
-          Deposit your VSP to the ${hyperlink(
+          Deposit your VSP to the ${discordBuilders.hyperlink(
             'vVSP pool',
-            hideLinkEmbed('https://app.vesper.finance/eth/0xbA4cFE5741b357FA371b506e5db0774aBFeCf8Fc'),
+            discordBuilders.hideLinkEmbed('https://app.vesper.finance/eth/0xbA4cFE5741b357FA371b506e5db0774aBFeCf8Fc'),
           )} to share in the performance, growth, and governance of Vesper.
 
           Revenue is generated from Vesper platform fees, those funds are used to purchase VSP on the open market, and that VSP is distributed to members of the vVSP pool.
 
           Participate in Vesper governance by voting on proposals with your vVSP pool token.
 
-          :book: ${bold('Read more about')}
+          :book: ${discordBuilders.bold('Read more about')}
 
-          - ${hyperlink(
+          - ${discordBuilders.hyperlink(
             'The vVSP pool',
-            hideLinkEmbed('https://medium.com/vesperfinance/understanding-vvsp-the-vsp-pool-39bd0cbf249f'),
+            discordBuilders.hideLinkEmbed(
+              'https://medium.com/vesperfinance/understanding-vvsp-the-vsp-pool-39bd0cbf249f',
+            ),
           )}
-          - ${hyperlink(
+          - ${discordBuilders.hyperlink(
             'The Vesper revenue model',
-            hideLinkEmbed('https://docs.vesper.finance/vsp-economics/revenue-model'),
+            discordBuilders.hideLinkEmbed('https://docs.vesper.finance/vsp-economics/revenue-model'),
           )}
-          - ${hyperlink(
+          - ${discordBuilders.hyperlink(
             'Governance',
-            hideLinkEmbed('https://docs.vesper.finance/community-participation-and-governance/the-voting-process'),
+            discordBuilders.hideLinkEmbed(
+              'https://docs.vesper.finance/community-participation-and-governance/the-voting-process',
+            ),
           )}
 
-          :bulb: ${bold('The More You Know')}
+          :bulb: ${discordBuilders.bold('The More You Know')}
 
            - Once you deposit VSP to the vVSP pool, you will no longer see VSP in your wallet - instead you will have the vVSP token representing your share of the governance pool. You can watch your VSP balance grow by checking the Vesper app.
 
            - Since your vVSP balance represents your share of the governance pool, it will not track 1:1 with your VSP balance. Your vVSP balance will remain static, the VSP balance it represents will grow as platform revenue is distributed to you. To see the current exchange rate of VSP to vVSP, you can use the \`/vsp exchange-rate\` command.
           `;
 
-          const messageEmbed = new MessageEmbed()
+          const messageEmbed = new discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle('Introduction to vVSP, the Vesper Governance Pool token')
             .setDescription(content)

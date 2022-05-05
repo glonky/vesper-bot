@@ -1,10 +1,10 @@
 import { chain } from 'lodash';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Logger } from '@vesper-discord/logger';
 import { unwrap } from '@vesper-discord/utils';
 import { Config as VesperConfig, VesperService } from '@vesper-discord/vesper-service';
-import { CoinGeckoService } from '@vesper-discord/coin-gecko-service';
-import { CustomSlashCommandBuilder, hyperlink, MessageEmbed } from '@vesper-discord/discord-service';
+import { CoinGeckoService, PlatformId } from '@vesper-discord/coin-gecko-service';
+import { CustomSlashCommandBuilder, discordBuilders, discord } from '@vesper-discord/discord-service';
 import { Config } from '../config';
 
 export default {
@@ -25,11 +25,11 @@ export default {
           const stats = await Container.get(VesperService).getVspStats();
           const coinInfo = await Container.get(CoinGeckoService).getCoinInfoFromContractAddress({
             contractAddress: config.vspTokenAddress,
-            platformId: 'ethereum',
+            platformId: PlatformId.ETHEREUM,
           });
           const numberFormatter = new Intl.NumberFormat('en-US', { currency: 'USD', style: 'currency' });
 
-          const messageEmbed = new MessageEmbed()
+          const messageEmbed = new discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle('VSP Price')
             .setDescription('Current price of VSP on different exchanges.')
@@ -37,7 +37,7 @@ export default {
             .addFields({
               inline: true,
               name: 'Vesper',
-              value: hyperlink(
+              value: discordBuilders.hyperlink(
                 numberFormatter.format(stats.price),
                 'https://app.vesper.finance/eth/0xbA4cFE5741b357FA371b506e5db0774aBFeCf8Fc',
               ),
@@ -52,7 +52,7 @@ export default {
           coinInfo.tickers.forEach((ticker) => {
             messageEmbed.addField(
               ticker.market.name,
-              hyperlink(numberFormatter.format(ticker.converted_last.usd), ticker.trade_url),
+              discordBuilders.hyperlink(numberFormatter.format(ticker.converted_last.usd), ticker.trade_url),
               true,
             );
           });
@@ -73,7 +73,7 @@ export default {
 
           const { vvspToVSPRatio, vspToVVSPRatio } = await Container.get(VesperService).getExchangeRate();
 
-          const messageEmbed = new MessageEmbed()
+          const messageEmbed = new discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle('VSP / vVSP Exchange Rate')
             .setDescription(
@@ -106,7 +106,7 @@ export default {
             style: 'currency',
           });
 
-          const messageEmbed = new MessageEmbed()
+          const messageEmbed = new discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle('VSP Stats')
             .setDescription('VSP stats from the Vesper App')
@@ -175,7 +175,7 @@ export default {
 
           await interaction.editReply({
             embeds: [
-              new MessageEmbed()
+              new discord.MessageEmbed()
                 .setColor('#0099ff')
                 .setTitle('Vesper Loan Rates')
                 .setDescription(

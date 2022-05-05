@@ -1,13 +1,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import 'reflect-metadata';
-import path from 'path';
+import path from 'node:path';
 import { DiscordClient } from '@vesper-discord/discord-service';
-import Container, { Service } from 'typedi';
+import { Container, Service } from 'typedi';
 import { Config } from './config';
+
+export interface StartProps {
+  startWebsocket?: boolean;
+}
 
 @Service()
 export class Server {
-  public async start() {
+  public async start(props?: StartProps) {
     const config = Container.get(Config);
     const discordService = new DiscordClient({
       intents: config.intents,
@@ -22,6 +26,6 @@ export class Server {
     await discordService.loadCommands(commandsPath);
     await discordService.loadEvents(eventsPath);
 
-    await discordService.start({ token: config.token });
+    return discordService.start({ startWebsocket: props?.startWebsocket, token: config.token });
   }
 }

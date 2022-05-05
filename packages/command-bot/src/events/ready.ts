@@ -1,4 +1,4 @@
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Logger } from '@vesper-discord/logger';
 import { ReadyEvent } from '@vesper-discord/discord-service';
 

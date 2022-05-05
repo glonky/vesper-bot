@@ -1,5 +1,5 @@
 import { CustomSlashCommandBuilder } from '@vesper-discord/discord-service';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Config } from '../config';
 
 export default {

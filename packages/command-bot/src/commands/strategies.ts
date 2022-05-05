@@ -1,6 +1,6 @@
-import { CustomSlashCommandBuilder, MessageEmbed, hyperlink } from '@vesper-discord/discord-service';
+import { CustomSlashCommandBuilder, discord, discordBuilders } from '@vesper-discord/discord-service';
 import { VesperService } from '@vesper-discord/vesper-service';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Config } from '../config';
 
 export default {
@@ -21,7 +21,7 @@ export default {
           // valuesLocked[0].valuesLocked.find((value) => value);
           const currencyFormatter = new Intl.NumberFormat('en-US', { currency: 'USD', style: 'currency' });
 
-          const messageEmbed = new MessageEmbed()
+          const messageEmbed = new discord.MessageEmbed()
             .setColor('#0099ff')
             .setTitle('Pools')
             .setDescription('All pools on Vesper')
@@ -36,7 +36,10 @@ export default {
                 {
                   inline: true,
                   name: 'Name',
-                  value: hyperlink(dashboard.name, `https://app.vesper.finance/eth/${dashboard.contract.address}`),
+                  value: discordBuilders.hyperlink(
+                    dashboard.name,
+                    `https://app.vesper.finance/eth/${dashboard.contract.address}`,
+                  ),
                 },
                 {
                   inline: true,
