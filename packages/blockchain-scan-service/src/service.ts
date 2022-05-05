@@ -12,12 +12,13 @@ import { omitBy, isNil } from 'lodash';
 import { Config } from './config';
 import {
   GetGasOracleResponse,
-  EtherscanResponse,
-  EtherscanFetchParams,
+  BlockchainScanResponse,
+  BlockchainScanFetchParams,
   GetListOfNormalTransactionsByAddressResponse,
   GetListOfERC20TokenTransferEventsByAddressResponse,
+  BlockchainScanServiceType,
 } from './interfaces';
-import { EtherscanErrorConverter } from './errors/index';
+import { BlockchainScanError, BlockchainScanErrorConverter } from './errors/index';
 
 export interface GetERC20TokenAccountBalanceForTokenContractAddressProps {
   contractAddress: string;
@@ -99,6 +100,7 @@ export abstract class BlockchainScanService {
   protected abstract blockchainService: BlockchainService;
   protected abstract get baseUrl(): string;
   protected abstract get apiKey(): string;
+  protected abstract get scanServiceType(): BlockchainScanServiceType;
 
   /**
    * Returns the current Safe, Proposed and Fast gas prices.
@@ -178,7 +180,7 @@ export abstract class BlockchainScanService {
   @Log({
     logInput: ({ input }) => input[0].transactionHash.toLowerCase(),
   })
-  @ErrorHandler({ converter: EtherscanErrorConverter })
+  @ErrorHandler({ converter: BlockchainScanErrorConverter })
   public async parseTransactionReceiptLogs(receipt: ethers.providers.TransactionReceipt) {
     const logsCopy = [...receipt.logs];
 
@@ -321,8 +323,11 @@ export abstract class BlockchainScanService {
     message: 'Fetching data from Etherscan',
   })
   @Retriable()
-  @ErrorHandler({ converter: EtherscanErrorConverter })
-  private async fetch<T>(params: EtherscanFetchParams): Promise<EtherscanResponse<T>> {
+  @ErrorHandler<BlockchainScanError, { scanService: BlockchainScanServiceType }>({
+    converter: BlockchainScanErrorConverter,
+    extraProps: ({ scope }) => ({ scanService: scope.scanServiceType }),
+  })
+  private async fetch<T>(params: BlockchainScanFetchParams): Promise<BlockchainScanResponse<T>> {
     const searchParams = new URLSearchParams({
       ...omitBy(params, isNil),
       apikey: this.apiKey,
@@ -333,7 +338,7 @@ export abstract class BlockchainScanService {
 
     const result = (await fetch(url.toString(), {
       method: 'GET',
-    }).then((response) => response.json())) as EtherscanResponse<T>;
+    }).then((response) => response.json())) as BlockchainScanResponse<T>;
 
     // TODO: Retry if rate limit exceeded
     // Max rate limit reached: https://docs.etherscan.io/support/rate-limits

@@ -1,10 +1,10 @@
 import { RetriableError } from '@vesper-discord/errors';
-import { ExtendedEtherscanErrorProps } from './error';
+import { ExtendedBlockchainScanErrorProps, BlockchainScanError } from './error';
 
-export class EtherscanRateLimitError extends RetriableError {
-  constructor(props: ExtendedEtherscanErrorProps) {
-    super('Rate limited by Etherscan', props);
-    Object.setPrototypeOf(this, EtherscanRateLimitError.prototype);
+export class BlockchainScanRateLimitError extends RetriableError<BlockchainScanError> {
+  constructor(props: ExtendedBlockchainScanErrorProps) {
+    super('Rate limited by Blockchain scan', props);
+    Object.setPrototypeOf(this, BlockchainScanRateLimitError.prototype);
     this.name = this.constructor.name;
   }
 }

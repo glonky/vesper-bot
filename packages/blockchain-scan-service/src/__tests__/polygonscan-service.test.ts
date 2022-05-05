@@ -1,12 +1,12 @@
-import { EthereumBlockchainService } from '@vesper-discord/blockchain-service';
+import { PolygonBlockchainService } from '@vesper-discord/blockchain-service';
 import { Container } from 'typedi';
-import { EtherscanService } from '../etherscan-service';
+import { PolygonScanService } from '../polygonscan-service';
 
-describe.skip('polygonscan-service | e2e', () => {
+describe('polygonscan-service | e2e', () => {
   describe('getGasOracle', () => {
     it('should respond with the correct result', async () => {
-      const etherscanService = Container.get(EtherscanService);
-      const { result } = await etherscanService.getGasOracle();
+      const polygonScanService = Container.get(PolygonScanService);
+      const { result } = await polygonScanService.getGasOracle();
 
       expect(result.FastGasPrice).toBeDefined();
       expect(result.ProposeGasPrice).toBeDefined();
@@ -15,49 +15,38 @@ describe.skip('polygonscan-service | e2e', () => {
     });
   });
 
-  describe('getEstimationOfConfirmationTime', () => {
-    it('should respond with the correct result', async () => {
-      const etherscanService = Container.get(EtherscanService);
-      const { result: gasOracleResult } = await etherscanService.getGasOracle();
-
-      const { result } = await etherscanService.getEstimationOfConfirmationTime(gasOracleResult.FastGasPrice);
-
-      expect(result).toBeDefined();
-    });
-  });
-
   describe('getListOfERC20TokenTransferEventsByAddress', () => {
     it('should respond with the correct result', async () => {
-      const etherscanService = Container.get(EtherscanService);
-      const { result } = await etherscanService.getListOfERC20TokenTransferEventsByAddress({
+      const polygonScanService = Container.get(PolygonScanService);
+      const { result } = await polygonScanService.getListOfERC20TokenTransferEventsByAddress({
         address: '0x76d266dfd3754f090488ae12f6bd115cd7e77ebd',
         sort: 'desc',
       });
 
-      expect(result).toHaveLength(50);
+      expect(result.length).toBeGreaterThan(30);
     });
   });
 
   describe('parseTransactionReceiptLogs', () => {
     it('should respond with the correct result', async () => {
-      const etherscanService = Container.get(EtherscanService);
-      const ethereumBlockchainService = Container.get(EthereumBlockchainService);
-      const receipt = await ethereumBlockchainService.getTransactionReceipt(
-        '0xdacecfa6f6ed7ae545b3895b99e953f9b5f90f6a31666da4bbc564558eec290c',
+      const polygonScanService = Container.get(PolygonScanService);
+      const polygonBlockchainService = Container.get(PolygonBlockchainService);
+      const receipt = await polygonBlockchainService.getTransactionReceipt(
+        '0x5073c1d27816d05da0ab0fe9951b9cd2fdc49d0050d12311ac5a4a062bb68979',
       );
 
-      const parsedLogs = await etherscanService.parseTransactionReceiptLogs(receipt);
+      const parsedLogs = await polygonScanService.parseTransactionReceiptLogs(receipt);
 
-      expect(parsedLogs).toHaveLength(25);
+      expect(parsedLogs).toHaveLength(3);
       expect(parsedLogs[0]?.parsedLog).toBeDefined();
     }, 10000);
   });
 
   describe('getContractABIFromAddress', () => {
     it('should respond with the correct result', async () => {
-      const etherscanService = Container.get(EtherscanService);
-      const contractAbi = await etherscanService.getContractABIFromAddress({
-        contractAddress: '0x01e1d41C1159b745298724c5Fd3eAfF3da1C6efD',
+      const polygonScanService = Container.get(PolygonScanService);
+      const contractAbi = await polygonScanService.getContractABIFromAddress({
+        contractAddress: '0xD66FDcA0b120427C90C0318a454b37B88a3Aa40F',
       });
 
       const parsedContractAbi = JSON.parse(contractAbi);
@@ -65,9 +54,9 @@ describe.skip('polygonscan-service | e2e', () => {
     });
 
     it('should respond with the correct result with followProxy', async () => {
-      const etherscanService = Container.get(EtherscanService);
-      const contractAbi = await etherscanService.getContractABIFromAddress({
-        contractAddress: '0x01e1d41C1159b745298724c5Fd3eAfF3da1C6efD',
+      const polygonScanService = Container.get(PolygonScanService);
+      const contractAbi = await polygonScanService.getContractABIFromAddress({
+        contractAddress: '0xD66FDcA0b120427C90C0318a454b37B88a3Aa40F',
         followProxy: true,
       });
 
@@ -79,8 +68,8 @@ describe.skip('polygonscan-service | e2e', () => {
 
   describe('getContractFromAddress', () => {
     it('should respond with the correct result', async () => {
-      const etherscanService = Container.get(EtherscanService);
-      const contract = await etherscanService.getContractFromAddress('0x01e1d41C1159b745298724c5Fd3eAfF3da1C6efD');
+      const polygonScanService = Container.get(PolygonScanService);
+      const contract = await polygonScanService.getContractFromAddress('0xD66FDcA0b120427C90C0318a454b37B88a3Aa40F');
 
       const decimals = await contract.decimals.call();
       expect(decimals).toBe(18);
@@ -89,9 +78,9 @@ describe.skip('polygonscan-service | e2e', () => {
 
   describe('getERC20TokenTotalSupplyByContractAddress', () => {
     it('should respond with the correct result', async () => {
-      const etherscanService = Container.get(EtherscanService);
-      const { result } = await etherscanService.getERC20TokenTotalSupplyByContractAddress(
-        '0x01e1d41C1159b745298724c5Fd3eAfF3da1C6efD',
+      const polygonScanService = Container.get(PolygonScanService);
+      const { result } = await polygonScanService.getERC20TokenTotalSupplyByContractAddress(
+        '0xD66FDcA0b120427C90C0318a454b37B88a3Aa40F',
       );
 
       expect(result).toBeDefined();
@@ -100,8 +89,8 @@ describe.skip('polygonscan-service | e2e', () => {
 
   describe('getERC20TokenAccountBalanceForTokenContractAddress', () => {
     it('should respond with the correct result', async () => {
-      const etherscanService = Container.get(EtherscanService);
-      const { result } = await etherscanService.getERC20TokenAccountBalanceForTokenContractAddress({
+      const polygonScanService = Container.get(PolygonScanService);
+      const { result } = await polygonScanService.getERC20TokenAccountBalanceForTokenContractAddress({
         address: '0xbA4cFE5741b357FA371b506e5db0774aBFeCf8Fc',
         contractAddress: '0x1b40183efb4dd766f11bda7a7c3ad8982e998421',
       });
@@ -112,12 +101,12 @@ describe.skip('polygonscan-service | e2e', () => {
 
   describe('getListOfNormalTransactionsByAddress', () => {
     it('should respond with the correct result', async () => {
-      const etherscanService = Container.get(EtherscanService);
-      const { result } = await etherscanService.getListOfNormalTransactionsByAddress({
-        address: '0x9B11078F5e8345d074498a83C4f9824942F796d3',
+      const polygonScanService = Container.get(PolygonScanService);
+      const { result } = await polygonScanService.getListOfNormalTransactionsByAddress({
+        address: '0xD66FDcA0b120427C90C0318a454b37B88a3Aa40F',
         sort: 'desc',
       });
-      expect(result).toHaveLength(45);
+      expect(result.length).toBeGreaterThan(200);
     });
   });
 });

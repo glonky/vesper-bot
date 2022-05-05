@@ -57,7 +57,11 @@ export abstract class BlockchainService {
   @Retriable()
   @ErrorHandler({ converter: EthersErrorConverter })
   public async findImplementationAddressFromProxyAddress(proxyAddress: string) {
-    const possibleStorageSlots = ['eip1967.proxy.implementation', 'org.zeppelinos.proxy.implementation'];
+    const possibleStorageSlots = [
+      'eip1967.proxy.implementation',
+      'org.zeppelinos.proxy.implementation',
+      'matic.network.proxy.implementation',
+    ];
 
     const possibleAddresses = await Promise.all(
       possibleStorageSlots.map(async (storageSlot) => {

@@ -1,6 +1,7 @@
 import { ExtendedError, ExtendedErrorProps } from '@vesper-discord/errors';
+import { BlockchainScanServiceType } from '../interfaces';
 
-export type EtherscanError = Error & {
+export type BlockchainScanError = Error & {
   code: string;
   status: string;
   url: string;
@@ -8,11 +9,14 @@ export type EtherscanError = Error & {
   module: string;
 };
 
-export type ExtendedEtherscanErrorProps = ExtendedErrorProps<EtherscanError>;
-export class ExtendedEtherscanError extends ExtendedError {
-  constructor(props: ExtendedEtherscanErrorProps) {
-    super('Error from Etherscan', props);
-    Object.setPrototypeOf(this, ExtendedEtherscanError.prototype);
+export interface ExtendedBlockchainScanErrorProps extends ExtendedErrorProps<BlockchainScanError> {
+  scanService: BlockchainScanServiceType;
+}
+
+export class ExtendedBlockchainScanError extends ExtendedError {
+  constructor(props: ExtendedBlockchainScanErrorProps) {
+    super(props.error?.message ?? `Error from ${props.scanService} service`, props);
+    Object.setPrototypeOf(this, ExtendedBlockchainScanError.prototype);
     this.name = this.constructor.name;
   }
 }

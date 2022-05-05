@@ -1,4 +1,10 @@
-export interface EtherscanResponse<T> {
+export enum BlockchainScanServiceType {
+  ETHERSCAN = 'etherscan',
+  POLYGON_SCAN = 'polygon-scan',
+  SNOWTRACE = 'snowtrace',
+}
+
+export interface BlockchainScanResponse<T> {
   status: string;
   message: string;
   result: T;
@@ -56,7 +62,7 @@ export interface GetListOfERC20TokenTransferEventsByAddressResponse {
   confirmations: string;
 }
 
-export interface EtherscanFetchParams {
+export interface BlockchainScanFetchParams {
   [key: string]: string | number | boolean | undefined;
   module: 'account' | 'contract' | 'transaction' | 'block' | 'logs' | 'stats' | 'proxy' | 'gastracker';
   action: string;
