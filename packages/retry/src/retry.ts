@@ -1,7 +1,7 @@
 import { performance } from 'perf_hooks';
 import asyncRetry, { Options } from 'async-retry';
 import { ulid } from 'ulid';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Logger } from '@vesper-discord/logger';
 import { NonRetriableError, RetriableError, ExtendedError, NotFoundError, RetryError } from '@vesper-discord/errors';
 import { asyncLocalStorage } from '@vesper-discord/container';
@@ -50,7 +50,8 @@ function cancelAllRetries(error?: {} | Error | string | null, shouldExitProcess 
   });
 
   if (shouldExitProcess) {
-    process.exit(1);
+    // NOTE: I don't think we should be killing the process here
+    // process.exit(1);
   }
 }
 /**
@@ -182,6 +183,9 @@ export async function retry<T>(fn: RetryFunction<T>, props?: RetryProps): Promis
     throw err;
   }
 
+  /**
+   * https://github.com/tim-kos/node-retry/blob/master/README.md#retrytimeoutsoptions
+   */
   function logNextRetryAttempt(retryAttempt: number, error: ExtendedError<Error> | RetriableError) {
     if (retryAttempt < (overrides.retries ?? 10)) {
       const random = overrides.randomize ? Math.random() + 1 : 1;

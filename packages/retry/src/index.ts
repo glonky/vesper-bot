@@ -1,2 +1,2 @@
 export * from './retry';
-export * from './decorators';
+export * from './decorators/index';

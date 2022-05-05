@@ -1,7 +1,10 @@
 {
   "name": "@vesper-discord/retry",
   "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
   "main": "./dist/index.js",
+  "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
@@ -15,8 +18,8 @@
     "ulid": "2.3.0"
   },
   "devDependencies": {
-    "@types/async-retry": "1.4.3",
-    "@types/lodash": "4.14.181",
+    "@types/async-retry": "1.4.4",
+    "@types/lodash": "4.14.182",
     "@types/uuid": "8.3.4"
   }
 }
