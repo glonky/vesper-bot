@@ -3,6 +3,12 @@ import { BaseConfig } from '@vesper-discord/config';
 
 @Service()
 export class Config extends BaseConfig {
+  services = {
+    dynamoDb: {
+      endpoint: this.getEnvVar<string>('AWS_SERVICES_DYNAMODB_ENDPOINT_URL'),
+    },
+  };
+
   account = this.getEnvVar<string>('CDK_DEFAULT_ACCOUNT' || 'AWS_ACCOUNT' || 'SHUFFL_AWS_ACCOUNT');
 
   region = this.getEnvVar<string>('CDK_DEFAULT_REGION' || 'AWS_DEFAULT_REGION' || 'AWS_REGION', 'us-east-1');

@@ -5,8 +5,8 @@ import { Config } from '../../config';
 @Service()
 export class LocalDynamoDBClient {
   @LoggerDecorator()
-  private logger!: Logger;
+  private readonly logger!: Logger;
 
   @Inject(() => Config)
-  private config!: Config;
+  private readonly config!: Config;
 }
