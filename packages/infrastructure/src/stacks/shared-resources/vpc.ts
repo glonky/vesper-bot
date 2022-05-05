@@ -1,12 +1,4 @@
-import {
-  Vpc,
-  SubnetType,
-  SubnetConfiguration,
-  NatProvider,
-  InstanceType,
-  InstanceClass,
-  InstanceSize,
-} from 'aws-cdk-lib/aws-ec2';
+import { Vpc, SubnetType, SubnetConfiguration, SecurityGroup, IVpc, ISecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { Construct } from 'constructs';
 
 export interface CustomVpcProps {
@@ -14,9 +6,11 @@ export interface CustomVpcProps {
 }
 
 export class CustomVpc extends Construct {
-  public readonly vpc: Vpc;
+  public readonly vpc: IVpc;
 
-  // public readonly sharedInboundAndOutboundSecurityGroup: SecurityGroup;
+  public readonly defaultSecurityGroup: ISecurityGroup;
+
+  public readonly sharedOutboundSecurityGroup: SecurityGroup;
 
   constructor(scope: Construct, id: string, props?: CustomVpcProps) {
     super(scope, id);
@@ -34,20 +28,16 @@ export class CustomVpc extends Construct {
       natGateways = 0;
     }
 
-    this.vpc = new Vpc(this, 'Vpc', {
-      maxAzs: 2,
-      natGatewayProvider: NatProvider.instance({
-        instanceType: InstanceType.of(InstanceClass.T2, InstanceSize.MICRO),
-      }),
-      natGateways,
-      subnetConfiguration,
+    this.vpc = Vpc.fromLookup(this, 'DefaultVpc', {
+      isDefault: true,
     });
 
-    // this.sharedInboundAndOutboundSecurityGroup = new SecurityGroup(this, `SharedInboundAndOutboundSecurityGroup`, {
-    //   allowAllOutbound: true,
-    //   securityGroupName: 'SharedInboundAndOutboundSecurityGroup',
-    //   vpc: this.vpc,
-    // });
+    this.defaultSecurityGroup = SecurityGroup.fromLookupByName(this, 'DefaultSecurityGroup', 'default', this.vpc);
+
+    this.sharedOutboundSecurityGroup = new SecurityGroup(this, `SharedOutboundSecurityGroup`, {
+      allowAllOutbound: true,
+      vpc: this.vpc,
+    });
 
     // this.sharedInboundAndOutboundSecurityGroup.connections.allowFromAnyIpv4(Port.allTraffic());
   }

@@ -1,0 +1,46 @@
+{
+  "availability-zones:account=702592220884:region=us-west-2": [
+    "us-west-2a",
+    "us-west-2b",
+    "us-west-2c",
+    "us-west-2d"
+  ],
+  "ami:account=702592220884:filters.image-type.0=machine:filters.name.0=amzn-ami-vpc-nat-*:filters.state.0=available:owners.0=amazon:region=us-west-2": "ami-0fe0a1b478a5edef9",
+  "vpc-provider:account=702592220884:filter.isDefault=true:region=us-west-2:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-08fab5526dd232a2f",
+    "vpcCidrBlock": "172.31.0.0/16",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "Public",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-0e86de7e75600b67c",
+            "cidr": "172.31.32.0/20",
+            "availabilityZone": "us-west-2a",
+            "routeTableId": "rtb-0d3dbb5d1d39787af"
+          },
+          {
+            "subnetId": "subnet-0a15a2c36cef04343",
+            "cidr": "172.31.16.0/20",
+            "availabilityZone": "us-west-2b",
+            "routeTableId": "rtb-0d3dbb5d1d39787af"
+          },
+          {
+            "subnetId": "subnet-0ca51592344c23e1d",
+            "cidr": "172.31.0.0/20",
+            "availabilityZone": "us-west-2c",
+            "routeTableId": "rtb-0d3dbb5d1d39787af"
+          },
+          {
+            "subnetId": "subnet-0b4d33349dccc8c42",
+            "cidr": "172.31.48.0/20",
+            "availabilityZone": "us-west-2d",
+            "routeTableId": "rtb-0d3dbb5d1d39787af"
+          }
+        ]
+      }
+    ]
+  }
+}

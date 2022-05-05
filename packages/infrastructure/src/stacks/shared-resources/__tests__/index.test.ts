@@ -1,6 +1,6 @@
 import { App } from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { SharedResourcesStack } from '..';
+import { SharedResourcesStack } from '../index';
 
 describe('SharedResourcesStack | Stack', () => {
   it('has the correct resources', () => {

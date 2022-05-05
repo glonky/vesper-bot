@@ -11,6 +11,11 @@
     { "path": "../config" },
     { "path": "../logger" },
     { "path": "../errors" },
-    { "path": "../container" }
+    { "path": "../container" },
+    { "path": "../vesper-service" },
+    { "path": "../discord-service" },
+    { "path": "../entity-service" },
+    { "path": "../command-bot" },
+    { "path": "../redis-service" }
   ]
 }

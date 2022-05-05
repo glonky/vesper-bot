@@ -45,11 +45,19 @@ describe('SharedResourcesStack | Construct | Database', () => {
             AttributeType: 'S',
           },
           {
-            AttributeName: 'gsi2pk',
+            AttributeName: 'GSI2pk',
             AttributeType: 'S',
           },
           {
-            AttributeName: 'gsi2sk',
+            AttributeName: 'GSI2sk',
+            AttributeType: 'S',
+          },
+          {
+            AttributeName: 'GSI3pk',
+            AttributeType: 'S',
+          },
+          {
+            AttributeName: 'GSI3sk',
             AttributeType: 'S',
           },
         ],
@@ -59,7 +67,7 @@ describe('SharedResourcesStack | Construct | Database', () => {
         },
         GlobalSecondaryIndexes: [
           {
-            IndexName: 'gsi1',
+            IndexName: 'GSI1',
             KeySchema: [
               {
                 AttributeName: 'sk',
@@ -75,14 +83,30 @@ describe('SharedResourcesStack | Construct | Database', () => {
             },
           },
           {
-            IndexName: 'gsi2',
+            IndexName: 'GSI2',
             KeySchema: [
               {
-                AttributeName: 'gsi2pk',
+                AttributeName: 'GSI2pk',
                 KeyType: 'HASH',
               },
               {
-                AttributeName: 'gsi2sk',
+                AttributeName: 'GSI2sk',
+                KeyType: 'RANGE',
+              },
+            ],
+            Projection: {
+              ProjectionType: 'ALL',
+            },
+          },
+          {
+            IndexName: 'GSI3',
+            KeySchema: [
+              {
+                AttributeName: 'GSI3pk',
+                KeyType: 'HASH',
+              },
+              {
+                AttributeName: 'GSI3sk',
                 KeyType: 'RANGE',
               },
             ],
@@ -103,6 +127,9 @@ describe('SharedResourcesStack | Construct | Database', () => {
         ],
         SSESpecification: {
           SSEEnabled: true,
+        },
+        StreamSpecification: {
+          StreamViewType: 'NEW_AND_OLD_IMAGES',
         },
         TimeToLiveSpecification: {
           AttributeName: 'ttl',

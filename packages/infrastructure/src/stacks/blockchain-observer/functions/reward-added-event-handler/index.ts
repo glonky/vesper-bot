@@ -1,51 +1,39 @@
+import 'reflect-metadata';
 import { Logger } from '@vesper-discord/logger';
-import type { Context, EventBridgeEvent } from 'aws-lambda';
-import Container from 'typedi';
-import { Config } from '../../../../config';
+import type { Context, DynamoDBStreamEvent } from 'aws-lambda';
+import type { AttributeValue } from '@aws-sdk/client-dynamodb';
+import { Container } from 'typedi';
+import { unmarshall } from '@aws-sdk/util-dynamodb';
+import { setupContainer as setupAwsContainer } from '@vesper-discord/aws';
+import { sendRewardAddedMessage } from './send-reward-added-message';
 
-interface ResponseEventDetails {
-  message: string;
-  unitId: string;
-}
-
-export async function handler(
-  event: EventBridgeEvent<'EventResponse', ResponseEventDetails>,
-  context: Context,
-): Promise<any> {
+export async function handler(event: DynamoDBStreamEvent, context: Context): Promise<any> {
   const container = Container.of(context.awsRequestId);
-  const config = container.get(Config);
   const logger = container.get(Logger);
-  // setupContainer({
-  //   apiGatewayManagementApi: {
-  //     endpoint: config.aws.resources.apiGateway.graphQLWebsocketManagementApiEndpoint,
-  //   },
-  //   container: container,
-  // });
-  // const connections = await container.get(DynamoDBClient).query({
-  //   ExpressionAttributeValues: {
-  //     unitId: event.detail.unitId,
-  //   },
-  //   KeyConditionExpression: 'unitId = :unitId',
-  // });
+  setupAwsContainer({
+    container,
+  });
 
-  // await Promise
-  // .all
-  // (connections.Items ?? []).map(async (connection) => {
-  //   const connectionId = connection.pk;
-  //   const dataToSendBuffer = Buffer.from(JSON.stringify({ connectionId, message: event.detail.message }));
-  //   const dataToSendJson = JSON.stringify({ connectionId, message: event.detail.message });
+  try {
+    await Promise.all(
+      event.Records.map(async (record) => {
+        logger.info('Stream record', { record });
 
-  //   logger.debug('WebSocket got message', { connectionId, dataToSendBuffer, dataToSendJson });
+        if (record.eventName === 'INSERT' && record.dynamodb?.NewImage) {
+          const reward = unmarshall(record.dynamodb.NewImage as { [key: string]: AttributeValue }, {
+            wrapNumbers: true,
+          });
 
-  //   // return container.get(ApiGatewayManagementApiClient).postToConnection({
-  //   //   ConnectionId: connectionId,
-  //   //   Data: dataToSendBuffer,
-  //   // });
-  // }),
-  // ();
-
-  // TODO: Lookup reward added hash details
-  // Parse transaction
-  // write to database
-  return {};
+          await sendRewardAddedMessage({
+            container,
+            poolRewardEvent: reward as any,
+          });
+          logger.info('Sent message');
+          // TODO: Update record in DynamoDB to say we have sent the message that way we can test this
+        }
+      }),
+    );
+  } catch (err) {
+    logger.error('Error sending reward added message to discord', { error: err as Error });
+  }
 }

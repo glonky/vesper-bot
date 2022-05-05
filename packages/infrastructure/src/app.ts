@@ -2,7 +2,8 @@ import '@vesper-discord/config';
 import { App, StackProps } from 'aws-cdk-lib';
 import { Container } from 'typedi';
 import { Config } from './config';
-import { SharedResourcesStack } from './stacks/shared-resources';
+import { BlockchainObserverStack } from './stacks/blockchain-observer/index';
+import { SharedResourcesStack } from './stacks/shared-resources/index';
 // import { BlockchainObserverStack } from './stacks/blockchain-observer';
 
 export class VesperDiscordApp extends App {
@@ -26,10 +27,10 @@ export class VesperDiscordApp extends App {
       stackName: `SharedResourcesStack`,
     });
 
-    // new BlockchainObserverStack(this, `BlockchainObserverStack`, {
-    //   ...stackProps,
-    //   database: this.sharedResourcesStack.database,
-    //   stackName: `BlockchainObserverStack`,
-    // });
+    new BlockchainObserverStack(this, `BlockchainObserverStack`, {
+      ...stackProps,
+      database: this.sharedResourcesStack.database,
+      stackName: `BlockchainObserverStack`,
+    });
   }
 }
