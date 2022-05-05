@@ -4,7 +4,7 @@ import { InteractionEventExecuteProps, InteractionExecuteFunction } from '../int
 
 export class CustomSlashCommandSubcommandBuilder extends DiscordSlashCommandSubcommandBuilder {
   @LoggerDecorator()
-  private logger!: Logger;
+  private readonly logger!: Logger;
 
   private executeFn?: InteractionExecuteFunction;
 

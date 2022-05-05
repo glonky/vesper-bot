@@ -1,12 +1,13 @@
 import { SlashCommandSubcommandBuilder } from '@discordjs/builders';
 import { Client, ClientOptions, Collection, Guild, GuildMember } from 'discord.js';
 import glob from 'glob';
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Logger } from '@vesper-discord/logger';
 import { Retriable } from '@vesper-discord/retry';
-import { Command, RestrictedRole } from './interfaces';
+import { Command, RestrictedRole } from './interfaces/index';
 export interface DiscordClientStartProps {
   token: string;
+  startWebsocket?: boolean;
 }
 
 export class DiscordClient extends Client {
@@ -63,9 +64,13 @@ export class DiscordClient extends Client {
   }
 
   @Retriable()
-  public async start({ token }: DiscordClientStartProps) {
+  public async start({ token, startWebsocket }: DiscordClientStartProps) {
     this.logger.info(`Logging into Discord...`);
-    await this.login(token);
+    this.token = token;
+
+    if (startWebsocket ?? true) {
+      await this.login();
+    }
 
     const guild = this.guilds.cache.first();
 

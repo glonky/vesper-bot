@@ -1,11 +1,11 @@
 import { SlashCommandBuilder as DiscordSlashCommandBuilder } from '@discordjs/builders';
 import { Logger, LoggerDecorator } from '@vesper-discord/logger';
-import { InteractionEventExecuteProps, InteractionExecuteFunction, RestrictedRole } from '../interfaces';
+import { InteractionEventExecuteProps, InteractionExecuteFunction, RestrictedRole } from '../interfaces/index';
 import { CustomSlashCommandSubcommandBuilder } from './custom-slash-command-sub-command-builder';
 
 export class CustomSlashCommandBuilder extends DiscordSlashCommandBuilder {
   @LoggerDecorator()
-  private logger!: Logger;
+  private readonly logger!: Logger;
 
   private executeFn?: InteractionExecuteFunction;
 

@@ -1,13 +1,15 @@
 {
   "name": "@vesper-discord/discord-service",
   "version": "1.0.0",
+  "private": true,
   "type": "commonjs",
   "exports": "./dist/index.js",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "@discordjs/builders": "0.12.0",
+    "@discordjs/builders": "0.13.0",
+    "@discordjs/rest": "0.4.1",
     "@vesper-discord/config": "1.0.0",
     "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
