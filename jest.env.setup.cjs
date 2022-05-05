@@ -1,28 +1,27 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-var-requires */
 require('reflect-metadata');
-const { BaseConfig } = require('@vesper-discord/config/src/base-config');
-
-new BaseConfig().loadDotEnvFiles();
-
-const { Container } = require('typedi')
-const { RedisService } = require('@vesper-discord/redis-service/src')
+const { Container } = require('typedi');
+const { BaseConfig } = require('./packages/config/dist/base-config.js');
+const { RedisService } = require('./packages/redis-service/dist/index.js');
 
 let redisClient;
 
-beforeAll(() => {
+beforeAll(async () => {
+  new BaseConfig().loadDotEnvFiles();
   redisClient = Container.get(RedisService).init();
-})
+});
 
 afterAll(async () => {
   try {
-    await redisClient?.quit();
- } catch(err) {
-    console.error("Error in after all jest.env.setup", err);
+    redisClient?.quit();
+  } catch (err) {
+    console.error('Error in after all jest.env.setup', err);
     throw err;
- }
-})
+  }
+});
 
 afterEach(async () => {
   Container.reset();
-  await redisClient.flushall()
+  await redisClient?.flushall();
 });
