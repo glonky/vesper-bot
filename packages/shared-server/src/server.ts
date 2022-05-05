@@ -1,5 +1,4 @@
-import path from 'path';
-import Container, { Service } from 'typedi';
+import { Container, Service } from 'typedi';
 import { Server as CommandBotServer } from '@vesper-discord/command-bot';
 import { Server as SidebarGasBotServer } from '@vesper-discord/sidebar-gas-bot';
 import { Server as SidebarExchangeRateBotServer } from '@vesper-discord/sidebar-exchange-rate-bot';
@@ -12,7 +11,7 @@ import { BaseConfig } from '@vesper-discord/config';
 export class Server {
   public async start() {
     Container.get(RedisService).init();
-    Container.get(BaseConfig).loadDotEnvFiles(path.join(__dirname, '../../..'));
+    Container.get(BaseConfig).loadDotEnvFiles();
     await Container.get(CommandBotServer).start();
     await Container.get(SidebarGasBotServer).start();
     await Container.get(SidebarExchangeRateBotServer).start();

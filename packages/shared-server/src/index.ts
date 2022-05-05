@@ -1,4 +1,4 @@
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Server } from './server';
 
 (async () => {
