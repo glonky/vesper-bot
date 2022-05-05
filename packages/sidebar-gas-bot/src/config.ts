@@ -1,6 +1,6 @@
 import { Service } from 'typedi';
 import { BaseConfig } from '@vesper-discord/config';
-import { Intents } from '@vesper-discord/discord-service';
+import { discord } from '@vesper-discord/discord-service';
 
 @Service()
 export class Config extends BaseConfig {
@@ -8,5 +8,5 @@ export class Config extends BaseConfig {
 
   token = this.getEnvVar<string>('SIDEBAR_GAS_BOT_DISCORD_TOKEN');
 
-  intents = [Intents.FLAGS.GUILDS];
+  intents = [discord.Intents.FLAGS.GUILDS];
 }

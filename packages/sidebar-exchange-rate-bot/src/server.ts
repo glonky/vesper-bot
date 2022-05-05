@@ -1,6 +1,6 @@
-import path from 'path';
+import path from 'node:path';
 import { DiscordClient } from '@vesper-discord/discord-service';
-import Container, { Service } from 'typedi';
+import { Container, Service } from 'typedi';
 import { Config } from './config';
 
 @Service()

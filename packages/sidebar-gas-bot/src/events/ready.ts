@@ -1,7 +1,7 @@
-import Container from 'typedi';
+import { Container } from 'typedi';
 import { Logger } from '@vesper-discord/logger';
 import { ReadyEvent } from '@vesper-discord/discord-service';
-import { EtherscanService } from '@vesper-discord/etherscan-service';
+import { EtherscanService } from '@vesper-discord/blockchain-scan-service';
 import { Config } from '../config';
 
 export default <ReadyEvent>{

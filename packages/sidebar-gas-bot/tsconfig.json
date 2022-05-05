@@ -7,7 +7,7 @@
   "include": ["src"],
   "references": [
     { "path": "../discord-service" },
-    { "path": "../etherscan-service" },
+    { "path": "../blockchain-scan-service" },
     { "path": "../logger" },
     { "path": "../config" }
   ]

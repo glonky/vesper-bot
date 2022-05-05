@@ -1,13 +1,16 @@
 {
   "name": "@vesper-discord/sidebar-gas-bot",
   "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
   "main": "./dist/index.js",
+  "exports": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {},
   "dependencies": {
     "@vesper-discord/discord-service": "1.0.0",
-    "@vesper-discord/etherscan-service": "1.0.0",
+    "@vesper-discord/blockchain-scan-service": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
     "@vesper-discord/config": "1.0.0",
     "typedi": "0.10.0"

@@ -1,7 +1,10 @@
 {
   "name": "@vesper-discord/utils",
   "version": "1.0.0",
-  "main": "dist/index.js",
+  "private": true,
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
   "types": "dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
@@ -11,7 +14,7 @@
     "pluralize": "8.0.0"
   },
   "devDependencies": {
-    "@types/lodash": "4.14.181",
+    "@types/lodash": "4.14.182",
     "@types/pluralize": "0.0.29"
   }
 }
