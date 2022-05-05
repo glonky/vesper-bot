@@ -1,0 +1,29 @@
+{
+  "name": "@vesper-discord/blockchain-scan-service",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "main": "./dist/index.js",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@vesper-discord/blockchain-service": "1.0.0",
+    "@vesper-discord/config": "1.0.0",
+    "@vesper-discord/errors": "1.0.0",
+    "@vesper-discord/logger": "1.0.0",
+    "@vesper-discord/monitoring": "1.0.0",
+    "@vesper-discord/redis-service": "1.0.0",
+    "@vesper-discord/retry": "1.0.0",
+    "bignumber.js": "9.0.2",
+    "ethers": "5.6.4",
+    "lodash": "4.17.21",
+    "luxon": "2.3.2",
+    "node-fetch": "2.6.6",
+    "typedi": "0.10.0"
+  },
+  "devDependencies": {
+    "@types/bignumber.js": "5.0.0",
+    "@types/lodash": "4.14.182"
+  }
+}
