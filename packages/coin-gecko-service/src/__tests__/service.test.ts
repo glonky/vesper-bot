@@ -1,5 +1,5 @@
-import Container from 'typedi';
-import { CoinGeckoService } from '../service';
+import { Container } from 'typedi';
+import { CoinGeckoService, PlatformId } from '../service';
 
 describe('coin-gecko-service | service | e2e', () => {
   const wbtcAddress = '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599';
@@ -9,7 +9,7 @@ describe('coin-gecko-service | service | e2e', () => {
       const coinGeckoService = Container.get(CoinGeckoService);
       const coinInfo = await coinGeckoService.getCoinInfoFromContractAddress({
         contractAddress: wbtcAddress,
-        platformId: 'ethereum',
+        platformId: PlatformId.ETHEREUM,
       });
       expect(coinInfo.symbol).toBe('wbtc');
     });
@@ -20,7 +20,7 @@ describe('coin-gecko-service | service | e2e', () => {
       const coinGeckoService = Container.get(CoinGeckoService);
       const priceOfToken = await coinGeckoService.getPriceOfToken({
         contractAddresses: [wbtcAddress], // WBTC
-        platformId: 'ethereum',
+        platformId: PlatformId.ETHEREUM,
         vsCurrencies: ['usd'],
       });
 

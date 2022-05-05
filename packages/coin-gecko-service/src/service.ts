@@ -8,15 +8,21 @@ import { ErrorHandler } from '@vesper-discord/errors';
 import { omitBy, isNil } from 'lodash';
 import { Config } from './config';
 import { CoinInfoFromContractAddress, PriceOfToken } from './interfaces';
-import { CoinGeckoErrorConverter } from './errors';
+import { CoinGeckoErrorConverter } from './errors/index';
+
+export enum PlatformId {
+  ETHEREUM = 'ethereum',
+  POLYGON = 'polygon-pos',
+  AVALANCHE = 'avalanche',
+}
 
 @Service()
 export class CoinGeckoService {
   @LoggerDecorator()
-  private logger!: Logger;
+  private readonly logger!: Logger;
 
   @Inject(() => Config)
-  private config!: Config;
+  private readonly config!: Config;
 
   @Log({
     logInput: ({ input }) => input[0],
@@ -25,7 +31,7 @@ export class CoinGeckoService {
   @Cacheable({
     ttlSeconds: 60 * 60 * 24,
   })
-  public async getCoinInfoFromContractAddress(props: { platformId: string; contractAddress: string }) {
+  public async getCoinInfoFromContractAddress(props: { platformId: PlatformId; contractAddress: string }) {
     return this.fetch<CoinInfoFromContractAddress>(`coins/${props.platformId}/contract/${props.contractAddress}`, {});
   }
 
@@ -36,7 +42,7 @@ export class CoinGeckoService {
   @Cacheable({
     ttlSeconds: 5,
   })
-  public async getPriceOfToken(props: { platformId: string; contractAddresses: string[]; vsCurrencies: string[] }) {
+  public async getPriceOfToken(props: { platformId: PlatformId; contractAddresses: string[]; vsCurrencies: string[] }) {
     return this.fetch<PriceOfToken>(`simple/token_price/${props.platformId}`, {
       contract_addresses: props.contractAddresses.join(','),
       vs_currencies: props.vsCurrencies.join(','),
