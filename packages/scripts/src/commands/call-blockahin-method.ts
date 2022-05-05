@@ -1,7 +1,6 @@
 import { flags } from '@oclif/command';
-import Container from 'typedi';
-import { EtherscanService } from '@vesper-discord/etherscan-service';
-import { BlockchainService } from '@vesper-discord/blockchain-service';
+import { EtherscanService } from '@vesper-discord/blockchain-scan-service';
+import { EthereumBlockchainService } from '@vesper-discord/blockchain-service';
 import { BaseCommand } from '../base-command';
 
 export default class CallBlockchainMethodCommand extends BaseCommand {
@@ -35,8 +34,10 @@ export default class CallBlockchainMethodCommand extends BaseCommand {
 
     const { contractAddress, method, readWrite, params } = cliFlags;
 
-    const abi = await Container.get(EtherscanService).getContractABIFromAddress({ contractAddress, followProxy: true });
-    await Container.get(BlockchainService).callMethod({
+    const abi = await this.container
+      .get(EtherscanService)
+      .getContractABIFromAddress({ contractAddress, followProxy: true });
+    await this.container.get(EthereumBlockchainService).callMethod({
       abi,
       cache: true,
       contractAddress,

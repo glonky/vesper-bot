@@ -1,4 +1,4 @@
-import path from 'path';
+import path from 'node:path';
 import { REST } from '@discordjs/rest';
 import type {
   RESTGetAPIApplicationGuildCommandsResult,
@@ -6,7 +6,6 @@ import type {
   RESTPutAPIGuildApplicationCommandsPermissionsJSONBody,
 } from 'discord-api-types/v9';
 import { ApplicationCommandPermissionType, Routes } from 'discord-api-types/v9';
-import Container from 'typedi';
 import glob from 'glob';
 import { Command } from '@vesper-discord/discord-service';
 import { Config } from '@vesper-discord/command-bot';
@@ -58,7 +57,7 @@ export default class DeployDiscordCommands extends BaseCommand {
       }
     }
 
-    const config = Container.get(Config);
+    const config = this.container.get(Config);
 
     this.logger.info('Deploying commands...', {
       commands: commands.map((command) => command.data.name),

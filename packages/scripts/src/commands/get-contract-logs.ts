@@ -1,7 +1,6 @@
 import { flags } from '@oclif/command';
-import Container from 'typedi';
-import { EtherscanService } from '@vesper-discord/etherscan-service';
-import { BlockchainService } from '@vesper-discord/blockchain-service';
+import { EtherscanService } from '@vesper-discord/blockchain-scan-service';
+import { EthereumBlockchainService } from '@vesper-discord/blockchain-service';
 import { BaseCommand } from '../base-command';
 
 export default class GetContractLogsCommand extends BaseCommand {
@@ -18,8 +17,8 @@ export default class GetContractLogsCommand extends BaseCommand {
 
     const { contractAddress } = cliFlags;
 
-    const etherscanService = Container.get(EtherscanService);
-    const blockchainService = Container.get(BlockchainService);
+    const etherscanService = this.container.get(EtherscanService);
+    const blockchainService = this.container.get(EthereumBlockchainService);
     const contract = await etherscanService.getContractFromAddress(contractAddress);
     const filter = contract.filters.RewardAdded();
     const logs = await blockchainService.getLogs({ ...filter, fromBlock: 0, toBlock: 'latest' });

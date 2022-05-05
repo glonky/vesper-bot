@@ -1,8 +1,8 @@
-import Container from 'typedi';
-import { EtherscanService } from '@vesper-discord/etherscan-service';
+import { EtherscanService } from '@vesper-discord/blockchain-scan-service';
 import { ethers } from 'ethers';
 import * as vsp from '@vesper-discord/vesper-service';
-import _ from 'lodash';
+import { mapKeys } from 'lodash';
+import { EthereumBlockchainService } from '@vesper-discord/blockchain-service';
 import { BaseCommand } from '../base-command';
 
 export default class TestCommand extends BaseCommand {
@@ -107,7 +107,8 @@ export default class TestCommand extends BaseCommand {
         symbol: 'SLP',
       },
     } as any;
-    const etherscanService = Container.get(EtherscanService);
+    const etherscanService = this.container.get(EtherscanService);
+    const blockchainService = this.container.get(EthereumBlockchainService);
     const proxyAddress = '0x9B11078F5e8345d074498a83C4f9824942F796d3';
     const listOfNormalTransactionsByAddress = await etherscanService.getListOfNormalTransactionsByAddress({
       address: proxyAddress,
@@ -116,7 +117,7 @@ export default class TestCommand extends BaseCommand {
     const { result } = listOfNormalTransactionsByAddress;
     const [firstTransaction, second] = result;
 
-    const receipt = await etherscanService.getTransactionReceipt(second.hash);
+    const receipt = await blockchainService.getTransactionReceipt(second.hash);
     const parsedLogs = await etherscanService.parseTransactionReceiptLogs(receipt);
 
     function populateKnownAddresses() {
@@ -133,7 +134,7 @@ export default class TestCommand extends BaseCommand {
         (c) => ((addressMetadata as any)[c.address] = { ...c, address: c.address.toLowerCase() }),
       );
 
-      addressMetadata = _.mapKeys(addressMetadata, (v, k) => k.toLowerCase()) as any;
+      addressMetadata = mapKeys(addressMetadata, (v, k) => k.toLowerCase()) as any;
     }
 
     populateKnownAddresses();
@@ -196,7 +197,7 @@ export default class TestCommand extends BaseCommand {
       }
     });
 
-    // const vesperMetadata = (Container.get(VesperService).vesperLib as any).metadata;
+    // const vesperMetadata = (this.container.get(VesperService).vesperLib as any).metadata;
 
     // const uniqueAddressess = _.chain(parsedLogs).uniqBy('address').map('address').value();
     // const addressMetadatas = uniqueAddressess.map((address) => {});

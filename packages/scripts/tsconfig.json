@@ -2,17 +2,18 @@
   "extends": "../../tsconfig.shared.json",
   "compilerOptions": {
     "rootDir": "src",
-    "esModuleInterop": true,
     "outDir": "dist"
   },
   "include": ["src"],
   "references": [
     { "path": "../config" },
     { "path": "../logger" },
+    { "path": "../aws" },
     { "path": "../errors" },
     { "path": "../discord-service" },
-    { "path": "../etherscan-service" },
+    { "path": "../blockchain-scan-service" },
     { "path": "../coin-gecko-service" },
+    { "path": "../entity-service" },
     { "path": "../blockchain-service" },
     { "path": "../vesper-service" },
     { "path": "../redis-service" },

@@ -1,4 +1,3 @@
-import path from 'path';
 import { Command } from '@oclif/command';
 import inquirer from 'inquirer';
 import Container, { ContainerInstance } from 'typedi';
@@ -6,6 +5,7 @@ import { ulid } from 'ulid';
 import { Logger } from '@vesper-discord/logger';
 import { BaseConfig } from '@vesper-discord/config';
 import { RedisService } from '@vesper-discord/redis-service';
+import { setupContainer as setupAwsContainer, Config as AwsConfig } from '@vesper-discord/aws';
 import { Config } from './config';
 
 export abstract class BaseCommand extends Command {
@@ -13,14 +13,23 @@ export abstract class BaseCommand extends Command {
 
   protected logger!: Logger;
 
+  protected container!: ContainerInstance;
+
   async run() {
-    const redisClient = Container.get(RedisService).init();
+    Container.get(BaseConfig).loadDotEnvFiles();
 
-    Container.get(BaseConfig).loadDotEnvFiles(path.join(__dirname, '../../..'));
+    this.container = Container.of(ulid());
+    const redisClient = this.container.get(RedisService).init();
+    this.logger = this.container.get(Logger);
+    this.localConfig = this.container.get(Config);
+    const awsConfig = this.container.get(AwsConfig);
 
-    const container = Container.of(ulid());
-    this.logger = container.get(Logger);
-    this.localConfig = container.get(Config);
+    setupAwsContainer({
+      container: this.container,
+      dynamoDBClient: {
+        endpoint: awsConfig.services.dynamoDb.endpoint,
+      },
+    });
 
     if (this.localConfig.isProduction && !this.localConfig.isCI) {
       const { confirmProd } = await inquirer.prompt({
@@ -36,7 +45,7 @@ export abstract class BaseCommand extends Command {
     }
 
     try {
-      await this.runHandler(container);
+      await this.runHandler();
     } catch (err) {
       this.logger.error('An error occurred running the script', {
         error: err as Error,
@@ -48,5 +57,5 @@ export abstract class BaseCommand extends Command {
     }
   }
 
-  protected abstract runHandler(container: ContainerInstance): Promise<void>;
+  protected abstract runHandler(): Promise<void>;
 }
