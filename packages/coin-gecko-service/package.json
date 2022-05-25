@@ -15,7 +15,7 @@
     "@vesper-discord/retry": "1.0.0",
     "ethers": "5.6.6",
     "lodash": "4.17.21",
-    "node-fetch": "2.6.6",
+    "node-fetch": "2.6.7",
     "typedi": "0.10.0"
   },
   "devDependencies": {
