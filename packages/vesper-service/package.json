@@ -19,7 +19,7 @@
     "bluebird": "3.7.2",
     "ethers": "5.6.6",
     "luxon": "2.4.0",
-    "node-fetch": "2.6.6",
+    "node-fetch": "2.6.7",
     "semver-sort": "1.0.0",
     "typedi": "0.10.0",
     "vesper-lib": "1.0.0",
