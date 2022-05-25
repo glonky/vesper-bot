@@ -14,7 +14,8 @@ describe('reward-added-event-handler | sendRewardAddedMessage', () => {
   it('should send a message to discord', async () => {
     const poolRewardEventsByPool = await container
       .get(PoolRewardEventRepository)
-      .getPoolRewardEventsByPool('veDAI-WBTC Earn Pool');
+      // 'veDAI-ETH Earn Pool'
+      .getPoolRewardEventsByPool({ poolContractAddress: '0x7a74B6D3A07D3249Ea2FBb58e47F0DaF6d6a2ebf' });
 
     const [latestPoolRewardEvent] = poolRewardEventsByPool as any;
 

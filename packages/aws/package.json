@@ -8,10 +8,10 @@
   "types": "dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-apigatewaymanagementapi": "3.82.0",
-    "@aws-sdk/client-dynamodb": "3.82.0",
-    "@aws-sdk/client-eventbridge": "3.82.0",
-    "@aws-sdk/lib-dynamodb": "3.82.0",
+    "@aws-sdk/client-apigatewaymanagementapi": "3.95.0",
+    "@aws-sdk/client-dynamodb": "3.95.0",
+    "@aws-sdk/client-eventbridge": "3.95.0",
+    "@aws-sdk/lib-dynamodb": "3.95.0",
     "@vesper-discord/config": "1.0.0",
     "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
@@ -22,7 +22,7 @@
     "typedi": "0.10.0"
   },
   "devDependencies": {
-    "@types/aws-lambda": "8.10.95",
+    "@types/aws-lambda": "8.10.97",
     "@types/lodash": "4.14.182"
   }
 }

@@ -7,7 +7,7 @@ import { Cacheable } from '@vesper-discord/redis-service';
 import { ErrorHandler } from '@vesper-discord/errors';
 import { omitBy, isNil } from 'lodash';
 import { Config } from './config';
-import { CoinInfoFromContractAddress, PriceOfToken } from './interfaces';
+import { Coin, CoinInfoFromContractAddress, PriceOfToken } from './interfaces';
 import { CoinGeckoErrorConverter } from './errors/index';
 
 export enum PlatformId {
@@ -29,7 +29,7 @@ export class CoinGeckoService {
     logResult: ({ result }) => result,
   })
   @Cacheable({
-    ttlSeconds: 60 * 60 * 24,
+    ttlSeconds: 60 * 60 * 24 * 30,
   })
   public async getCoinInfoFromContractAddress(props: { platformId: PlatformId; contractAddress: string }) {
     return this.fetch<CoinInfoFromContractAddress>(`coins/${props.platformId}/contract/${props.contractAddress}`, {});
@@ -41,6 +41,30 @@ export class CoinGeckoService {
   })
   @Cacheable({
     ttlSeconds: 5,
+  })
+  public async getCoin(props: {
+    id: string;
+    tickers?: boolean;
+    marketData?: boolean;
+    communityData?: boolean;
+    sparkline?: boolean;
+    developerData?: boolean;
+  }) {
+    return this.fetch<Coin>(`coin/${props.id}`, {
+      community_data: props.communityData ?? false,
+      developerData: props.developerData ?? false,
+      marketData: props.marketData ?? true,
+      sparkline: props.sparkline ?? false,
+      tickers: props.tickers,
+    });
+  }
+
+  @Log({
+    logInput: ({ input }) => input[0],
+    logResult: ({ result }) => result,
+  })
+  @Cacheable({
+    ttlSeconds: 30,
   })
   public async getPriceOfToken(props: { platformId: PlatformId; contractAddresses: string[]; vsCurrencies: string[] }) {
     return this.fetch<PriceOfToken>(`simple/token_price/${props.platformId}`, {
@@ -73,7 +97,7 @@ export class CoinGeckoService {
   @ErrorHandler({
     converter: CoinGeckoErrorConverter,
   })
-  private fetch<T>(endpoint: string, params?: { [key: string]: string }): Promise<T> {
+  private fetch<T>(endpoint: string, params?: { [key: string]: any }): Promise<T> {
     const searchParams = new URLSearchParams(params);
     const url = new URL(`${this.config.baseUrl}/${this.config.apiVersion}/${endpoint}`);
     url.search = searchParams.toString();

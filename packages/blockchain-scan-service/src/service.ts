@@ -4,7 +4,7 @@ import fetch from 'node-fetch';
 import { ethers } from 'ethers';
 import { Cacheable } from '@vesper-discord/redis-service';
 import { BlockchainService, NotProxyAddressError } from '@vesper-discord/blockchain-service';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import { Logger, Log } from '@vesper-discord/logger';
 import { Retriable } from '@vesper-discord/retry';
 import { ErrorHandler } from '@vesper-discord/errors';
@@ -220,7 +220,7 @@ export abstract class BlockchainScanService {
       const { contractAddress, followProxy } = args[0];
       return `${contractAddress.toLowerCase()}${followProxy ? ':proxy' : ''}`;
     },
-    ttlSeconds: 60 * 60 * 24, // 1 day,
+    ttlSeconds: 60 * 60 * 24 * 30, // 30 days,
   })
   public async getContractABIFromAddress({
     contractAddress,

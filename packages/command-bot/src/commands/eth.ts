@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import { Container } from 'typedi';
 import web3 from 'web3';
 import { formatTimeFromSeconds, unwrap } from '@vesper-discord/utils';

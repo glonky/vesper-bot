@@ -16,8 +16,6 @@ export class BlockchainScanErrorConverter implements ErrorConverter<BlockchainSc
     const existingMessage = error.message || undefined;
     const message = existingMessage ?? error.code ?? `${scanService} Error`;
 
-    error.message = message;
-
     const errorProps = { ...props, scanService } as ExtendedBlockchainScanErrorProps;
 
     if (
@@ -33,7 +31,7 @@ export class BlockchainScanErrorConverter implements ErrorConverter<BlockchainSc
         resultError = new BlockchainScanRateLimitError(errorProps);
         break;
       default:
-        resultError = new ExtendedBlockchainScanError(errorProps);
+        resultError = new ExtendedBlockchainScanError(message, errorProps);
     }
 
     return resultError;

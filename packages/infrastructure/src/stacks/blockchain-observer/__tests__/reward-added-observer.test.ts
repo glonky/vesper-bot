@@ -1,17 +1,42 @@
 import { Template } from 'aws-cdk-lib/assertions';
 import * as cdk from 'aws-cdk-lib';
 import { Stack } from 'aws-cdk-lib';
-import { Database } from '../database';
+import { RewardAddedObserver } from '../reward-added-observer';
+import { CustomVpc } from '../../shared-resources/vpc';
+import { Database } from '../../shared-resources/database';
+import { RedisCache } from '../../shared-resources/redis-cache';
+import { SecurityGroups } from '../../shared-resources/security-groups';
 
-describe('SharedResourcesStack | Construct | Database', () => {
-  describe('DynamoDB Tables', () => {
+describe('BlockchainObserverStack | Construct | RewardAddedObserver', () => {
+  describe('Lambda', () => {
     test('it has the correct resources', () => {
       const app = new cdk.App();
-      const stack = new Stack(app, 'Stack');
-      new Database(stack, 'Database');
+      const stack = new Stack(app, 'Stack', {
+        env: {
+          account: '702592220884',
+          region: 'us-west-2',
+        },
+      });
+      const vpc = new CustomVpc(stack, 'Vpc');
+      const securityGroup = new SecurityGroups(stack, 'SecurityGroups', {
+        vpc,
+      });
+
+      const database = new Database(stack, 'Database');
+      const redisCache = new RedisCache(stack, 'RedisCache', {
+        securityGroup: securityGroup.redisCacheSecurityGroup,
+        vpc,
+      });
+      new RewardAddedObserver(stack, 'RewardAddedObserver', {
+        database,
+
+        redisCache,
+        securityGroup: securityGroup.lambdaSecurityGroup,
+        vpc,
+      });
 
       const template = Template.fromStack(stack);
-      template.resourceCountIs('AWS::DynamoDB::Table', 1);
+      template.resourceCountIs('AWS::DynamoDB::Table', 0);
     });
 
     test('it sets retention policy to Retain', () => {
@@ -58,14 +83,6 @@ describe('SharedResourcesStack | Construct | Database', () => {
           },
           {
             AttributeName: 'GSI3sk',
-            AttributeType: 'S',
-          },
-          {
-            AttributeName: 'GSI4pk',
-            AttributeType: 'S',
-          },
-          {
-            AttributeName: 'GSI4sk',
             AttributeType: 'S',
           },
         ],
@@ -115,22 +132,6 @@ describe('SharedResourcesStack | Construct | Database', () => {
               },
               {
                 AttributeName: 'GSI3sk',
-                KeyType: 'RANGE',
-              },
-            ],
-            Projection: {
-              ProjectionType: 'ALL',
-            },
-          },
-          {
-            IndexName: 'GSI4',
-            KeySchema: [
-              {
-                AttributeName: 'GSI4pk',
-                KeyType: 'HASH',
-              },
-              {
-                AttributeName: 'GSI4sk',
                 KeyType: 'RANGE',
               },
             ],

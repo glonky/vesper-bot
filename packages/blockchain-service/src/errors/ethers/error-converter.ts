@@ -10,7 +10,12 @@ export class EthersErrorConverter implements ErrorConverter<EthersError> {
     const code = error.code;
     const message = props.error.message ?? 'Ethers Error';
 
+    if (message.includes('request failed or timed out')) {
+      return new RetriableEthersError(message, props);
+    }
+
     switch (code) {
+      case 'EADDRNOTAVAIL':
       case 'TIMEOUT': {
         resultError = new RetriableEthersError(message, props);
         break;

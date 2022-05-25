@@ -1,7 +1,7 @@
 import { Container } from 'typedi';
 import { Logger } from '@vesper-discord/logger';
 import { ReadyEvent } from '@vesper-discord/discord-service';
-import { VesperService } from '@vesper-discord/vesper-service';
+import { EthereumVesperService } from '@vesper-discord/vesper-service';
 import { Config } from '../config';
 
 export default <ReadyEvent>{
@@ -10,7 +10,7 @@ export default <ReadyEvent>{
     const logger = Container.get(Logger);
     logger.setName('Ready');
 
-    const vesperService = Container.get(VesperService);
+    const vesperService = Container.get(EthereumVesperService);
 
     logger.info(`Ready! Logged in`, {
       tag: client.user?.tag,

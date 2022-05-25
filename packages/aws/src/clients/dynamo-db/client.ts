@@ -9,6 +9,8 @@ import {
   GetCommandInput,
   PutCommandInput,
   PutCommand,
+  UpdateCommand,
+  UpdateCommandInput,
   QueryCommand,
   QueryCommandInput,
   ScanCommand,
@@ -150,6 +152,28 @@ export class DynamoDBClient {
   public async putItem(props: PutCommandInput) {
     return this.documentClient.send(
       new PutCommand({
+        ...props,
+        ReturnConsumedCapacity: 'TOTAL',
+        ReturnItemCollectionMetrics: 'SIZE',
+      }),
+    );
+  }
+
+  @Log({
+    logInput: ({ input }) => ({ key: input[0].Key, updateExpression: input[0].UpdateExpression }),
+    logResult: ({ result }) => ({
+      consumedCapacity: omitBy(
+        result.ConsumedCapacity,
+        (value, key) => isNil(value) || key === 'TableName' || key === 'Table',
+      ),
+      itemCollectionMetrics: omitBy(result.ItemCollectionMetrics, isNil),
+    }),
+  })
+  @Retriable()
+  @ErrorHandler({ converter: AwsErrorConverter })
+  public async updateItem(props: UpdateCommandInput) {
+    return this.documentClient.send(
+      new UpdateCommand({
         ...props,
         ReturnConsumedCapacity: 'TOTAL',
         ReturnItemCollectionMetrics: 'SIZE',

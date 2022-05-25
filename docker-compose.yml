@@ -10,6 +10,22 @@ services:
       working_dir: /home/dynamodblocal
   redis:
     image: redis
-    command: ["redis-server", "--bind", "redis", "--port", "6379"]
+    environment:
+      - REDIS_APPENDONLY=yes
+      - REDIS_APPENDFSYNC=always
+    restart: always
+    command: ["redis-server", "--bind", "redis", "--port", "6379", "--save", "20", "1"]
+    volumes:
+      - ./docker/redis/data:/data
     ports:
       - 6379:6379
+  app:
+    container_name: app
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    external_links:
+      - redis
+    depends_on:
+      - redis

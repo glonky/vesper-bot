@@ -1,74 +1,86 @@
 import { PoolRewardEventRepository } from '@vesper-discord/entity-service';
-import { Logger } from '@vesper-discord/logger';
-import { convert } from 'convert-svg-to-jpeg';
+import sharp from 'sharp';
 import { capitalize } from 'lodash';
 import { DateTime } from 'luxon';
 import fetch, { Headers } from 'node-fetch';
 import FormData from 'form-data';
 import { ContainerInstance } from 'typedi';
+import { BigNumber, ethers } from 'ethers';
 
 interface PoolRewardEvent {
   GSI2pk: string;
-  poolLogoURI: string;
-  poolHolders: {
-    value: number;
-  };
-  poolType: string;
-
-  poolInterestFee: {
-    value: number;
-  };
-  poolWithdrawFee: {
-    value: number;
-  };
-  GSI2ssk: string;
-  baseTokenAddress: string;
-  baseTokenAmount: {
-    value: number;
-  };
-  baseTokenAmountInUSD: {
-    value: number;
-  };
-  baseTokenName: string;
-  baseTokenPriceInUSD: {
-    value: number;
-  };
-  baseTokenSymbol: string;
-  baseTokenTotalValueLocked: {
-    value: number;
-  };
-  baseTokenTotalValueLockedInUSD: {
-    value: number;
-  };
-  baseTokenValue: {
-    value: number;
-  };
-  blockId: {
+  GSI2sk: string;
+  GSI3pk: string;
+  GSI3sk: string;
+  blockNumber: {
     value: number;
   };
   blockTimestamp: {
     value: number;
   };
-  blockchain: string;
   id: string;
   network: string;
   pk: string;
+  poolAssetAddress: string;
+  poolAssetCurrency: string;
+  poolAssetDecimals: {
+    value: number;
+  };
+  poolAssetPrice: {
+    value: number;
+  };
+  poolAssetSymbol: string;
+  poolAssetTotalValueLocked: {
+    value: number;
+  };
+  poolContractVersion: string;
+  poolHolders: {
+    value: number;
+  };
+  poolInterestFee: {
+    value: number;
+  };
+  poolLogoURI: string;
   poolName: string;
   poolProxyContractAddress: string;
   poolRewardsProxyContractAddress: string;
+  poolRiskLevel: {
+    value: number;
+  };
+  poolStage: string;
+  poolTokenTotalValueLocked: string;
+  poolTokenValue: {
+    value: number;
+  };
+  poolType: string;
+  poolWithdrawFee: {
+    value: number;
+  };
   rewardAmount: {
     value: number;
   };
   rewardDuration: {
     value: number;
   };
+  rewardTokenAmount: string;
+  rewardTokenAmountInUSD: {
+    value: number;
+  };
+  rewardTokenPoolDecimals: {
+    value: number;
+  };
+  poolTotalValueLocked: string;
   rewardTokenPoolAddress: string;
   rewardTokenPoolName: string;
+  poolFullName: string;
+  rewardTokenPriceInUSD: {
+    value: number;
+  };
   rewardTokenSymbol: string;
   sk: string;
   strategyAddress: string;
   strategyName: string;
-  transactionId: string;
+  transactionHash: string;
   type: 'POOL_REWARD_EVENT';
 }
 
@@ -78,17 +90,17 @@ export interface SendRewardAddedMessageProps {
 }
 
 export async function sendRewardAddedMessage({ poolRewardEvent, container }: SendRewardAddedMessageProps) {
-  const logger = container.get(Logger);
+  // const logger = container.get(Logger);
   const currencyFormatter = new Intl.NumberFormat('en-US', { currency: 'USD', style: 'currency' });
-  const numberFormatter = new Intl.NumberFormat('en-US');
+  // const numberFormatter = new Intl.NumberFormat('en-US');
   const tokenNumberFormatter = new Intl.NumberFormat('en-US', {
     maximumFractionDigits: 5,
   });
-  const percentFormatter = new Intl.NumberFormat('en-US', {
-    maximumFractionDigits: 2,
-    minimumFractionDigits: 2,
-    style: 'percent',
-  });
+  // const percentFormatter = new Intl.NumberFormat('en-US', {
+  //   maximumFractionDigits: 2,
+  //   minimumFractionDigits: 2,
+  //   style: 'percent',
+  // });
 
   let networkImageUrl = '';
 
@@ -106,19 +118,33 @@ export async function sendRewardAddedMessage({ poolRewardEvent, container }: Sen
 
   const poolRewardEventsByPool = await container
     .get(PoolRewardEventRepository)
-    .getPoolRewardEventsByPool(poolRewardEvent.poolName);
+    .getPoolRewardEventsByPool({ poolContractAddress: poolRewardEvent.poolProxyContractAddress });
 
-  const [, lastPoolRewardEvent] = poolRewardEventsByPool as any;
-  const percentDifferenceInYield =
-    (Number(poolRewardEvent.baseTokenAmountInUSD.value) - Number(lastPoolRewardEvent.baseTokenAmountInUSD.value)) /
-    Number(poolRewardEvent.baseTokenAmountInUSD.value);
+  let lastPoolRewardEvent: PoolRewardEvent | undefined;
 
-  const percentDifferenceInTVL =
-    (Number(poolRewardEvent.baseTokenTotalValueLockedInUSD.value) -
-      Number(lastPoolRewardEvent.baseTokenTotalValueLockedInUSD.value)) /
-    Number(poolRewardEvent.baseTokenTotalValueLockedInUSD.value);
+  if (poolRewardEventsByPool.length > 1) {
+    lastPoolRewardEvent = poolRewardEventsByPool[1] as unknown as PoolRewardEvent;
+  }
+  // const percentDifferenceInYield =
+  //   (Number(poolRewardEvent.rewardTokenAmountInUSD.value) - Number(lastPoolRewardEvent.rewardTokenAmountInUSD.value)) /
+  //   Number(poolRewardEvent.rewardTokenAmountInUSD.value);
 
-  let vesperAppLink = 'https://app.vesper.finance/';
+  // const percentDifferenceInTVL =
+  //   (Number(poolRewardEvent.rewardTokenTotalValueLockedInUSD.value) -
+  //     Number(lastPoolRewardEvent.rewardTokenTotalValueLockedInUSD.value)) /
+  //   Number(poolRewardEvent.rewardTokenTotalValueLockedInUSD.value);
+
+  let vesperAppLink;
+
+  switch (poolRewardEvent.poolStage) {
+    case 'orbit': {
+      vesperAppLink = 'https://orbit.vesper.finance/';
+      break;
+    }
+    default: {
+      vesperAppLink = 'https://app.vesper.finance/';
+    }
+  }
 
   switch (poolRewardEvent.network) {
     case 'mainnet':
@@ -136,6 +162,19 @@ export async function sendRewardAddedMessage({ poolRewardEvent, container }: Sen
 
   vesperAppLink += `pools/${poolRewardEvent.poolProxyContractAddress}`;
 
+  const convertedPoolTokenTotalValueLocked = ethers.utils.formatUnits(
+    BigNumber.from(poolRewardEvent.poolTotalValueLocked),
+    Number(poolRewardEvent.poolAssetDecimals.value),
+  );
+
+  const poolTokenTotalValueLockedInUSD =
+    Number(convertedPoolTokenTotalValueLocked) * Number(poolRewardEvent.poolAssetPrice.value);
+
+  const rewardAmountFormatted = ethers.utils.formatUnits(
+    BigNumber.from(poolRewardEvent.rewardTokenAmount),
+    Number(poolRewardEvent.rewardTokenPoolDecimals.value),
+  );
+
   const messageEmbed = {
     attachments: [
       {
@@ -147,95 +186,103 @@ export async function sendRewardAddedMessage({ poolRewardEvent, container }: Sen
     fields: [
       {
         inline: true,
-        name: 'Yield Amount USD',
-        value: currencyFormatter.format(Number(poolRewardEvent.baseTokenAmountInUSD.value)),
+        name: 'Yield',
+        value: `${tokenNumberFormatter.format(Number(rewardAmountFormatted))} ${poolRewardEvent.rewardTokenSymbol}`,
       },
       {
         inline: true,
-        name: 'Yield Amount Token',
-        value: `${tokenNumberFormatter.format(Number(poolRewardEvent.baseTokenAmount.value))} ${
-          poolRewardEvent.baseTokenSymbol
-        }`,
+        name: 'USD Value',
+        value: currencyFormatter.format(Number(poolRewardEvent.rewardTokenAmountInUSD.value)),
       },
       {
         inline: true,
         name: 'TVL',
-        value: currencyFormatter.format(Number(poolRewardEvent.baseTokenTotalValueLockedInUSD.value)),
+        value: currencyFormatter.format(poolTokenTotalValueLockedInUSD),
       },
 
-      {
-        inline: true,
-        name: 'Last Yield USD',
-        value: currencyFormatter.format(Number(lastPoolRewardEvent.baseTokenAmountInUSD.value)),
-      },
-      {
-        inline: true,
-        name: 'Last Yield Token',
-        value: `${tokenNumberFormatter.format(Number(lastPoolRewardEvent.baseTokenAmount.value))} ${
-          lastPoolRewardEvent.baseTokenSymbol
-        }`,
-      },
-      {
-        inline: true,
-        name: 'Last TVL',
-        value: currencyFormatter.format(Number(lastPoolRewardEvent.baseTokenTotalValueLockedInUSD.value)),
-      },
-      {
-        inline: true,
-        name: 'Yield Difference',
-        value: percentFormatter.format(percentDifferenceInYield),
-      },
-      {
-        inline: true,
-        name: 'TVL Difference',
-        value: percentFormatter.format(percentDifferenceInTVL),
-      },
-      {
-        inline: true,
-        name: 'Last Rebalance',
-        value: `[${DateTime.fromSeconds(
-          Number(lastPoolRewardEvent.blockTimestamp.value),
-        ).toRelative()}](https://etherscan.io/tx/${lastPoolRewardEvent.transactionId})`,
-      },
+      // {
+      //   inline: true,
+      //   name: 'Last Yield USD',
+      //   value: currencyFormatter.format(Number(lastPoolRewardEvent.rewardTokenAmountInUSD.value)),
+      // },
+      // {
+      //   inline: true,
+      //   name: 'Last Yield Token',
+      //   value: `${tokenNumberFormatter.format(Number(lastPoolRewardEvent.rewardTokenAmount.value))} ${
+      //     lastPoolRewardEvent.rewardTokenSymbol
+      //   }`,
+      // },
+      // {
+      //   inline: true,
+      //   name: 'Last TVL',
+      //   value: currencyFormatter.format(Number(lastPoolRewardEvent.rewardTokenTotalValueLockedInUSD.value)),
+      // },
+      // {
+      //   inline: true,
+      //   name: 'Yield Difference',
+      //   value: percentFormatter.format(percentDifferenceInYield),
+      // },
+      // {
+      //   inline: true,
+      //   name: 'TVL Difference',
+      //   value: percentFormatter.format(percentDifferenceInTVL),
+      // },
+      ...(lastPoolRewardEvent
+        ? [
+            {
+              inline: true,
+              name: 'Last Rebalance',
+              value: `[${DateTime.fromMillis(
+                Number(lastPoolRewardEvent.blockTimestamp.value),
+              ).toRelative()}](https://etherscan.io/tx/${lastPoolRewardEvent.transactionHash})`,
+            },
+          ]
+        : []),
       {
         inline: true,
         name: 'Pool',
-        value: `[${poolRewardEvent.poolName}](${vesperAppLink})`,
+        value: `[${poolRewardEvent.poolFullName}](${vesperAppLink})`,
       },
-      {
-        inline: true,
-        name: 'Strategy',
-        value: `[${poolRewardEvent.strategyName}](https://etherscan.io/address/${poolRewardEvent.strategyAddress})`,
-      },
-      {
-        inline: true,
-        name: 'Pool Holders',
-        value: numberFormatter.format(Number(poolRewardEvent.poolHolders.value)),
-      },
+      // {
+      //   inline: true,
+      //   name: 'Strategy',
+      //   value: `[${poolRewardEvent.strategyName}](https://etherscan.io/address/${poolRewardEvent.strategyAddress})`,
+      // },
+      // {
+      //   inline: true,
+      //   name: 'Pool Holders',
+      //   value: numberFormatter.format(Number(poolRewardEvent.poolHolders.value)),
+      // },
+      ...(poolRewardEvent.poolType === 'grow'
+        ? [
+            {
+              inline: true,
+              name: 'Risk Level',
+              value: poolRewardEvent.poolRiskLevel.value === 4 ? 'Aggressive' : 'Conservative',
+            },
+          ]
+        : []),
     ],
     footer: {
       icon_url: networkImageUrl,
       text: capitalize(poolRewardEvent.network),
     },
     thumbnail: {
-      // url: poolRewardEvent.poolLogoURI,
       url: `attachment://thumbnail.jpg`,
     },
-    timestamp: DateTime.fromSeconds(Number(poolRewardEvent.blockTimestamp.value)).toISO(),
-    title: `🎉💰 Rebalance ${poolRewardEvent.poolName}`,
-    url: 'https://etherscan.io/tx/${poolRewardEvent.transactionId}',
+    timestamp: DateTime.fromMillis(Number(poolRewardEvent.blockTimestamp.value)).toISO(),
+    title: `🎉💰 ${poolRewardEvent.poolName} Rebalance`,
+    url: `https://etherscan.io/tx/${poolRewardEvent.transactionHash}`,
   };
+
+  // TODO: Add risk level to grow pools
 
   const channelId = '900091874973483109';
   const token = process.env.COMMAND_BOT_DISCORD_TOKEN;
 
   const formData = new FormData();
   const svg = await fetch(poolRewardEvent.poolLogoURI).then((res) => res.text());
-  const jpg = await convert(svg, {
-    height: 512,
-    width: 512,
-  });
-  // const jpgFile = new File([jpg], 'thumbnail.jpg', { type: 'image/jpeg' });
+  const jpg = await sharp(Buffer.from(svg)).resize(200, 200).toBuffer();
 
   const stringifiedMessageEmbed = JSON.stringify({ embeds: [messageEmbed] });
 
@@ -245,6 +292,7 @@ export async function sendRewardAddedMessage({ poolRewardEvent, container }: Sen
   const headers = new Headers();
   headers.append('Authorization', `Bot ${token}`);
 
+  // TODO: Replace node-fetch with axios
   const result = await fetch(`https://discord.com/api/v9/channels/${channelId}/messages`, {
     body: formData,
     headers,

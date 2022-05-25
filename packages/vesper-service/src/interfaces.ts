@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 
 export interface Token {
   address: string;
@@ -144,6 +144,9 @@ export interface Pool {
 
   // VSP rewards rate.
   vspRewardsRate: string;
+  rewardsTokenSymbol: string;
+  rewardsTokenAddress: string;
+  rewardsTokenDecimal: string;
 
   // withdraw fee charged. It is set to 0.60% for every pool except vVSP which is 0.
   withdrawFee: number;

@@ -43,7 +43,6 @@ export default class CallBlockchainMethodCommand extends BaseCommand {
       contractAddress,
       methodName: method,
       params,
-      readWrite: readWrite as 'read' | 'write',
     });
   }
 }

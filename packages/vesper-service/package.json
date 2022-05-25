@@ -8,26 +8,29 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "dependencies": {
-    "@vesper-discord/blockchain-service": "1.0.0",
-    "@vesper-discord/config": "1.0.0",
-    "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/blockchain-scan-service": "1.0.0",
-    "@vesper-discord/entity-service": "1.0.0",
-    "@vesper-discord/logger": "1.0.0",
+    "@vesper-discord/blockchain-service": "1.0.0",
     "@vesper-discord/coin-gecko-service": "1.0.0",
+    "@vesper-discord/config": "1.0.0",
+    "@vesper-discord/entity-service": "1.0.0",
+    "@vesper-discord/errors": "1.0.0",
+    "@vesper-discord/logger": "1.0.0",
     "bignumber.js": "9.0.2",
+    "bluebird": "3.7.2",
+    "ethers": "5.6.6",
+    "luxon": "2.4.0",
     "node-fetch": "2.6.6",
+    "semver-sort": "1.0.0",
     "typedi": "0.10.0",
     "vesper-lib": "1.0.0",
-    "semver-sort": "1.0.0",
-    "vesper-metadata": "2.68.0",
+    "vesper-metadata": "2.71.0",
+    "ulid": "2.3.0",
     "web3": "1.7.3",
-    "web3-eth-contract": "1.7.3",
-    "luxon": "2.3.2",
-    "ethers": "5.6.4"
+    "web3-eth-contract": "1.7.3"
   },
   "devDependencies": {
     "@types/bignumber.js": "5.0.0",
+    "@types/bluebird": "3.5.36",
     "@types/semver-sort": "0.0.1"
   }
 }

@@ -13,7 +13,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
-    "sourceMap": true,
+    "inlineSourceMap": true,
     "importHelpers": true,
     "noEmitHelpers": true,
     "inlineSources": true,
@@ -22,7 +22,7 @@
   },
   "compileOnSave": false,
   "include": ["<rootDir>/src"],
-  "exclude": ["node_modules", "coverage", "dist"],
+  "exclude": ["node_modules", "coverage", "dist", "cdk.out"],
   "ts-node": {
     "transpileOnly": true,
     "transpiler": "ts-node/transpilers/swc-experimental"

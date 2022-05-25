@@ -14,26 +14,44 @@ export async function handler(event: DynamoDBStreamEvent, context: Context): Pro
     container,
   });
 
+  const rewardAddedMessagesSent: any[] = [];
+
   try {
     await Promise.all(
       event.Records.map(async (record) => {
-        logger.info('Stream record', { record });
-
         if (record.eventName === 'INSERT' && record.dynamodb?.NewImage) {
           const reward = unmarshall(record.dynamodb.NewImage as { [key: string]: AttributeValue }, {
             wrapNumbers: true,
           });
 
+          const vVspAddress = '0x1b40183EFB4Dd766f11bDa7A7c3AD8982e998421';
+          if (reward.rewardTokenPoolAddress === vVspAddress) {
+            logger.info(`Skipping sending reward because it's to VSP`, {
+              rewardId: reward.id,
+            });
+            return;
+          }
+
           await sendRewardAddedMessage({
             container,
             poolRewardEvent: reward as any,
           });
-          logger.info('Sent message');
+          // TODO: Update db with record that we sent the message, that way if it gets replayed we don't send it again
+
+          logger.debug('Sent message', {
+            reward,
+            rewardId: reward.id,
+          });
+
+          rewardAddedMessagesSent.push(reward);
           // TODO: Update record in DynamoDB to say we have sent the message that way we can test this
         }
       }),
     );
   } catch (err) {
     logger.error('Error sending reward added message to discord', { error: err as Error });
+    throw err;
+  } finally {
+    logger.info('Sent messages', { rewardAddedMessagesSent: rewardAddedMessagesSent.map((r) => r.id) });
   }
 }

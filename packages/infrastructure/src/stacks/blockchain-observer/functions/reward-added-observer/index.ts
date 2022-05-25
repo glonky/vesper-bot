@@ -14,6 +14,8 @@ export async function handler(event: CloudWatchLogsEvent, context: Context): Pro
 
   await container.get(EthereumRewardAddedEventHandler).backfill({ poolContractVersion: 3 });
   await container.get(EthereumRewardAddedEventHandler).backfill({ poolContractVersion: 4 });
+  // await container.get(PolygonRewardAddedEventHandler).backfill({ poolContractVersion: 3 });
+  // await container.get(PolygonRewardAddedEventHandler).backfill({ poolContractVersion: 4 });
+
   // await container.get(AvalancheRewardAddedEventHandler).backfill();
-  // await container.get(PolygonRewardAddedEventHandler).backfill();
 }

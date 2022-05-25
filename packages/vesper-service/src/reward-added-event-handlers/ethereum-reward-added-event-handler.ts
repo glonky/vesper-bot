@@ -2,10 +2,14 @@ import { EtherscanService } from '@vesper-discord/blockchain-scan-service';
 import { EthereumBlockchainService } from '@vesper-discord/blockchain-service';
 import { PlatformId } from '@vesper-discord/coin-gecko-service';
 import { Inject, Service } from 'typedi';
+import { EthereumVesperService } from '../ethereum-service';
 import { RewardAddedEventHandler } from './reward-added-event-handler';
 
 @Service()
 export class EthereumRewardAddedEventHandler extends RewardAddedEventHandler {
+  @Inject(() => EthereumVesperService)
+  protected readonly vesperService!: EthereumVesperService;
+
   @Inject(() => EthereumBlockchainService)
   protected readonly blockchainService!: EthereumBlockchainService;
 

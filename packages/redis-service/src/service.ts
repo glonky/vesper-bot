@@ -19,11 +19,7 @@ export class RedisService {
     const client = new IoRedis(config.host, {
       db: config.isTest ? 1 : undefined,
       keepAlive: isLocalhost ? 1 : 0,
-      tls: isLocalhost
-        ? undefined
-        : {
-            rejectUnauthorized: false,
-          },
+      port: config.port,
     });
     const clientAdapter = useAdapter(client);
     cacheManager.setOptions({

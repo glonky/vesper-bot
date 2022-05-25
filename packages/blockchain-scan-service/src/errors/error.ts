@@ -14,8 +14,8 @@ export interface ExtendedBlockchainScanErrorProps extends ExtendedErrorProps<Blo
 }
 
 export class ExtendedBlockchainScanError extends ExtendedError {
-  constructor(props: ExtendedBlockchainScanErrorProps) {
-    super(props.error?.message ?? `Error from ${props.scanService} service`, props);
+  constructor(message: string, props: ExtendedBlockchainScanErrorProps) {
+    super(message || `Error from ${props.scanService} service`, props);
     Object.setPrototypeOf(this, ExtendedBlockchainScanError.prototype);
     this.name = this.constructor.name;
   }

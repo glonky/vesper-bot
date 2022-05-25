@@ -81,13 +81,16 @@
       "type": "node",
       "request": "launch",
       "name": "scripts: backfill-reward-added-events",
-      "sourceMaps": true,
-      "smartStep": true,
+      // "sourceMaps": true,
+      // "smartStep": true,
       "preLaunchTask": "npm: build",
       "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolder}/packages/**/dist/**/*.js"],
       "program": "${workspaceFolder}/packages/scripts/bin/run",
       "console": "integratedTerminal",
-      "args": ["backfill-reward-added-events", "-f"]
+      "env": { "LOG_LEVEL": "debug" },
+      // "args": ["backfill-reward-added-events", "-f"]
+      "args": ["backfill-reward-added-events"]
     },
     {
       "type": "node",
@@ -95,9 +98,11 @@
       "request": "launch",
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "disableOptimisticBPs": true,
-      "smartStep": true,
+      // "smartStep": true,
       "preLaunchTask": "npm: build",
+      // "skipFiles": ["<node_internals>/**"],
+      // "outFiles": ["${workspaceFolder}/packages/**/dist/**/*.js"],
+      "sourceMaps": true,
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "yarn",
       "args": ["test", "--runInBand", "--watchAll=false", "--color", "--coverage=false"]

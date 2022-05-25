@@ -40,5 +40,11 @@ export class Database extends Construct {
       partitionKey: { name: 'GSI3pk', type: AttributeType.STRING },
       sortKey: { name: 'GSI3sk', type: AttributeType.STRING },
     });
+
+    singleTable.addGlobalSecondaryIndex({
+      indexName: 'GSI4',
+      partitionKey: { name: 'GSI4pk', type: AttributeType.STRING },
+      sortKey: { name: 'GSI4sk', type: AttributeType.STRING },
+    });
   }
 }

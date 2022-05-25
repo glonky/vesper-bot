@@ -21,10 +21,23 @@ export default class BackfillRewardAddedEvents extends BaseCommand {
 
     const { contractAddress, force } = cliFlags;
 
-    await this.container.get(EthereumRewardAddedEventHandler).backfill({ force, poolContractVersion: 3 });
-    await this.container.get(EthereumRewardAddedEventHandler).backfill({ force, poolContractVersion: 4 });
+    await this.container.get(EthereumRewardAddedEventHandler).backfill({
+      force,
+      // fromBlockNumber: 14798068,
+      // poolAddress: '0x7a74B6D3A07D3249Ea2FBb58e47F0DaF6d6a2ebf',
+      poolContractVersion: 3,
+      // toBlockNumber: 14798068,
+    });
+    await this.container.get(EthereumRewardAddedEventHandler).backfill({
+      force,
+      // fromBlockNumber: 14798068,
+      // poolAddress: '0x7a74B6D3A07D3249Ea2FBb58e47F0DaF6d6a2ebf',
+      poolContractVersion: 4,
+      // toBlockNumber: 14798068,
+    });
     // await this.container.get(AvalancheRewardAddedEventHandler).backfill();
-    // await this.container.get(PolygonRewardAddedEventHandler).backfill();
+    // await this.container.get(PolygonRewardAddedEventHandler).backfill({ force, poolContractVersion: 3 });
+    // await this.container.get(PolygonRewardAddedEventHandler).backfill({ force, poolContractVersion: 4 });
 
     this.logger.info(`Upserting reward amount`, {
       contractAddress,

@@ -6,9 +6,13 @@ export class DefaultStrategy implements CacheStrategy {
 
   private pendingMethodCallMap = new Map<string, Promise<any>>();
 
-  private findCachedValue = async (client: CacheClient, key: string) => {
+  private async findCachedValue(client: CacheClient, key: string) {
     let cachedValue: any;
     const pendingCachePromise = this.pendingCacheRequestMap.get(key);
+    const store = asyncLocalStorage.getStore();
+    if (store) {
+      asyncLocalStorage.enterWith(store);
+    }
 
     if (pendingCachePromise) {
       cachedValue = await pendingCachePromise;
@@ -46,17 +50,22 @@ export class DefaultStrategy implements CacheStrategy {
       }
 
       const ttl = cachedValue[0][1];
-      asyncLocalStorage.getStore()?.set('cacheHit', true);
-      asyncLocalStorage.getStore()?.set('cacheTTLSeconds', ttl);
+      store?.set('cacheHit', true);
+      store?.set('cacheTTLSeconds', ttl);
     }
 
     return result;
-  };
+  }
 
   async handle(context: CacheStrategyContext): Promise<any> {
     const fullyQualifiedName = `${context.originalMethodScope.constructor.name}.${context.originalPropertyKey}`;
     const finalKey = `${fullyQualifiedName}:${context.key}`;
-    asyncLocalStorage.getStore()?.set('cacheKey', finalKey);
+    const store = asyncLocalStorage.getStore();
+    if (store) {
+      asyncLocalStorage.enterWith(store);
+    }
+
+    store?.set('cacheKey', finalKey);
 
     try {
       const cachedValue = await this.findCachedValue(context.client, finalKey);
@@ -133,7 +142,7 @@ export class DefaultStrategy implements CacheStrategy {
       }
     }
 
-    asyncLocalStorage.getStore()?.set('cacheHit', false);
+    store?.set('cacheHit', false);
 
     return result;
   }

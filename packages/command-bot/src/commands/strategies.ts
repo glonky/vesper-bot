@@ -1,5 +1,5 @@
 import { CustomSlashCommandBuilder, discord, discordBuilders } from '@vesper-discord/discord-service';
-import { VesperService } from '@vesper-discord/vesper-service';
+import { EthereumVesperService } from '@vesper-discord/vesper-service';
 import { Container } from 'typedi';
 import { Config } from '../config';
 
@@ -15,8 +15,8 @@ export default {
         .setExecute(async ({ interaction }) => {
           await interaction.deferReply();
 
-          const vspDashboards = await Container.get(VesperService).getDashboards();
-          const valuesLocked = await Container.get(VesperService).getValuesLocked();
+          const vspDashboards = await Container.get(EthereumVesperService).getDashboards();
+          const valuesLocked = await Container.get(EthereumVesperService).getValuesLocked();
 
           // valuesLocked[0].valuesLocked.find((value) => value);
           const currencyFormatter = new Intl.NumberFormat('en-US', { currency: 'USD', style: 'currency' });

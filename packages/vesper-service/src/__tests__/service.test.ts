@@ -1,10 +1,10 @@
 import { Container } from 'typedi';
-import { VesperService } from '../service';
+import { EthereumVesperService } from '..';
 
 describe('vesper-service | service | e2e', () => {
   describe('getListOfNormalTransactionsByAddress', () => {
     it.skip('should response with 200', async () => {
-      const vesperService = Container.get(VesperService);
+      const vesperService = Container.get(EthereumVesperService);
       // const contracts = await vesperService.vesperLib.getContracts();
       // contracts.assetContracts.forEach(async (assetContract) => {
       // assetContract.

@@ -14,7 +14,7 @@
     "@vesper-discord/container": "1.0.0",
     "@vesper-discord/errors": "1.0.0",
     "@vesper-discord/logger": "1.0.0",
-    "ioredis": "5.0.4",
+    "ioredis": "5.0.5",
     "typedi": "0.10.0"
   },
   "devDependencies": {

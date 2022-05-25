@@ -52,10 +52,10 @@ export const Log =
         const boundThis = this;
 
         const store = new Map();
-        store.set('id', ulid());
+        store.set('logId', ulid());
 
         return asyncLocalStorage.run(store, async () => {
-          const logId = asyncLocalStorage.getStore()?.get('id');
+          const logId = asyncLocalStorage.getStore()?.get('logId');
           const fullyQualifiedName = `${target.constructor.name}.${propertyKey}`;
 
           const startTime = performance.now();

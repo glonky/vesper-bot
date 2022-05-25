@@ -42,5 +42,9 @@
         ]
       }
     ]
+  },
+  "security-group:account=702592220884:region=us-west-2:securityGroupName=default:vpcId=vpc-08fab5526dd232a2f": {
+    "securityGroupId": "sg-0a1651e492eac33d4",
+    "allowAllOutbound": false
   }
 }

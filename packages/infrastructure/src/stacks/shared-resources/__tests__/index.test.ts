@@ -5,7 +5,12 @@ import { SharedResourcesStack } from '../index';
 describe('SharedResourcesStack | Stack', () => {
   it('has the correct resources', () => {
     const app = new App();
-    const stack = new SharedResourcesStack(app, 'Stack', {});
+    const stack = new SharedResourcesStack(app, 'Stack', {
+      env: {
+        account: '702592220884',
+        region: 'us-west-2',
+      },
+    });
     const template = Template.fromStack(stack);
     template.resourceCountIs('AWS::IAM::User', 2);
     template.resourceCountIs('AWS::DynamoDB::Table', 1);
@@ -13,7 +18,12 @@ describe('SharedResourcesStack | Stack', () => {
 
   it('assigns the correct permissions for the users', () => {
     const app = new App();
-    const stack = new SharedResourcesStack(app, 'Stack', {});
+    const stack = new SharedResourcesStack(app, 'Stack', {
+      env: {
+        account: '702592220884',
+        region: 'us-west-2',
+      },
+    });
     const template = Template.fromStack(stack);
     template.resourceCountIs('AWS::IAM::Policy', 2);
     template.hasResourceProperties('AWS::IAM::Policy', {

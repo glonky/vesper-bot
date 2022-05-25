@@ -58,7 +58,7 @@ export class Logger {
       streams.push(
         ...allLevels.map((level) => ({
           level: level as Level,
-          stream: PinoPretty({ colorize: this.config.colors, sync: this.config.sync }),
+          stream: PinoPretty({ colorize: this.config.colors, sync: this.config.sync,  }),
         })),
       );
     }

@@ -1,21 +1,35 @@
-import { ethers, BigNumber } from 'ethers';
+import { ethers, BigNumber, Contract } from 'ethers';
 import { keccak256 } from 'ethers/lib/utils';
+import bluebird from 'bluebird';
 import { Logger, Log } from '@vesper-discord/logger';
 import { Inject, Service } from 'typedi';
-import { ErrorHandler } from '@vesper-discord/errors';
+import { assertion, ErrorHandler } from '@vesper-discord/errors';
 import { Cacheable } from '@vesper-discord/redis-service';
 import type { Filter, BlockTag, Provider } from '@ethersproject/abstract-provider';
 import { Retriable } from '@vesper-discord/retry';
-import { chunk } from 'lodash';
+import { chunk, clamp } from 'lodash';
 import { Config } from './config';
 import { EthersError, EthersErrorConverter, NotProxyAddressError } from './errors/index';
 
-export interface CallMethodProps {
+export interface CallMethodContractAddressProps {
   methodName: string;
   contractAddress: string;
   abi: any;
   params?: any[];
-  readWrite?: 'read' | 'write';
+  contract?: never;
+  cache?:
+    | {
+        ttl?: number;
+      }
+    | boolean;
+}
+
+export interface CallMethodContractProps {
+  methodName: string;
+  contractAddress?: never;
+  abi?: never;
+  contract: Contract;
+  params?: any[];
   cache?:
     | {
         ttl?: number;
@@ -52,7 +66,7 @@ export abstract class BlockchainService {
   @Log({ ignoreErrors: [NotProxyAddressError], logInput: ({ input }) => input[0], logResult: ({ result }) => result })
   @Cacheable({
     cacheKey: (args) => args[0],
-    ttlSeconds: 60 * 60 * 24,
+    ttlSeconds: 60 * 60 * 24 * 30,
   })
   @Retriable()
   @ErrorHandler({ converter: EthersErrorConverter })
@@ -94,19 +108,43 @@ export abstract class BlockchainService {
   }
 
   @Log({
-    logInput: ({ input }) => ({ contractAddress: input[0].contractAddress, methodName: input[0].methodName }),
+    logInput: ({ input }) => ({
+      contractAddress: input[0].contractAddress ?? input[0].contract.address,
+      methodName: input[0].methodName,
+    }),
     logResult: ({ result }) => result,
   })
   @Cacheable({
-    cacheKey: (args) => `${args[0].contractAddress}:${args[0].methodName}`,
+    cacheKey: (args, context) => {
+      const { contract, contractAddress, abi, methodName } = args[0];
+
+      let finalContract = contract;
+
+      if (!finalContract && contractAddress) {
+        finalContract = new ethers.Contract(contractAddress, abi, context.provider);
+      }
+
+      return `${finalContract.address}:${methodName}`;
+    },
     noop: (args) => !args[0].cache,
     ttlSeconds: (args) => (args[0].cache && args[0].cache?.ttl ? args[0].cache?.ttl : 60 * 60 * 24),
   })
   @Retriable()
   @ErrorHandler({ converter: EthersErrorConverter })
-  public async callMethod({ methodName, contractAddress, abi, readWrite }: CallMethodProps) {
-    const contract = new ethers.Contract(contractAddress, abi, this.provider);
-    return contract[methodName].call();
+  public async callMethod({
+    methodName,
+    contractAddress,
+    contract,
+    abi,
+  }: CallMethodContractAddressProps | CallMethodContractProps) {
+    let finalContract = contract;
+
+    if (!finalContract && contractAddress) {
+      finalContract = new ethers.Contract(contractAddress, abi, this.provider);
+    }
+    assertion('Contract must be defined', finalContract);
+
+    return finalContract[methodName].call();
   }
 
   @Log({
@@ -114,28 +152,31 @@ export abstract class BlockchainService {
   })
   @Cacheable({
     cacheKey: (args) => `${args[0].address}:${args[0].topics.toString()}:${args[0].fromBlock}:${args[0].toBlock}`,
-    ttlSeconds: (args) => (args[0].cache && args[0].cache?.ttl ? args[0].cache?.ttl : 60 * 60 * 24 * 365),
+    ttlSeconds: (args) => (args[0].cache && args[0].cache?.ttl ? args[0].cache?.ttl : 60 * 60 * 24 * 30),
   })
   @Retriable()
   @ErrorHandler({ converter: EthersErrorConverter })
   public async getLogs(filter: Filter & { chunkSize?: number }) {
     try {
-      return await this.provider.getLogs(filter);
+      return await this._getLogs(filter);
     } catch (err) {
-      if ((err as Error).message.includes('invalid block range')) {
-        const latestBlockNumber = filter.toBlock === 'latest' ? await this.provider.getBlockNumber() : filter.toBlock;
+      const message = (err as Error).message;
+      if (message.includes('invalid block range') || message.includes('block range too large')) {
+        const latestBlockNumber = filter.toBlock === 'latest' ? await this.getBlockNumber() : filter.toBlock;
 
         let logs: ethers.providers.Log[] = [];
 
         const chunkSize = filter.chunkSize ?? 3500;
         const chunks = chunk(Array.from({ length: Number(latestBlockNumber) }), chunkSize);
 
-        await Promise.all(
-          chunks.map(async (_chunk, index) => {
-            const fromBlock = index * chunkSize;
-            const toBlock = fromBlock + chunkSize - 1;
-            logs = [...logs, ...(await this.provider.getLogs({ ...filter, fromBlock, toBlock }))];
-          }),
+        await bluebird.map(
+          chunks,
+          async (_chunk, index) => {
+            const fromBlock = (Number(filter.fromBlock) ?? 0) + index * chunkSize;
+            const toBlock = clamp(fromBlock + chunkSize - 1, fromBlock, Number(latestBlockNumber));
+            logs = [...logs, ...(await this._getLogs({ ...filter, fromBlock, toBlock }))];
+          },
+          { concurrency: 100 },
         );
 
         return logs;
@@ -150,7 +191,7 @@ export abstract class BlockchainService {
   })
   @Cacheable({
     cacheKey: (args) => args[0],
-    ttlSeconds: 60 * 60 * 24,
+    ttlSeconds: 60 * 60 * 24 * 30,
   })
   @Retriable()
   @ErrorHandler({ converter: EthersErrorConverter })
@@ -159,12 +200,23 @@ export abstract class BlockchainService {
     return this.provider['getBlock'](block);
   }
 
+  @Log()
+  @Retriable()
+  @Cacheable({
+    ttlSeconds: 15,
+  })
+  @ErrorHandler({ converter: EthersErrorConverter })
+  public async getBlockNumber() {
+    // eslint-disable-next-line @typescript-eslint/dot-notation
+    return this.provider['getBlockNumber']();
+  }
+
   @Log({
     logInput: ({ input }) => input[0],
   })
   @Cacheable({
     cacheKey: (args) => args[0],
-    ttlSeconds: 60 * 60 * 24,
+    ttlSeconds: 60 * 60 * 24 * 30,
   })
   @Retriable()
   @ErrorHandler({ converter: EthersErrorConverter })
@@ -181,11 +233,24 @@ export abstract class BlockchainService {
   })
   @Cacheable({
     cacheKey: (args) => args[0].toLowerCase(),
-    ttlSeconds: 60 * 60 * 24,
+    ttlSeconds: 60 * 60 * 24 * 30,
   })
   @Retriable()
   @ErrorHandler({ converter: EthersErrorConverter })
   public async getTransactionReceipt(txhash: string) {
     return this.provider.getTransactionReceipt(txhash);
+  }
+
+  @Log({
+    logInput: ({ input }) => input[0],
+  })
+  @Cacheable({
+    cacheKey: (args) => `${args[0].address}:${args[0].topics.toString()}:${args[0].fromBlock}:${args[0].toBlock}`,
+    ttlSeconds: (args) => (args[0].cache && args[0].cache?.ttl ? args[0].cache?.ttl : 60 * 60 * 24 * 30),
+  })
+  @Retriable()
+  @ErrorHandler({ converter: EthersErrorConverter })
+  private async _getLogs(filter: Filter & { chunkSize?: number }) {
+    return this.provider.getLogs(filter);
   }
 }

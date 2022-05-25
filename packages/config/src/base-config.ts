@@ -86,6 +86,8 @@ export class BaseConfig {
       AWS_ACCESS_KEY_ID,
       AWS_REGION,
       AWS_SECRET_ACCESS_KEY,
+      AWS_SERVICES_DYNAMODB_ENDPOINT_URL,
+      LOG_TIMESTAMP,
       AWS_ACCOUNT,
       LOG_TO_FILE,
       LOG_COLORS,
