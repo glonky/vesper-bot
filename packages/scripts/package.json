@@ -43,7 +43,7 @@
     "inquirer": "8.2.4",
     "listr": "0.14.3",
     "lodash": "4.17.21",
-    "luxon": "2.4.0",
+    "luxon": "2.5.2",
     "patch-package": "6.4.7",
     "reflect-metadata": "0.1.13",
     "semver-sort": "1.0.0",
