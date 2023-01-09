@@ -10,7 +10,7 @@
   "dependencies": {
     "dotenv-expand": "8.0.3",
     "dotenv-flow": "3.2.0",
-    "luxon": "2.4.0",
+    "luxon": "2.5.2",
     "pkg-dir": "5.0.0",
     "typedi": "0.10.0"
   },
